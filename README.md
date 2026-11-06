@@ -111,8 +111,14 @@ GitHub Actions runs lint, type checking, and tests for pushes and pull requests.
 
 Planning documents live in [`docs/`](docs/):
 
+- [Statewide JVSG best-practices presentation](docs/Services_for_Non_CM_Veterans_Best_Practices.pdf)
+  - presentation context for the demonstrated workbook, baseline, and project
+    direction.
 - [Enterprise technical specification](docs/executive_summary_enterprise_technical_specification_jvsg_non_cm_triage_azure_architecture.md)
   - requirements authority and rollout vision.
+- [Deliverables and required inputs](docs/deliverables_and_required_inputs.md)
+  - report samples, ETL workflow, SharePoint and TOON outcomes, operational
+    decisions, and the management input checklist.
 - [Implementation plan](docs/implementation_plan.md) - architecture boundaries,
   decision gates, source traceability, and release criteria.
 - [Sprint TODO](docs/sprint_todo.md) - discrete tasks, dependencies, acceptance
