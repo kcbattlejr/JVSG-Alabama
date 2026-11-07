@@ -1,0 +1,2 @@
+# Synthetic data is hash-checked in CI; keep exact bytes on every platform.
+data/synthetic/** -text

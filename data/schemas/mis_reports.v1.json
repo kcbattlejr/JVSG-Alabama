@@ -1,331 +1,378 @@
 {
   "anti_join": {
-    "version": "1.0",
+    "version": "1.1",
     "kind": "anti_join",
     "format": "csv",
     "observed_header_row": 1,
+    "footer": "none",
     "columns": [
       {
         "position": 1,
         "header": "programdesc3",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Program description"
       },
       {
         "position": 2,
         "header": "Username",
-        "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "pii_class": "participant_identifier",
+        "handling": "lexicon",
+        "target": "identifier",
+        "description": "Participant MIS account number"
       },
       {
         "position": 3,
         "header": "StateID",
+        "pii_class": "participant_identifier",
+        "handling": "projected",
         "target": "participant_id",
-        "handling": "protected",
-        "data_type": "identifier"
+        "description": "State ID (SID); sole join key, HMAC-tokenized on read"
       },
       {
         "position": 4,
         "header": "Textbox72",
+        "pii_class": "report_label",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Unused SSRS textbox"
       },
       {
         "position": 5,
         "header": "Region",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Workforce region"
       },
       {
         "position": 6,
         "header": "Office",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Career center"
       },
       {
         "position": 7,
         "header": "OfficeResponsible",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 8,
         "header": "FirstName",
-        "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "pii_class": "direct_identifier",
+        "handling": "lexicon",
+        "target": "person_name",
+        "description": null
       },
       {
         "position": 9,
         "header": "LastName",
-        "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "pii_class": "direct_identifier",
+        "handling": "lexicon",
+        "target": "person_name",
+        "description": null
       },
       {
         "position": 10,
         "header": "SSN",
+        "pii_class": "direct_identifier",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Blank in observed download"
       },
       {
         "position": 11,
         "header": "CityStateCountry",
+        "pii_class": "quasi_identifier",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Masked by MIS"
       },
       {
         "position": 12,
         "header": "primephone",
+        "pii_class": "direct_identifier",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Masked by MIS"
       },
       {
         "position": 13,
         "header": "email",
+        "pii_class": "direct_identifier",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Masked by MIS"
       },
       {
         "position": 14,
         "header": "employmentdate",
+        "pii_class": "quasi_identifier",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 15,
         "header": "Service",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Service code and description"
       },
       {
         "position": 16,
         "header": "Naics",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 17,
         "header": "onetcode",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 18,
         "header": "CompletionStatus",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 19,
         "header": "programserv",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 20,
         "header": "Provider",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 21,
         "header": "StaffCreated",
-        "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "pii_class": "staff_identifier",
+        "handling": "lexicon",
+        "target": "staff_name",
+        "description": null
       },
       {
         "position": 22,
         "header": "Date1",
+        "pii_class": "quasi_identifier",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "SSRS date; label supplied by textbox81"
       },
       {
         "position": 23,
         "header": "Date2",
+        "pii_class": "quasi_identifier",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "SSRS date; label supplied by textbox82"
       },
       {
         "position": 24,
         "header": "Date3",
+        "pii_class": "quasi_identifier",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "SSRS date; label supplied by textbox83"
       },
       {
         "position": 25,
         "header": "Date4",
+        "pii_class": "quasi_identifier",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "SSRS date; label supplied by textbox84"
       },
       {
         "position": 26,
         "header": "Date5",
+        "pii_class": "quasi_identifier",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "SSRS date; label supplied by textbox85"
       },
       {
         "position": 27,
         "header": "col_exitdate",
+        "pii_class": "quasi_identifier",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Program exit date"
       },
       {
         "position": 28,
         "header": "EditStaff",
-        "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "pii_class": "staff_identifier",
+        "handling": "lexicon",
+        "target": "staff_name",
+        "description": null
       },
       {
         "position": 29,
         "header": "DSSClientID",
+        "pii_class": "direct_identifier",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 30,
         "header": "EDGStatus",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 31,
         "header": "TimeLimitedStatus",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 32,
         "header": "AppID",
-        "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "pii_class": "participant_identifier",
+        "handling": "lexicon",
+        "target": "identifier",
+        "description": "Application ID"
       },
       {
         "position": 33,
         "header": "CaseManager",
-        "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "pii_class": "staff_identifier",
+        "handling": "lexicon",
+        "target": "staff_name",
+        "description": null
       },
       {
         "position": 34,
         "header": "registeredapprenticeship",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 35,
         "header": "apprenticeshiptype",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 36,
         "header": "Hispanic",
+        "pii_class": "sensitive_attribute",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Ethnicity"
       },
       {
         "position": 37,
         "header": "learningmode",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 38,
         "header": "agencycode",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 39,
         "header": "col_offender",
+        "pii_class": "sensitive_attribute",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Justice involvement"
       },
       {
         "position": 40,
         "header": "comments",
+        "pii_class": "free_text",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Blank in observed download"
       },
       {
         "position": 41,
         "header": "itapaying",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 42,
         "header": "textbox81",
+        "pii_class": "report_label",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Label for Date1: Create Date"
       },
       {
         "position": 43,
         "header": "textbox82",
+        "pii_class": "report_label",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Label for Date2: Actual Date"
       },
       {
         "position": 44,
         "header": "textbox83",
+        "pii_class": "report_label",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Label for Date3: Edit Date"
       },
       {
         "position": 45,
         "header": "textbox84",
+        "pii_class": "report_label",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Label for Date4: Scheduled Date"
       },
       {
         "position": 46,
         "header": "textbox85",
+        "pii_class": "report_label",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Label for Date5: Application Date"
       }
     ],
     "anchors": [
@@ -335,94 +382,107 @@
     ]
   },
   "case_notes": {
-    "version": "1.0",
+    "version": "1.1",
     "kind": "case_notes",
     "format": "xlsx",
     "observed_header_row": 4,
+    "footer": "repeated_header_total_rows",
     "columns": [
       {
         "position": 1,
         "header": "Userid",
-        "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "pii_class": "participant_identifier",
+        "handling": "lexicon",
+        "target": "identifier",
+        "description": "Participant MIS account number"
       },
       {
         "position": 2,
         "header": null,
-        "target": null,
+        "pii_class": "blank",
         "handling": "blank",
-        "data_type": "blank"
+        "target": null,
+        "description": "Unlabeled column; must stay empty"
       },
       {
         "position": 3,
         "header": "Individual",
-        "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "pii_class": "direct_identifier",
+        "handling": "lexicon",
+        "target": "person_name",
+        "description": "Participant name"
       },
       {
         "position": 4,
         "header": "Created By",
-        "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "pii_class": "staff_identifier",
+        "handling": "lexicon",
+        "target": "staff_name",
+        "description": null
       },
       {
         "position": 5,
         "header": "Create\nDate",
+        "pii_class": "quasi_identifier",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 6,
         "header": "Contact\nDate",
+        "pii_class": "quasi_identifier",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 7,
         "header": "Contact\nType",
+        "pii_class": "operational",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 8,
         "header": "Last\nEdited By",
-        "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "pii_class": "staff_identifier",
+        "handling": "lexicon",
+        "target": "staff_name",
+        "description": null
       },
       {
         "position": 9,
         "header": "Last Edit Date",
+        "pii_class": "quasi_identifier",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": null
       },
       {
         "position": 10,
         "header": "State\nID",
+        "pii_class": "participant_identifier",
+        "handling": "projected",
         "target": "participant_id",
-        "handling": "protected",
-        "data_type": "identifier"
+        "description": "State ID (SID); sole join key, HMAC-tokenized on read"
       },
       {
         "position": 11,
         "header": "Case\nSubject",
+        "pii_class": "free_text",
+        "handling": "discarded",
         "target": null,
-        "handling": "unmapped",
-        "data_type": "unknown"
+        "description": "Free-text subject"
       },
       {
         "position": 12,
         "header": "Case Notes",
+        "pii_class": "free_text",
+        "handling": "projected",
         "target": "text",
-        "handling": "protected",
-        "data_type": "text"
+        "description": "Unstructured note; scrubbed"
       }
     ],
     "anchors": [
