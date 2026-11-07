@@ -9,277 +9,323 @@
         "position": 1,
         "header": "programdesc3",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 2,
         "header": "Username",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 3,
         "header": "StateID",
         "target": "participant_id",
-        "handling": "protected"
+        "handling": "protected",
+        "data_type": "identifier"
       },
       {
         "position": 4,
         "header": "Textbox72",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 5,
         "header": "Region",
-        "target": "region",
-        "handling": "protected"
+        "target": null,
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 6,
         "header": "Office",
-        "target": "office",
-        "handling": "protected"
+        "target": null,
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 7,
         "header": "OfficeResponsible",
-        "target": "office_responsible",
-        "handling": "protected"
+        "target": null,
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 8,
         "header": "FirstName",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 9,
         "header": "LastName",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 10,
         "header": "SSN",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 11,
         "header": "CityStateCountry",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 12,
         "header": "primephone",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 13,
         "header": "email",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 14,
         "header": "employmentdate",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 15,
         "header": "Service",
-        "target": "service",
-        "handling": "protected"
+        "target": null,
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 16,
         "header": "Naics",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 17,
         "header": "onetcode",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 18,
         "header": "CompletionStatus",
-        "target": "completion_status",
-        "handling": "protected"
+        "target": null,
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 19,
         "header": "programserv",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 20,
         "header": "Provider",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 21,
         "header": "StaffCreated",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 22,
         "header": "Date1",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 23,
         "header": "Date2",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 24,
         "header": "Date3",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 25,
         "header": "Date4",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 26,
         "header": "Date5",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 27,
         "header": "col_exitdate",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 28,
         "header": "EditStaff",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 29,
         "header": "DSSClientID",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 30,
         "header": "EDGStatus",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 31,
         "header": "TimeLimitedStatus",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 32,
         "header": "AppID",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 33,
         "header": "CaseManager",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 34,
         "header": "registeredapprenticeship",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 35,
         "header": "apprenticeshiptype",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 36,
         "header": "Hispanic",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 37,
         "header": "learningmode",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 38,
         "header": "agencycode",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 39,
         "header": "col_offender",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 40,
         "header": "comments",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 41,
         "header": "itapaying",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 42,
         "header": "textbox81",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 43,
         "header": "textbox82",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 44,
         "header": "textbox83",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 45,
         "header": "textbox84",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 46,
         "header": "textbox85",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       }
     ],
     "anchors": [
@@ -298,73 +344,85 @@
         "position": 1,
         "header": "Userid",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 2,
         "header": null,
         "target": null,
-        "handling": "blank"
+        "handling": "blank",
+        "data_type": "blank"
       },
       {
         "position": 3,
         "header": "Individual",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 4,
         "header": "Created By",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 5,
         "header": "Create\nDate",
-        "target": "created_at",
-        "handling": "protected"
+        "target": null,
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 6,
         "header": "Contact\nDate",
-        "target": "contact_at",
-        "handling": "protected"
+        "target": null,
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 7,
         "header": "Contact\nType",
-        "target": "contact_type",
-        "handling": "protected"
+        "target": null,
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 8,
         "header": "Last\nEdited By",
         "target": null,
-        "handling": "unmapped"
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 9,
         "header": "Last Edit Date",
-        "target": "last_edited_at",
-        "handling": "protected"
+        "target": null,
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 10,
         "header": "State\nID",
         "target": "participant_id",
-        "handling": "protected"
+        "handling": "protected",
+        "data_type": "identifier"
       },
       {
         "position": 11,
         "header": "Case\nSubject",
-        "target": "subject",
-        "handling": "protected"
+        "target": null,
+        "handling": "unmapped",
+        "data_type": "unknown"
       },
       {
         "position": 12,
         "header": "Case Notes",
         "target": "text",
-        "handling": "protected"
+        "handling": "protected",
+        "data_type": "text"
       }
     ],
     "anchors": [

@@ -32,10 +32,9 @@ records and corrupt files also fail; no undocumented footer-dropping rule exists
 The protected in-memory models are in
 [models.py](../src/jvsg_triage/etl/models.py):
 
-- **AntiJoinRecord:** source coordinates, HMAC participant token, region,
-  office, responsible office, service description and completion status.
-- **CaseNoteRecord:** source coordinates, HMAC participant token, creation,
-  contact and last-edit timestamps, contact type, protected subject and note.
+- **AntiJoinRecord:** source coordinates and HMAC participant token only.
+- **CaseNoteRecord:** source coordinates, HMAC participant token and the
+  unstructured note itself only.
 - **IntakeBatch:** layouts, private cohort and matching notes, and aggregate
   reconciliation counts.
 
@@ -46,25 +45,26 @@ missing IDs fail. The owner must confirm whether Excel numeric IDs have already
 lost meaningful leading zeros. HMAC-SHA256 requires an explicit locally supplied
 key of at least 32 UTF-8 bytes; no default key is generated or persisted.
 
+Per the owner's streamlined scope, the only projected CSV field is `StateID`;
+the only projected XLSX fields are `State ID` and `Case Notes`. Dates, subject,
+staff, contact type, demographics and all other record fields are ignored.
+Full source headers are retained solely for download layout validation.
+
 All source-derived fields are private and excluded from ordinary model
 serialization and representations. Raw SID, names, SSN, user/staff identifiers,
 contact details and unmapped fields are not retained in the normalized models.
-Subject and note text use `SecretStr`, but **remain unsanitized private evidence**.
+Note text uses `SecretStr`, but **remains unsanitized private evidence**.
 Masking and HMAC are not anonymization, access control, encryption at rest, or
 a completed PII scrubber. Do not send these objects to inference services.
 Only layouts and counts appear in the batch's ordinary JSON output.
 
-`Date1` through `Date5`, `Textbox72`, other `textbox` fields, `programserv`,
-and other ambiguous fields are represented in the contract but **unmapped and
-discarded** during projection. No field is assumed to be an assessment date,
+All fields other than SID and note text are represented in the contract but
+**unmapped and discarded** during projection. No field is assumed to be an assessment date,
 service code, role, fiscal bound or active-IEP indicator without a dictionary.
 
-Case-note dates accept Excel dates/datetimes and US month/day/year text, with
-optional 24-hour or AM/PM time, plus ISO date and second-resolution local
-datetime text. Blank dates are retained as unknown; invalid nonblank dates fail.
-No timezone, contact verification, latest-touch, future-date or FY policy is
-inferred. Header discovery alone cannot certify body date formats; obtain
-synthetic representative date/null examples before extending parsing rules.
+Dates are not parsed or validated because they are outside this intake scope.
+Notes must be nonblank text and are preserved exactly, including whitespace and
+line breaks. No timezone, contact verification, latest-touch or FY policy is inferred.
 
 ## Pipeline behavior
 
@@ -130,11 +130,13 @@ Do not copy, rename or convert the source files for this implementation.
 
 [test_mis_intake.py](../tests/test_mis_intake.py) constructs synthetic CSV/XLSX
 fixtures for layouts, header drift, title rows, malformed rows, leading zeros,
-multiple notes, date validation, HMAC determinism and output/error privacy.
+multiple notes, ignored metadata, exact note preservation, HMAC determinism and
+output/error privacy.
 The checked-in contract is compared to its code model to prevent schema drift.
 
-Remaining owner inputs: meanings of ambiguous MIS fields, row granularity,
-203/205 filters and FY rules, stable note identity/version semantics, approved
-contact evidence, timezone/date/null examples, office and deduplication rules,
-and authorized intake, retention and production data handling. Header discovery
+Remaining inputs for later stages: 203/205 filters and FY rules if independent
+cohort verification is wanted, stable note identity/version semantics if
+cross-refresh persistence is wanted, and authorized intake, retention and
+production data handling. Other MIS fields are not needed for SID-to-note
+matching and are not prerequisites for this streamlined foundation. Header discovery
 is complete; the broader S1/S2 and privacy/inference release gates remain open.

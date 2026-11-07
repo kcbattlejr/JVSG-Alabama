@@ -1,7 +1,5 @@
 """Protected in-memory intake records and value-free reconciliation models."""
 
-from datetime import datetime
-
 from pydantic import BaseModel, ConfigDict, Field, SecretStr
 
 from jvsg_triage.etl.contracts import ReportKind
@@ -36,11 +34,6 @@ class AntiJoinRecord(IntakeModel):
 
     source: Provenance
     participant_token: str = Field(repr=False, exclude=True)
-    region: str | None = Field(default=None, repr=False, exclude=True)
-    office: str | None = Field(default=None, repr=False, exclude=True)
-    office_responsible: str | None = Field(default=None, repr=False, exclude=True)
-    service: str | None = Field(default=None, repr=False, exclude=True)
-    completion_status: str | None = Field(default=None, repr=False, exclude=True)
 
 
 class CaseNoteRecord(IntakeModel):
@@ -48,11 +41,6 @@ class CaseNoteRecord(IntakeModel):
 
     source: Provenance
     participant_token: str = Field(repr=False, exclude=True)
-    created_at: datetime | None = Field(default=None, repr=False, exclude=True)
-    contact_at: datetime | None = Field(default=None, repr=False, exclude=True)
-    last_edited_at: datetime | None = Field(default=None, repr=False, exclude=True)
-    contact_type: str | None = Field(default=None, repr=False, exclude=True)
-    subject: SecretStr | None = Field(default=None, repr=False, exclude=True)
     text: SecretStr = Field(repr=False, exclude=True)
 
 

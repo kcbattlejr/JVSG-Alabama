@@ -2,7 +2,6 @@
 
 import csv
 import json
-from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -27,7 +26,10 @@ def headers(contract: ReportContract) -> list[str | None]:
 
 
 def row(contract: ReportContract, values: dict[str, object]) -> list[object]:
-    return [values.get(column.target or "", "") for column in contract.columns]
+    return [
+        values.get(column.target or column.header or "", "")
+        for column in contract.columns
+    ]
 
 
 def write_csv(
@@ -61,15 +63,15 @@ def write_xlsx(
 
 def inputs(tmp_path: Path) -> tuple[Path, Path]:
     anti = write_csv(tmp_path / "synthetic.csv", [
-        row(ANTI_JOIN_CONTRACT, {"participant_id": "0001", "office": SENTINEL}),
-        row(ANTI_JOIN_CONTRACT, {"participant_id": "0001", "service": "203"}),
+        row(ANTI_JOIN_CONTRACT, {"participant_id": "0001", "Office": SENTINEL}),
+        row(ANTI_JOIN_CONTRACT, {"participant_id": "0001", "Service": "203"}),
         row(ANTI_JOIN_CONTRACT, {"participant_id": "0002"}),
     ])
     notes = write_xlsx(tmp_path / "synthetic.xlsx", [
         row(CASE_NOTES_CONTRACT, {
-            "participant_id": "0001", "text": SENTINEL, "subject": SENTINEL,
-            "created_at": datetime(2026, 10, 1, 14, 30),
-            "contact_at": "10/02/2026 2:30 PM",
+            "participant_id": "0001", "text": SENTINEL, "Case\nSubject": SENTINEL,
+            "Create\nDate": "ignored-unparsed-date",
+            "Contact\nDate": "ignored-unparsed-date",
         }),
         row(CASE_NOTES_CONTRACT, {"participant_id": "0001", "text": SENTINEL}),
         row(CASE_NOTES_CONTRACT, {"participant_id": "0003", "text": SENTINEL}),
@@ -165,8 +167,10 @@ def test_match_is_deterministic_preserves_rows_and_protects_outputs(tmp_path: Pa
     assert len(batch.cohort) == 3
     assert len(batch.matched_notes) == 2
     assert batch.matched_notes[0].text.get_secret_value() == SENTINEL
-    assert batch.matched_notes[0].created_at == datetime(2026, 10, 1, 14, 30)
-    assert batch.matched_notes[0].contact_at == datetime(2026, 10, 2, 14, 30)
+    assert set(type(batch.cohort[0]).model_fields) == {"source", "participant_token"}
+    assert set(type(batch.matched_notes[0]).model_fields) == {
+        "source", "participant_token", "text",
+    }
     assert batch.cohort[0].source.row_number == 2
     assert batch.matched_notes[0].source.row_number == 5
     repeat = ingest_reports(anti, notes, secret=KEY)
@@ -191,7 +195,7 @@ def test_header_only_inputs_produce_empty_batch(tmp_path: Path) -> None:
 @pytest.mark.parametrize("value", ["", None])
 def test_missing_identity_is_sanitized(tmp_path: Path, value: object) -> None:
     anti, notes = inputs(tmp_path)
-    write_csv(anti, [row(ANTI_JOIN_CONTRACT, {"participant_id": value, "office": SENTINEL})])
+    write_csv(anti, [row(ANTI_JOIN_CONTRACT, {"participant_id": value, "Office": SENTINEL})])
     with pytest.raises(IngestionError, match="StateID"):
         ingest_reports(anti, notes, secret=KEY)
 
@@ -218,23 +222,38 @@ def test_excel_integer_identity_preserves_csv_text_zeros(tmp_path: Path) -> None
     assert batch.matched_notes[0].participant_token == batch.cohort[0].participant_token
 
 
-@pytest.mark.parametrize("field", ["created_at", "contact_at", "last_edited_at"])
-def test_invalid_dates_fail_even_on_unmatched_notes(tmp_path: Path, field: str) -> None:
+@pytest.mark.parametrize("field", ["Create\nDate", "Contact\nDate", "Last Edit Date"])
+def test_unneeded_dates_are_not_parsed_or_retained(tmp_path: Path, field: str) -> None:
     anti, notes = inputs(tmp_path)
     write_xlsx(notes, [row(CASE_NOTES_CONTRACT, {
         "participant_id": "unknown-synthetic", "text": SENTINEL, field: SENTINEL,
     })])
-    with pytest.raises(IngestionError) as error:
-        ingest_reports(anti, notes, secret=KEY)
-    assert SENTINEL not in str(error.value)
-    assert error.value.__cause__ is None
+    batch = ingest_reports(anti, notes, secret=KEY)
+    assert batch.summary.unmatched_note_rows == 1
+    assert SENTINEL not in batch.model_dump_json()
 
 
 def test_empty_note_is_not_silently_skipped(tmp_path: Path) -> None:
     anti, notes = inputs(tmp_path)
     write_xlsx(notes, [row(CASE_NOTES_CONTRACT, {"participant_id": "0001"})])
-    with pytest.raises(IngestionError, match="Case Notes is required"):
+    with pytest.raises(IngestionError, match="Case Notes requires nonblank text"):
         ingest_reports(anti, notes, secret=KEY)
+
+
+@pytest.mark.parametrize("text", [123, True, " \n "])
+def test_invalid_note_type_is_sanitized(tmp_path: Path, text: object) -> None:
+    anti, notes = inputs(tmp_path)
+    write_xlsx(notes, [row(CASE_NOTES_CONTRACT, {"participant_id": "0001", "text": text})])
+    with pytest.raises(IngestionError, match="Case Notes requires nonblank text"):
+        ingest_reports(anti, notes, secret=KEY)
+
+
+def test_note_text_is_preserved_exactly(tmp_path: Path) -> None:
+    anti, notes = inputs(tmp_path)
+    text = "  Synthetic note:\n    - preserve indentation and trailing newline\n"
+    write_xlsx(notes, [row(CASE_NOTES_CONTRACT, {"participant_id": "0001", "text": text})])
+    batch = ingest_reports(anti, notes, secret=KEY)
+    assert batch.matched_notes[0].text.get_secret_value() == text
 
 
 @pytest.mark.parametrize("width", [45, 47])

@@ -5,7 +5,6 @@ import hashlib
 import hmac
 from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
-from datetime import date, datetime, time
 from pathlib import Path
 
 from openpyxl import load_workbook
@@ -106,29 +105,6 @@ def _token(value: object, secret: bytes, source: Provenance) -> str:
     return hmac.new(secret, identifier.encode("utf-8"), hashlib.sha256).hexdigest()
 
 
-def _timestamp(value: object, field: str, source: Provenance) -> datetime | None:
-    if value is None or (isinstance(value, str) and not value.strip()):
-        return None
-    if isinstance(value, datetime):
-        return value
-    if isinstance(value, date):
-        return datetime.combine(value, time())
-    if isinstance(value, str):
-        for pattern in (
-            "%m/%d/%Y", "%m/%d/%Y %H:%M", "%m/%d/%Y %H:%M:%S",
-            "%m/%d/%Y %I:%M %p", "%m/%d/%Y %I:%M:%S %p",
-            "%Y-%m-%d", "%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%S",
-        ):
-            try:
-                return datetime.strptime(value.strip(), pattern)
-            except ValueError:
-                continue
-    raise IngestionError(
-        f"{source.report}: row {source.row_number}, {field} requires an Excel date "
-        "or supported US/ISO date text"
-    )
-
-
 def _mapped_rows(
     path: Path, kind: ReportKind,
 ) -> Iterator[tuple[SourceLayout, Provenance, dict[str, object]]]:
@@ -177,28 +153,19 @@ def ingest_reports(anti_join_csv: Path, case_notes_xlsx: Path, *, secret: Secret
             cohort.append(AntiJoinRecord(
                 source=source,
                 participant_token=_token(values["participant_id"], key, source),
-                region=_text(values["region"]),
-                office=_text(values["office"]),
-                office_responsible=_text(values["office_responsible"]),
-                service=_text(values["service"]),
-                completion_status=_text(values["completion_status"]),
             ))
         tokens = {record.participant_token for record in cohort}
         total_notes = 0
         for _, source, values in _mapped_rows(case_notes_xlsx, ReportKind.CASE_NOTES):
             participant_token = _token(values["participant_id"], key, source)
-            text = _text(values["text"])
-            if text is None:
-                raise IngestionError(f"case_notes: row {source.row_number}, Case Notes is required")
-            subject = _text(values["subject"])
+            text = values["text"]
+            if not isinstance(text, str) or not text.strip():
+                raise IngestionError(
+                    f"case_notes: row {source.row_number}, Case Notes requires nonblank text"
+                )
             note = CaseNoteRecord(
                 source=source,
                 participant_token=participant_token,
-                created_at=_timestamp(values["created_at"], "Create Date", source),
-                contact_at=_timestamp(values["contact_at"], "Contact Date", source),
-                last_edited_at=_timestamp(values["last_edited_at"], "Last Edit Date", source),
-                contact_type=_text(values["contact_type"]),
-                subject=SecretStr(subject) if subject else None,
                 text=SecretStr(text),
             )
             total_notes += 1

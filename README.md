@@ -106,8 +106,9 @@ versioned layout. The observed samples have 46 CSV columns at row 1 and 12 XLSX
 columns at row 4 (with a blank column B and wrapped header labels).
 
 See [the intake contract](docs/mis_intake_contract.md) for the typed model,
-header-only operator commands, private API, reconciliation counts, intentionally
-unmapped fields and remaining business-rule decisions. Only headers were
+header-only operator commands, private API, reconciliation counts and privacy
+boundaries. The model retains only SID-based membership and corresponding note
+text; other record fields are ignored. Only headers were
 inspected from the provided samples; pipeline validation uses synthetic records.
 
 ## Common checks

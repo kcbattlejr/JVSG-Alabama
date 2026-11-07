@@ -23,7 +23,7 @@ class ColumnContract(BaseModel):
     header: str | None
     target: str | None = None
     handling: Literal["protected", "unmapped", "blank"] = "unmapped"
-    data_type: Literal["identifier", "text", "datetime", "unknown", "blank"]
+    data_type: Literal["identifier", "text", "unknown", "blank"]
 
 
 class ReportContract(BaseModel):
@@ -79,9 +79,6 @@ def _columns(
             data_type=(
                 "blank" if header is None
                 else "identifier" if mappings.get(normalize_header(header)) == "participant_id"
-                else "datetime" if mappings.get(normalize_header(header)) in (
-                    "created_at", "contact_at", "last_edited_at",
-                )
                 else "text" if normalize_header(header) in mappings
                 else "unknown"
             ),
@@ -96,14 +93,7 @@ ANTI_JOIN_CONTRACT = ReportContract(
     observed_header_row=1,
     columns=_columns(
         ANTI_JOIN_HEADERS,
-        {
-            "stateid": "participant_id",
-            "region": "region",
-            "office": "office",
-            "officeresponsible": "office_responsible",
-            "service": "service",
-            "completionstatus": "completion_status",
-        },
+        {"stateid": "participant_id"},
     ),
     anchors=("stateid", "service", "officeresponsible"),
 )
@@ -116,11 +106,6 @@ CASE_NOTES_CONTRACT = ReportContract(
         CASE_NOTE_HEADERS,
         {
             "stateid": "participant_id",
-            "createdate": "created_at",
-            "contactdate": "contact_at",
-            "contacttype": "contact_type",
-            "lasteditdate": "last_edited_at",
-            "casesubject": "subject",
             "casenotes": "text",
         },
     ),
