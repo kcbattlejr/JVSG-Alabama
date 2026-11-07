@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 import pytest
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 from pydantic import SecretStr
 
 from jvsg_triage.etl.__main__ import main
@@ -46,16 +46,23 @@ def write_csv(
 
 def write_xlsx(
     path: Path, rows: list[list[object]], *, titles: int = 3,
-    header: list[str | None] | None = None,
+    header: list[str | None] | None = None, footer: bool = True,
+    declared: int | None = None,
 ) -> Path:
+    """Mimic the native download, including the repeated-header 'Total Rows' footer."""
     workbook = Workbook()
     sheet = workbook.active
     assert sheet is not None
     for _ in range(titles):
         sheet.append([SENTINEL])
-    sheet.append(headers(CASE_NOTES_CONTRACT) if header is None else header)
+    columns = headers(CASE_NOTES_CONTRACT) if header is None else header
+    sheet.append(columns)
     for values in rows:
         sheet.append(values)
+    if footer:
+        sheet.append([])
+        sheet.append(columns)
+        sheet.append([f"Total Rows: {len(rows) if declared is None else declared:,}"])
     workbook.save(path)
     workbook.close()
     return path
@@ -72,6 +79,7 @@ def inputs(tmp_path: Path) -> tuple[Path, Path]:
             "participant_id": "0001", "text": SENTINEL, "Case\nSubject": SENTINEL,
             "Create\nDate": "ignored-unparsed-date",
             "Contact\nDate": "ignored-unparsed-date",
+            "person_name": "Synthetica, Quorra", "staff_name": "Testerly, Jr., Vance",
         }),
         row(CASE_NOTES_CONTRACT, {"participant_id": "0001", "text": SENTINEL}),
         row(CASE_NOTES_CONTRACT, {"participant_id": "0003", "text": SENTINEL}),
@@ -161,26 +169,32 @@ def test_match_is_deterministic_preserves_rows_and_protects_outputs(tmp_path: Pa
     batch = ingest_reports(anti, notes, secret=KEY)
     assert batch.summary.model_dump() == {
         "anti_join_rows": 3, "unique_participants": 2, "repeated_participant_rows": 1,
-        "case_note_rows": 3, "matched_note_rows": 2, "unmatched_note_rows": 1,
-        "participants_with_notes": 1, "participants_without_notes": 1,
+        "case_note_rows": 3, "declared_case_note_rows": 3, "matched_note_rows": 2,
+        "unmatched_note_rows": 1, "participants_with_notes": 1, "participants_without_notes": 1,
     }
     assert len(batch.cohort) == 3
     assert len(batch.matched_notes) == 2
     assert batch.matched_notes[0].text.get_secret_value() == SENTINEL
     assert set(type(batch.cohort[0]).model_fields) == {"source", "participant_token"}
     assert set(type(batch.matched_notes[0]).model_fields) == {
-        "source", "participant_token", "text",
+        "source", "participant_token", "text", "context_names",
     }
+    assert {name.get_secret_value() for name in batch.matched_notes[0].context_names} == {
+        "Synthetica, Quorra", "Testerly, Jr., Vance",
+    }
+    assert "Synthetica, Quorra" in batch.lexicon.person_names
+    assert "0001" in batch.lexicon.identifiers
     assert batch.cohort[0].source.row_number == 2
     assert batch.matched_notes[0].source.row_number == 5
     repeat = ingest_reports(anti, notes, secret=KEY)
     assert repeat == batch
     other = ingest_reports(anti, notes, secret=SecretStr("synthetic-other-development-key-0002"))
     assert other.cohort[0].participant_token != batch.cohort[0].participant_token
-    for record in [batch, *batch.cohort, *batch.matched_notes]:
+    for record in [batch, *batch.cohort, *batch.matched_notes, batch.lexicon]:
         for rendered in [repr(record), record.model_dump_json(), str(record.model_dump())]:
             assert SENTINEL not in rendered
             assert "0001" not in rendered
+            assert "Quorra" not in rendered
             assert batch.cohort[0].participant_token not in rendered
 
 
@@ -330,6 +344,67 @@ def test_blank_rows_skipped_without_losing_other_rows(tmp_path: Path) -> None:
     write_csv(anti, [[], [""] * 46, row(ANTI_JOIN_CONTRACT, {"participant_id": "0001"})])
     batch = ingest_reports(anti, notes, secret=KEY)
     assert batch.summary.anti_join_rows == 1
+
+
+def note_rows(count: int) -> list[list[object]]:
+    return [
+        row(CASE_NOTES_CONTRACT, {"participant_id": "0001", "text": SENTINEL})
+        for _ in range(count)
+    ]
+
+
+def test_footer_total_with_thousands_separator_is_reconciled(tmp_path: Path) -> None:
+    anti, _ = inputs(tmp_path)
+    notes = write_xlsx(tmp_path / "synthetic.xlsx", note_rows(1002))
+    assert ingest_reports(anti, notes, secret=KEY).summary.declared_case_note_rows == 1002
+
+
+def test_missing_footer_signals_truncated_download(tmp_path: Path) -> None:
+    anti, _ = inputs(tmp_path)
+    notes = write_xlsx(tmp_path / "synthetic.xlsx", note_rows(2), footer=False)
+    with pytest.raises(IngestionError, match="native footer missing"):
+        ingest_reports(anti, notes, secret=KEY)
+
+
+def test_footer_total_mismatch_fails(tmp_path: Path) -> None:
+    anti, _ = inputs(tmp_path)
+    notes = write_xlsx(tmp_path / "synthetic.xlsx", note_rows(2), declared=3)
+    with pytest.raises(IngestionError, match="declares 3 rows but 2 were read"):
+        ingest_reports(anti, notes, secret=KEY)
+
+
+def test_repeated_header_without_total_fails(tmp_path: Path) -> None:
+    anti, _ = inputs(tmp_path)
+    notes = write_xlsx(tmp_path / "synthetic.xlsx", note_rows(1), footer=False)
+    workbook = load_workbook(notes)
+    sheet = workbook.worksheets[0]
+    sheet.append(headers(CASE_NOTES_CONTRACT))
+    workbook.save(notes)
+    with pytest.raises(IngestionError, match="lacks 'Total Rows'"):
+        ingest_reports(anti, notes, secret=KEY)
+
+
+def test_content_after_footer_fails_without_echo(tmp_path: Path) -> None:
+    anti, _ = inputs(tmp_path)
+    notes = write_xlsx(tmp_path / "synthetic.xlsx", note_rows(1))
+    workbook = load_workbook(notes)
+    workbook.worksheets[0].append([SENTINEL])
+    workbook.save(notes)
+    with pytest.raises(IngestionError, match="unexpected content") as error:
+        ingest_reports(anti, notes, secret=KEY)
+    assert SENTINEL not in str(error.value)
+
+
+def test_every_column_is_classified() -> None:
+    for contract in (ANTI_JOIN_CONTRACT, CASE_NOTES_CONTRACT):
+        projected = [c.target for c in contract.columns if c.handling == "projected"]
+        assert "participant_id" in projected
+        for column in contract.columns:
+            assert column.pii_class
+            if column.handling in {"projected", "lexicon"}:
+                assert column.target
+    targets = {c.target for c in CASE_NOTES_CONTRACT.columns if c.handling == "projected"}
+    assert targets == {"participant_id", "text"}
 
 
 def test_checked_in_contract_matches_model() -> None:

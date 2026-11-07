@@ -28,6 +28,8 @@ data/raw/
 data/processed/
 data/private/
 *.xlsx
+# Seeded synthetic practice data is fictional and intentionally versioned.
+!data/synthetic/*.xlsx
 *.sqlite3
 
 # Azure Functions local state

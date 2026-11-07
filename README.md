@@ -5,10 +5,13 @@ triage and VOMA stability-constraints initiative. The intended system includes
 synthetic GeoSol data workflows, privacy-preserving processing, operational
 digests, and local or Azure-hosted services.
 
-> **Current status:** Native MIS intake now supports header discovery and a
-> synthetic-tested, protected in-memory pipeline for an anti-join CSV and
-> case-notes XLSX. It does not recompute the 203/205 anti-join, classify case
-> notes, persist live records, send Microsoft 365 messages, or deploy Azure services.
+> **Current status:** Native MIS intake validates the anti-join CSV and
+> case-notes XLSX (headers, title rows and the `Total Rows` footer). It matches
+> notes to cohort SIDs, scrubs them under the [PII protocol](docs/pii_protocol.md)
+> into a private, Git-ignored folder, and ships a seeded synthetic practice
+> dataset with PII ground truth. It does not recompute the 203/205 anti-join,
+> classify case notes, persist to a database, send Microsoft 365 messages, or
+> deploy Azure services.
 
 ## Development environments
 
@@ -85,9 +88,12 @@ repository or automatically used by the dev container.
 azure_functions/     Reserved for the Azure Functions host
 config/              Non-secret project configuration and data schemas
 data/
-  synthetic/         Safe location for generated synthetic fixtures
+  synthetic/         Seeded synthetic MIS downloads + PII labels (versioned)
+  private/           Git-ignored scrubbed (T2) extraction outputs
 src/jvsg_triage/     Installable Python package
-  etl/               GeoSol joins, aging, and privacy processing
+  etl/               Native MIS contract, intake, extraction pipeline, CLI
+  privacy/           PII scrubber (protocol v1.0)
+  synthetic/         Synthetic dataset generator and recall evaluator
   m365/              Microsoft 365 workbook, Graph, and digest integrations
   slm/               Barrier models and private inference integrations
   toon/              TOON serialization and validation
@@ -95,21 +101,31 @@ src/jvsg_triage/     Installable Python package
 tests/               Automated tests
 ```
 
-The ETL package implements native-download intake. Other domain modules remain
-directory scaffolding; integrations are not implemented.
+The `etl`, `privacy` and `synthetic` packages are implemented. Other domain
+modules remain directory scaffolding; integrations are not implemented.
 
 ## Native MIS report intake
 
 Keep the download formats unchanged: **203/205 anti-join CSV, case-notes XLSX**.
-The loader discovers the actual headers after any title rows and validates a
-versioned layout. The observed samples have 46 CSV columns at row 1 and 12 XLSX
-columns at row 4 (with a blank column B and wrapped header labels).
+Drop new downloads into the Git-ignored `temp/` folder. The loader discovers the
+actual headers after any title rows and validates a versioned layout: 46 CSV
+columns at row 1, and 12 XLSX columns at row 4 with a blank column B, wrapped
+header labels and a `Total Rows` footer.
 
-See [the intake contract](docs/mis_intake_contract.md) for the typed model,
-header-only operator commands, private API, reconciliation counts and privacy
-boundaries. The model retains only SID-based membership and corresponding note
-text; other record fields are ignored. Only headers were
-inspected from the provided samples; pipeline validation uses synthetic records.
+```powershell
+$env:SID_HMAC_SECRET = '<32+ byte key>'
+python -m jvsg_triage.etl extract --anti-join temp\<file>.csv `
+  --case-notes temp\<file>.xlsx --output temp\private
+```
+
+The anti-join supplies only the list of SIDs. From the case notes, only the note
+text for those SIDs is kept. Notes are scrubbed into `temp\private\redacted_notes.jsonl`;
+only aggregate counts are printed. To practice without live data, use the files in
+[`data/synthetic/`](data/synthetic/README.md).
+
+See [the intake contract](docs/mis_intake_contract.md) for the typed model and
+commands, and [the PII protocol](docs/pii_protocol.md) for data tiers,
+redaction rules and known limits.
 
 ## Common checks
 
@@ -141,9 +157,10 @@ Planning documents live in [`docs/`](docs/):
 The plan and sprint TODO expand these milestones; they do not indicate that the
 planned functionality has already been implemented.
 
-1. Build deterministic synthetic GeoSol extracts and test fixtures.
-2. Implement the 203/205 anti-join and contact-velocity state machine.
-3. Add privacy scrubbing, reviewed barrier schemas, and TOON validation.
+1. Classify scrubbed notes into reviewed barrier schemas and validate TOON output.
+2. Implement the contact-velocity state machine on the SID cohort.
+3. Strengthen de-identification for third-party names (local NER plus review)
+   before any non-local inference.
 4. Add M365 and VOMA interfaces behind explicit configuration and tests.
 5. Add Azure Functions and deployment workflows after the target environment,
    identity model, and security approvals are confirmed.
