@@ -61,6 +61,12 @@ Goal: make all downstream work reproducible without live data.
   - Done when: required columns, SID types, service codes, roles, office, dates,
     active/open IEP status, and touch provenance are checked; invalid/missing
     fields produce sanitized actionable errors; valid CSV inputs load offline.
+  - Partial implementation (November 6, 2026):
+    [native MIS intake](./mis_intake_contract.md) defines the observed anti-join
+    CSV / case-notes XLSX header contract, title-row discovery, protected models
+    and synthetic-tested note matching. Source files were inspected only
+    through their headers. Separate 203/205 schemas, ambiguous date/code/role
+    meanings and D02 business-rule approval remain open; this task is not done.
 - [ ] **S1-02 - Generate the deterministic Mobile baseline**
   - Depends: S1-01.
   - Output: `scripts/generate_synthetic_geosol.py` baseline mode and fixture tests.

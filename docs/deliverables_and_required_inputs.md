@@ -15,19 +15,23 @@ managed (Non-CM) veterans. A separate TOON workflow will prepare and, only when
 authorized, transmit the approved information to the U.S. Department of Labor
 (DOL)/VOMA.
 
-**Starting point:** The MIS can export reports as CSV, and manual CSV exports
-will be the initial input method for the 203, 205, and case-notes ETL. The
+**Confirmed initial downloads (November 6, 2026):** the project owner supplies
+the MIS's precomputed **203/205 anti-join as CSV** and **case notes as XLSX**.
+Keep these formats unchanged, including report title rows and wrapped headers.
+The [native intake contract](./mis_intake_contract.md) records header-only
+discovery and the synthetic-tested ETL foundation. Separate 203/205 inputs
+remain a future requirement for independently recomputing the cohort. The
 presentation also describes a Python batch extraction and M365 workbook; verify
 what is currently operating and whether that extraction can consume these
 specific reports before reusing or extending it. ADOW analyst accounts may
 provide access to custom reports or BI features, but that access is not
 confirmed for this project. Ask management/MIS administrators to assess it as
-a possible future improvement, not as a prerequisite for the CSV-based pilot.
+a possible future improvement, not as a prerequisite for the native-download pilot.
 Keep the ingestion contract independent of source method so an authorized
 managed export or integration can replace the manual step without changing
 downstream processing.
 
-This repository is a development scaffold, not a deployed system. The deliverables
+This repository has an intake foundation, not a deployed system. The deliverables
 below are targets; they are not claims of existing production functionality.
 Live veteran data must not be added to this repository, tests, prompts, or
 development artifacts. Use synthetic fixtures here. Real-data discovery and
@@ -36,16 +40,16 @@ validation must use an ADOW-approved secure environment and transfer method.
 ## Target workflow
 
 ```text
-Manual MIS CSV exports (initial path)
-  ├─ 203 Comprehensive Assessment report
-  ├─ 205 active/open IEP report
-  └─ Case notes report
+Manual native MIS exports (initial path)
+  ├─ Precomputed 203/205 anti-join CSV
+  └─ Case notes XLSX
           |
           v
 Secure intake -> validation/quarantine -> normalize and deduplicate
           |
           v
-Join 203 to 205 -> identify Non-CM cohort -> retrieve matching notes
+Use supplied cohort -> retrieve matching notes
+  (independent 203/205 join requires separate reports and approved rules)
           |
           v
 Privacy boundary -> structured, evidence-linked barrier extraction
@@ -115,7 +119,7 @@ in this codebase.
 | ID | Deliverable | Expected result and acceptance evidence |
 |---|---|---|
 | D1 | **Source report contract** | Documented field mappings, data types, row granularity, report filters, and validation rules for the 203, 205, and case-notes reports. Report changes fail visibly with an actionable, sanitized error rather than silently dropping data. |
-| D2 | **Secure, repeatable CSV intake** | Provide a documented operator procedure for manually exporting the required reports as CSV and placing them in an authorized intake location. Include a clear file naming/version convention, receipt record, and quarantine path for invalid files. Verify whether the presented batch extraction can supply these same reports; preserve the CSV contract if a later approved automated source replaces manual intake. |
+| D2 | **Secure, repeatable native-download intake** | Accept the precomputed anti-join CSV and case-notes XLSX unchanged, discover headers after titles, and validate ordered layouts. Complete an authorized intake procedure, naming/version convention, receipt record and quarantine path before live processing. Preserve the source contract if approved automation replaces manual intake. |
 | D3 | **Deterministic ETL pipeline** | Typed, tested steps to load and normalize each report; deduplicate according to approved rules; join the 203 and 205 populations; identify the Non-CM cohort; match applicable case notes; and produce validation/reconciliation counts. Re-running the same inputs does not create duplicate cases or notes. |
 | D4 | **Barrier extraction and review workflow** | Convert unstructured case-note evidence into a versioned, structured barrier profile with source-note provenance and uncertainty/status. Model-generated content is an `AI_Draft`; qualified JVSG staff retain authority to review and correct it. No model output independently decides eligibility, referral, or case closure. |
 | D5 | **JVSG SharePoint experience** | Verify and, where approved, extend the workbook demonstrated in the presentation rather than create a competing tracker. Provide the authorized JVSG team with the cohort/action view, approved barrier summaries, review status, source/refresh timestamps, and visible exception or stale-data state. Confirm access, retention, ownership, and record-level permissions before live data is published. |
@@ -186,8 +190,10 @@ records-retention approval.
 
 ### 1. Sample reports for format discovery
 
-Please provide one representative sample of each report, preferably with
-synthetic or de-identified rows:
+Header-only discovery of the anti-join CSV and case-notes XLSX is complete; see
+[the contract](./mis_intake_contract.md). Do not resubmit live samples. To
+independently verify the underlying cohort, obtain approved synthetic samples
+of the separate reports:
 
 1. **203 report** — Comprehensive Assessments used to define the candidate
    population.
@@ -200,8 +206,8 @@ synthetic or de-identified rows:
 For each report, include:
 
 - The original export format (for example, XLSX or CSV), with headers and
-  representative date and null formats preserved. For the initial pilot, use
-  CSV exports and retain the original header names and values.
+  representative date and null formats preserved. Retain native formats:
+  anti-join CSV and case-notes XLSX, including title rows and original headers.
 - A data dictionary or explanation for each field, coded values, and report
   filters, if available.
 - The report-generation steps and the date/time the report was run.

@@ -5,9 +5,10 @@ triage and VOMA stability-constraints initiative. The intended system includes
 synthetic GeoSol data workflows, privacy-preserving processing, operational
 digests, and local or Azure-hosted services.
 
-> **Current status:** This repository contains the developer environment and
-> package foundation. It does not yet process GeoSol data, classify case notes,
-> send Microsoft 365 messages, or deploy Azure services.
+> **Current status:** Native MIS intake now supports header discovery and a
+> synthetic-tested, protected in-memory pipeline for an anti-join CSV and
+> case-notes XLSX. It does not recompute the 203/205 anti-join, classify case
+> notes, persist live records, send Microsoft 365 messages, or deploy Azure services.
 
 ## Development environments
 
@@ -94,8 +95,21 @@ src/jvsg_triage/     Installable Python package
 tests/               Automated tests
 ```
 
-The domain modules above are directory scaffolding only; implementations will
-be added and tested as each workflow is developed.
+The ETL package implements native-download intake. Other domain modules remain
+directory scaffolding; integrations are not implemented.
+
+## Native MIS report intake
+
+Keep the download formats unchanged: **203/205 anti-join CSV, case-notes XLSX**.
+The loader discovers the actual headers after any title rows and validates a
+versioned layout. The observed samples have 46 CSV columns at row 1 and 12 XLSX
+columns at row 4 (with a blank column B and wrapped header labels).
+
+See [the intake contract](docs/mis_intake_contract.md) for the typed model,
+header-only operator commands, private API, reconciliation counts and privacy
+boundaries. The model retains only SID-based membership and corresponding note
+text; other record fields are ignored. Only headers were
+inspected from the provided samples; pipeline validation uses synthetic records.
 
 ## Common checks
 
