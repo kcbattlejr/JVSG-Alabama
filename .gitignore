@@ -23,6 +23,7 @@ venv/
 Thumbs.db
 
 # Local data and generated outputs
+temp/
 data/raw/
 data/processed/
 data/private/
