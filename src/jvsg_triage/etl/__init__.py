@@ -1,1 +1,1 @@
-"""Extract, transform, and load components."""
+"""Offline MIS intake; integrations and inference remain disabled."""

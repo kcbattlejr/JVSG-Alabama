@@ -28,7 +28,7 @@ As inspected on November 6, 2026:
 | Developer foundation | Python 3.11+ package, dev container, optional integration dependency groups | Add dependencies only with their implementing modules; verify authorized edge connectivity separately |
 | Configuration | Environment-backed settings in [settings.py](../src/jvsg_triage/settings.py), secret-typed HMAC setting | Runtime validation, approved routing, production identity and secret retrieval |
 | Quality controls | Pytest settings tests; Ruff, strict mypy, and CI | Domain, integration-contract, property, benchmark, and release evidence |
-| Domain packages | ETL, SLM, TOON, M365, and VOMA directories | Actual processing and integration implementations |
+| Domain packages | Native CSV/XLSX intake with header-only contract, protected models and synthetic-tested matching; SLM/TOON/M365/VOMA scaffolds | Independent 203/205 cohort computation, privacy scrubbing, aging and integrations |
 | Deployment | Reserved Azure Functions directory | Functions host, packaging, infrastructure, deployment, and operational verification |
 
 The specification calls Phase 1 operational validation completed/current. That
@@ -62,6 +62,16 @@ not copy live artifacts into the repository.
    exports; ask staff only for operational actions and review, not retyping.
 
 ## 4. Decisions that block implementation
+
+### Confirmed native intake scope (November 6, 2026)
+
+The project owner confirmed a precomputed 203/205 anti-join CSV and case-notes
+XLSX as the initial downloads. [The intake contract](./mis_intake_contract.md)
+records the headers, title-row discovery and private model/API. Header-only
+sample discovery and synthetic pipeline tests do not establish live-data
+approval, report filter correctness or date semantics. Matching uses the
+supplied cohort; independently recomputing the anti-join still requires separate
+203/205 inputs and D02 resolution. No unknown business rule is silently closed.
 
 All decisions below are **open**. The domain owner supplies operational rules;
 the agency platform/security owner approves environment and data boundaries;
