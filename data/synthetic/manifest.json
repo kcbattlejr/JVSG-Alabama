@@ -1,0 +1,115 @@
+{
+  "synthetic": true,
+  "notice": "Every value is invented. No record, name, ID or text comes from MIS data.",
+  "generator_version": "1.0",
+  "contract_version": "1.1",
+  "seed": 42,
+  "profile": {
+    "cohort_participants": 64,
+    "repeated_cohort_rows": 2,
+    "cohort_note_bins": [
+      [
+        1,
+        3,
+        0.64
+      ],
+      [
+        4,
+        9,
+        0.14
+      ],
+      [
+        10,
+        19,
+        0.08
+      ],
+      [
+        20,
+        34,
+        0.14
+      ]
+    ],
+    "other_participants": 140,
+    "other_notes_range": [
+      1,
+      5
+    ],
+    "contact_types": [
+      [
+        "Other",
+        0.66
+      ],
+      [
+        "Telephone",
+        0.12
+      ],
+      [
+        "E-mail",
+        0.085
+      ],
+      [
+        "Face-to-Face",
+        0.06
+      ],
+      [
+        null,
+        0.075
+      ]
+    ],
+    "hiring_event_share": 0.14,
+    "unedited_share": 0.1,
+    "virtual_learning_share": 0.76,
+    "exit_date_share": 0.6,
+    "employment_date_share": 0.27,
+    "caps_name_share": 0.1,
+    "fiscal_year_start": [
+      2025,
+      10,
+      1
+    ],
+    "fiscal_year_end": [
+      2026,
+      9,
+      30
+    ],
+    "themes": [
+      "EMP",
+      "MED",
+      "TRAIN",
+      "CONTACT",
+      "LEG",
+      "TRN",
+      "HSG"
+    ]
+  },
+  "files": {
+    "anti_join": {
+      "name": "fy2026_203_205_anti_join.synthetic.csv",
+      "sha256": "e97ce413337aad468921e116d78d2862f95e3a01ad142be27d81c17bc55f5e77"
+    },
+    "case_notes": {
+      "name": "fy2026_case_notes.synthetic.xlsx",
+      "sha256": null,
+      "note": "XLSX bytes vary by zip metadata; compare cell values"
+    },
+    "pii_labels": {
+      "name": "fy2026_case_notes.pii_labels.jsonl",
+      "sha256": "6ae3a2591d78b5c143ba3da5f0fd5a0614c1fd131f8715eab11c1e7274a189ca"
+    }
+  },
+  "counts": {
+    "anti_join_rows": 66,
+    "cohort_participants": 64,
+    "case_note_rows": 794,
+    "cohort_note_rows": 399,
+    "note_participants": 204,
+    "contact_types": {
+      "(blank)": 69,
+      "E-mail": 202,
+      "Face-to-Face": 80,
+      "Other": 333,
+      "Telephone": 110
+    },
+    "pii_spans": 5841
+  }
+}

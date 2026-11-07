@@ -67,6 +67,9 @@ Goal: make all downstream work reproducible without live data.
     and synthetic-tested note matching. Source files were inspected only
     through their headers. Separate 203/205 schemas, ambiguous date/code/role
     meanings and D02 business-rule approval remain open; this task is not done.
+  - Contract v1.1 update (November 7, 2026): every column now carries a PII class and handling rule.
+    The XLSX `Total Rows` footer is validated, and a seeded native-layout synthetic
+    dataset with PII labels is in [`data/synthetic/`](../data/synthetic/README.md).
 - [ ] **S1-02 - Generate the deterministic Mobile baseline**
   - Depends: S1-01.
   - Output: `scripts/generate_synthetic_geosol.py` baseline mode and fixture tests.
@@ -74,6 +77,13 @@ Goal: make all downstream work reproducible without live data.
     qualifying assessments and 92 active IEPs have 90 overlaps, 48 triage SIDs,
     and 2 prior-year carryovers; triage includes 40 Q4, 34 virtual, and 8 legal
     cases; all names, IDs, contacts, and notes are synthetic.
+  - Related progress (November 7, 2026): `python -m jvsg_triage.etl synthesize`
+    deterministically generates native-layout FY2026 anti-join/case-note
+    practice files with PII ground-truth labels in
+    [`data/synthetic/`](../data/synthetic/README.md). The output is profiled
+    from rounded real-download aggregates, with no real-value collisions. It is
+    not the GeoSol Mobile baseline (138/92/90/48/2 counts), so this task
+    remains open.
 - [ ] **S1-03 - Add adversarial and scale fixture modes**
   - Depends: S1-02.
   - Output: separate noise/boundary fixtures and 500-record and 15,000+-service-row
@@ -132,6 +142,16 @@ Goal: structured, private, auditable classifications rather than opaque decision
     components, phones, emails, addresses, and raw SIDs; deterministic HMAC
     uses a required secret and differs with another secret; scrubber failures
     block inference; tests prove no raw identity reaches prompts or logs.
+  - Partial implementation (November 7, 2026): [PII protocol v1.0](./pii_protocol.md) is complete.
+    The regex and lexicon scrubber is in `privacy/scrubber.py` (not
+    `etl/pii_scrubber.py`). HMAC identity, private extraction, residual scan,
+    and 100% synthetic recall on all non-third-party labels are done. Presidio/NER
+    for third-party names and the inference-blocking gate remain open.
+  - Blocked for cloud inference: about 2,200 capitalized word pairs survive in
+    the real T2 output. Most are organization names; some are likely untitled
+    third-party names. Add local NER and measure `THIRD_PARTY` recall on
+    `data/synthetic/` before any non-local use. Review whether the over-redacted
+    common-word tokens need an allowlist.
 - [ ] **S3-02 - Implement strict barrier and review schemas**
   - Depends: S0-03, S0-04.
   - Output: `slm/barrier_schema.py` and model validation tests.
