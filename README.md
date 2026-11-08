@@ -13,8 +13,18 @@ digests, and local or Azure-hosted services.
 
 See [Hardware and workspace architecture](HARDWARE_ARCHITECTURE.md) for the
 native Ubuntu WSL checkout, local GPU worker, browser-only Codespaces, and
-private backup boundaries. Use the Linux checkout for active development;
-do not run a Windows virtual environment from Ubuntu.
+private backup boundaries. Do not run a Windows virtual environment from Ubuntu.
+
+On this Windows workstation, open `..\JVSG-Alabama.code-workspace` for the
+named **jvsg-dev** container, or `..\Data Science.code-workspace` for Data Science.
+Switch between them through **File > Open Recent**. The workstation profile
+`.devcontainer/windows-wsl/devcontainer.json` explicitly uses Ubuntu-24.04's
+Docker engine via a WSL UNC host path. It mounts this current repository at
+`/workspace`, installs the development/data extras, and selects
+`/home/vscode/.venvs/jvsg/bin/python`. It remains running when VS Code closes.
+The older unnamed native-clone container was removed; the source clone remains.
+The Data Science PostgreSQL container is a supporting database, not a third
+development workspace.
 
 The same Python 3.11 development container can be used in GitHub Codespaces or
 locally with VS Code and Docker.
