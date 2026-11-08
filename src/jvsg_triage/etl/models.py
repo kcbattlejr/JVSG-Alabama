@@ -1,10 +1,13 @@
-"""Protected in-memory intake records and value-free reconciliation models."""
+"""Protected in-memory intake records and value-free reconciliation models.
 
-from datetime import datetime
+Data tiers (docs/pii_protocol.md): T1 records here hold raw note text and are never
+serialized; T2 RedactedNote holds scrubbed text for private local use only; T3
+manifests hold aggregate counts only.
+"""
 
 from pydantic import BaseModel, ConfigDict, Field, SecretStr
 
-from jvsg_triage.etl.contracts import ReportKind
+from jvsg_triage.etl.contracts import CONTRACT_VERSION, ReportKind
 
 
 class IntakeModel(BaseModel):
@@ -17,7 +20,7 @@ class SourceLayout(IntakeModel):
     """Safe report coordinates, deliberately excluding filenames and titles."""
 
     report: ReportKind
-    contract_version: str = "1.0"
+    contract_version: str = CONTRACT_VERSION
     header_row: int
     column_count: int
     sheet_index: int | None = None
@@ -32,28 +35,27 @@ class Provenance(IntakeModel):
 
 
 class AntiJoinRecord(IntakeModel):
-    """A row in the supplied MIS anti-join; no eligibility claims are inferred."""
+    """T1: one supplied anti-join row; membership only, no eligibility inferred."""
 
     source: Provenance
     participant_token: str = Field(repr=False, exclude=True)
-    region: str | None = Field(default=None, repr=False, exclude=True)
-    office: str | None = Field(default=None, repr=False, exclude=True)
-    office_responsible: str | None = Field(default=None, repr=False, exclude=True)
-    service: str | None = Field(default=None, repr=False, exclude=True)
-    completion_status: str | None = Field(default=None, repr=False, exclude=True)
 
 
 class CaseNoteRecord(IntakeModel):
-    """Private evidence, not scrubbed text and never safe for an inference prompt."""
+    """T1: raw note plus the row's own names for scrubbing; never send to inference."""
 
     source: Provenance
     participant_token: str = Field(repr=False, exclude=True)
-    created_at: datetime | None = Field(default=None, repr=False, exclude=True)
-    contact_at: datetime | None = Field(default=None, repr=False, exclude=True)
-    last_edited_at: datetime | None = Field(default=None, repr=False, exclude=True)
-    contact_type: str | None = Field(default=None, repr=False, exclude=True)
-    subject: SecretStr | None = Field(default=None, repr=False, exclude=True)
     text: SecretStr = Field(repr=False, exclude=True)
+    context_names: tuple[SecretStr, ...] = Field(default=(), repr=False, exclude=True)
+
+
+class RedactionLexicon(IntakeModel):
+    """T1: identities read transiently from lexicon columns; memory only."""
+
+    person_names: frozenset[str] = Field(default=frozenset(), repr=False, exclude=True)
+    staff_names: frozenset[str] = Field(default=frozenset(), repr=False, exclude=True)
+    identifiers: frozenset[str] = Field(default=frozenset(), repr=False, exclude=True)
 
 
 class Reconciliation(IntakeModel):
@@ -63,6 +65,7 @@ class Reconciliation(IntakeModel):
     unique_participants: int
     repeated_participant_rows: int
     case_note_rows: int
+    declared_case_note_rows: int | None
     matched_note_rows: int
     unmatched_note_rows: int
     participants_with_notes: int
@@ -76,3 +79,24 @@ class IntakeBatch(IntakeModel):
     summary: Reconciliation
     cohort: tuple[AntiJoinRecord, ...] = Field(repr=False, exclude=True)
     matched_notes: tuple[CaseNoteRecord, ...] = Field(repr=False, exclude=True)
+    lexicon: RedactionLexicon = Field(repr=False, exclude=True)
+
+
+class RedactedNote(IntakeModel):
+    """T2: scrubbed note keyed by HMAC token. Pseudonymous, not anonymous."""
+
+    participant_token: str
+    source_row: int
+    text: str = Field(repr=False)
+    redactions: dict[str, int]
+
+
+class ExtractionManifest(IntakeModel):
+    """T3: aggregate-only record of an extraction run; safe to log locally."""
+
+    contract_version: str
+    protocol_version: str
+    summary: Reconciliation
+    redactions: dict[str, int]
+    residual_findings: dict[str, int]
+    notes_with_residual_findings: int
