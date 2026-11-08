@@ -8,7 +8,7 @@ not an approved production deployment.
 | Node | Role | Verified or required capability |
 | --- | --- | --- |
 | Dell Precision 7820 Windows server | Primary development and compute host | Ubuntu 24.04 on WSL2; native Linux Docker; NVIDIA RTX 3060, 12 GiB VRAM |
-| TrueNAS SCALE server | Intended private PostgreSQL backup destination | Tailscale online and SSH reachable; backup account, dataset permissions and host key still need verification |
+| TrueNAS SCALE server | Private file redundancy and PostgreSQL backup destination | Tailscale and pinned-key SSH verified; nightly Data Science container dump enabled; isolated PostgreSQL 16 restore passed |
 | Personal home laptop | Secondary development client | Existing Windows Tailscale peer; use private SSH or its own checkout |
 | Work laptop, Windows 11 Enterprise | Browser-only client | GitHub Codespaces; no administrator rights or local Docker/Tailscale installation assumed |
 
@@ -124,9 +124,39 @@ Its named volume persists beyond container replacement.
 Backup tooling performs consistent custom-format dumps, checksum verification,
 strict pinned-host SSH and atomic final-file publication. It does not provide
 PITR, global-role backup, retention deletion or encryption at rest.
-The local isolated dump/restore smoke test passed; **no real TrueNAS dump or
-backup schedule has been verified or enabled**. Required inputs are a real NAS
-backup account, existing writable dataset, authorized key and verified host key.
+On November 8, a PostgreSQL 16 `app` dump was transferred to
+`/mnt/backup-server/postgres/dumps/data-science-container/`, checksum-verified,
+and restored into a disposable NAS PostgreSQL 18 database. Both source and
+restore had zero user tables; this does not certify populated-data recovery.
+The scratch database was dropped. A subsequent host-generated dump also passed
+an isolated PostgreSQL 16 restore, without network access or a persistent test
+volume. NAS PostgreSQL's existing nightly dumps, including `jvsg_synth`, are
+successful.
+
+The existing Syncthing Documents folder mirrors both OneDrive repositories to
+`/mnt/backup-server/backups/server-documents/`. It is bidirectional and has no
+Syncthing versioning; recursive daily ZFS snapshots retain two weeks. UrBackup
+has completed workstation file backups in its app-managed `/backups` mount.
+Restic is authenticated and append-only. No additional file backup or clone
+was added.
+
+The Data Science container's nightly dump timer is enabled on the Ubuntu host.
+It runs at 02:10 America/Chicago, catches up after downtime and uses a dedicated
+host-generated upload-only SSH key outside OneDrive. A root-owned NAS forced
+command accepts only a dump filename and matching SHA256 checksum, publishes
+atomically, and retains this dump family for 30 days after successful uploads.
+Host staging in `~/.local/state/data-science/backups/` retains seven days;
+failed partials are kept for diagnosis. Existing PostgreSQL dataset snapshots
+cover the destination for 14 days. The timer's first run succeeded; arbitrary
+commands and bad checksums were rejected.
+
+Live Docker inspection verified both repository bind mounts are covered by
+Syncthing. JVSG has no separate application-data volume, only its workspace,
+editor tooling volume and display socket. No container clone or additional
+whole-repository backup was added. User lingering keeps the timer available
+without an open editor/Linux login, but WSL, Docker and Tailscale must run.
+Failure status is available in the user systemd journal; there is no push/email
+alert or automatic Windows pre-login startup.
 
 Ubuntu Docker and SSH are enabled. Development services have restart policies.
 The current-user `DataScienceUbuntuHost` scheduled task starts Ubuntu at Windows
@@ -151,7 +181,7 @@ credentials. If a future private registry is needed, configure native Docker
 authentication explicitly rather than forwarding a workstation store blindly.
 
 Pending: browser-created Codespace runtime, Codespace Tailscale enrollment and
-restricted grants, dedicated remote key, TrueNAS transfer/restore/scheduling,
-administrator Windows firewall hardening, and unattended boot availability.
+restricted grants, dedicated remote key, administrator Windows firewall
+hardening, and unattended boot availability.
 GitHub CLI authentication currently lacks the Codespaces scope; a successful
 repository API call does not imply permission to create/manage Codespaces.
