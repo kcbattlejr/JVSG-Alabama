@@ -11,6 +11,11 @@ digests, and local or Azure-hosted services.
 
 ## Development environments
 
+See [Hardware and workspace architecture](HARDWARE_ARCHITECTURE.md) for the
+native Ubuntu WSL checkout, local GPU worker, browser-only Codespaces, and
+private backup boundaries. Use the Linux checkout for active development;
+do not run a Windows virtual environment from Ubuntu.
+
 The same Python 3.11 development container can be used in GitHub Codespaces or
 locally with VS Code and Docker.
 
@@ -20,6 +25,14 @@ locally with VS Code and Docker.
    codespace**.
 2. Wait for the dev container to finish creating and installing dependencies.
 3. Open a terminal. The editable package and development tools are ready.
+
+The container installs development and data extras. Azure CLI is not installed
+automatically: no Azure deployment is currently implemented. Install it only
+when an authorized Azure workflow requires it.
+The container environment is `/home/vscode/.venvs/jvsg`; the native WSL
+environment remains `.venv`. Keeping them separate prevents a mounted Python
+3.12 environment from breaking TLS/package installation in the Python 3.11
+container. In the container use `/home/vscode/.venvs/jvsg/bin/python -m pytest`.
 
 ### Local development
 
