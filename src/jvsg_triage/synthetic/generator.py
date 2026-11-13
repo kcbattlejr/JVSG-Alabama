@@ -30,7 +30,7 @@ from jvsg_triage.synthetic.notes import (
 )
 from jvsg_triage.synthetic.profile import DEFAULT_PROFILE, SyntheticProfile
 
-GENERATOR_VERSION = "1.0"
+GENERATOR_VERSION = "1.1"
 ANTI_JOIN_FILE = "fy2026_203_205_anti_join.synthetic.csv"
 CASE_NOTES_FILE = "fy2026_case_notes.synthetic.xlsx"
 LABELS_FILE = "fy2026_case_notes.pii_labels.jsonl"
