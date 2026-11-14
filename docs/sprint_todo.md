@@ -22,6 +22,19 @@ Execution companion to the [implementation plan](./implementation_plan.md) and
 
 ## Sprint 0 - Baseline and requirement decisions
 
+### Presentation slice progress (November 14, 2026)
+
+The [SharePoint-first demo runbook](./management_demo_runbook.md) and
+[recording script](./management_demo_script.md) describe the separate synthetic
+presentation workflow implemented in `jvsg_triage.demo`: strict workbook intake,
+vectorized aging, custom lossless TOON demo codec, verified Excel/HTML snapshots,
+simulated baseline/refresh delivery and preserved source review values.
+Focused evidence is in [test_management_demo.py](../tests/test_management_demo.py),
+including exact aging thresholds, closed-schema rejection, TOON round trips,
+repeatability, integrity tampering and last-success preservation.
+This slice does not close the approval-dependent tasks below, the production
+TOON contract, live SharePoint integration or real-world privacy validation.
+
 Goal: establish an honest starting point and resolve implementation contracts.
 
 - [ ] **S0-01 - Verify and record repository/operational baseline**
