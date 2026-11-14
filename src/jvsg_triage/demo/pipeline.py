@@ -239,6 +239,24 @@ padding:24px;background:#06182c;color:#f8fafc}}a,h1,h2{{color:#52d19c}}
 li{{margin:16px 0}}</style><body>
 <h1>Veteran follow-up and support needs</h1>
 <p>All people and situations are fictional. No live SharePoint connection.</p>
+<section aria-labelledby="demo-files-title">
+<h2 id="demo-files-title">Demo files - open or download here</h2>
+<p>In VS Code, open <code>temp/management-demo/</code> for the standard demo.
+Paths below are relative to that output folder. These links open the generated
+files, not the Python source code.</p>
+<ul>
+<li><a href="batches/{second.batch_id}/dashboard.xlsx" download>
+Download the updated Excel report</a> - charts and participant list.<br>
+<code>batches/{second.batch_id}/dashboard.xlsx</code></li>
+<li><a href="batches/{second.batch_id}/source.xlsx" download>
+Download the source Excel workbook</a> - fictional input for the updated report.<br>
+<code>batches/{second.batch_id}/source.xlsx</code></li>
+<li><a href="batches/{second.batch_id}/profiles.toon" download>
+Download the TOON data file</a> - compact machine-readable records.<br>
+<code>batches/{second.batch_id}/profiles.toon</code></li>
+</ul>
+<p>Excel may download rather than open in the browser. Check your browser's Downloads list.
+Each report also has its own file links at the top of the page.</p></section>
 <h2>Start with the first report, then see what changed</h2>
 <ol><li><a href="batches/{first.batch_id}/dashboard.html">First report: 18 fictional people</a>
  - see who may need follow-up and what support needs are recorded.</li>

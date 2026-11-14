@@ -38,6 +38,12 @@ python -m jvsg_triage.demo rehearse --output temp/management-demo
 Open `temp/management-demo/index.html` in a browser. It links to baseline and
 refreshed HTML dashboards, the refreshed Excel workbook, TOON and verification
 evidence. The HTML has no remote dependencies, fonts, assets, requests or backend.
+The prominent **Demo files - open or download here** section on the landing page
+and each report links directly to the Excel report, source workbook and TOON file.
+Each report shows its actual folder and file locations from the page address.
+For local files this is the filesystem path; when served over HTTP it is the URL
+path. On disk, expand `temp/management-demo/batches/` in VS Code and select the
+matching report folder. Excel links may download; check the browser Downloads list.
 Open the Excel workbook in desktop Excel or an approved Excel browser viewer;
 there is no requirement to host a web application.
 

@@ -281,7 +281,7 @@ def test_management_surfaces_use_plain_language_and_hide_technical_details(tmp_p
         assert label in visible
     for abbreviation in (
         "TRN", "HSG", "MED", "LEG", "CRT", "ACT", "MIT", "RES", "UNK",
-        "GREEN", "YELLOW", "RED", "ETL", "TOON", "SHA-256", "idle_days",
+        "GREEN", "YELLOW", "RED", "ETL", "SHA-256", "idle_days",
     ):
         assert abbreviation not in visible.split()
     workbook = load_workbook(batch / "dashboard.xlsx")
@@ -299,6 +299,45 @@ def test_management_surfaces_use_plain_language_and_hide_technical_details(tmp_p
     assert workbook["Demo Intake"]["F7"].value == "Critical barrier"
     assert workbook["Demo Intake"]["I3"].value == "Awaiting staff review"
     workbook.close()
+
+
+def test_demo_file_links_are_visible_and_resolve_to_generated_files(tmp_path: Path) -> None:
+    from html.parser import HTMLParser
+
+    class FileLinks(HTMLParser):
+        def __init__(self) -> None:
+            super().__init__()
+            self.downloads: list[str] = []
+
+        def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+            attributes = dict(attrs)
+            if tag == "a" and "download" in attributes:
+                href = attributes.get("href")
+                assert href is not None
+                self.downloads.append(href)
+
+    root = tmp_path / "demo"
+    result = rehearse(root)
+    pages = [root / "index.html"]
+    for key in ("baseline", "refreshed"):
+        entry = result[key]
+        assert isinstance(entry, dict)
+        pages.append(root / entry["path"] / "dashboard.html")
+    for page in pages:
+        html = page.read_text()
+        assert html.index("Demo files - open or download here") < html.index(
+            "What changed" if page.name == "index.html" else "How long since"
+        )
+        parser = FileLinks()
+        parser.feed(html)
+        assert len(parser.downloads) >= 3
+        assert {Path(link).name for link in parser.downloads} >= {
+            "dashboard.xlsx", "source.xlsx", "profiles.toon",
+        }
+        for link in parser.downloads:
+            assert (page.parent / link).is_file()
+        assert "temp/management-demo/" in html
+        assert "Downloads list" in html
 
 
 def test_legacy_source_codes_remain_supported(tmp_path: Path) -> None:

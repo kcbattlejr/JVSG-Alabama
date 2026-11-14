@@ -32,7 +32,7 @@ from jvsg_triage.demo.models import DOMAINS, Alert, Office, Profile, Review, Sta
 from jvsg_triage.toon.demo import encode
 
 FIXED_TIME = datetime(2026, 1, 1)
-PRESENTATION_VERSION = "plain-language-1"
+PRESENTATION_VERSION = "plain-language-files-1"
 PROFILE_FIELDS = (
     "demo_id", "office", "assessment_date", "last_contact_date",
     "TRN", "HSG", "MED", "LEG", "review", "as_of", "idle_days", "alert",
@@ -300,6 +300,9 @@ article{{background:#122d52;border:1px solid #7496d2;padding:18px;min-width:170p
 article strong{{font-size:36px}} label{{display:inline-block;margin:12px 20px 12px 0}}
 article{{flex:1;min-width:220px}} article h2{{font-size:20px}}
 .guide{{background:#122d52;padding:20px;margin:20px 0;line-height:1.6}}
+.files{{border:2px solid #52d19c;padding:20px;background:#122d52;margin:20px 0}}
+.files a{{color:#8ce9bf;font-weight:bold}} .files code{{overflow-wrap:anywhere}}
+.files li{{margin:14px 0}} .files small{{display:block;margin-top:4px}}
 dt{{font-weight:bold;margin-top:12px}} dd{{margin:4px 0 12px}}
 .technical{{margin-top:20px;color:#cbd5e1}} .intro{{font-size:20px;line-height:1.6}}
 select,input{{padding:10px;background:#122d52;color:white;border:1px solid #7496d2}}
@@ -315,6 +318,32 @@ summary{{cursor:pointer;color:#52d19c}} .scroll{{overflow-x:auto}}
 <p class="notice"><strong>FICTIONAL DEMONSTRATION - NO REAL PERSONAL DATA</strong><br>
 Report date: {display_date(profiles[0].as_of)}. SharePoint delivery is simulated.
 No live connection. Nothing is sent to staff, partners or an AI service.</p>
+<section class="files" aria-labelledby="demo-files-title">
+<h2 id="demo-files-title">Demo files - open or download here</h2>
+<p>These are real generated files, not Python code. Each link belongs to the report
+you are viewing.</p>
+<ul>
+<li><a href="dashboard.xlsx" download>Download the Excel report</a>
+ - charts and the readable participant list.
+<small>File: <code data-demo-file="dashboard.xlsx">dashboard.xlsx</code></small></li>
+<li><a href="source.xlsx" download>Download the source Excel workbook</a>
+ - the fictional input used to create this report.
+<small>File: <code data-demo-file="source.xlsx">source.xlsx</code></small></li>
+<li><a href="profiles.toon" download>Download the TOON data file</a>
+ - the compact machine-readable version for technical review.
+<small>File: <code data-demo-file="profiles.toon">profiles.toon</code></small></li>
+<li><a href="profiles.json" download>Download the readable structured data</a>
+ - the same calculated records in JSON format.
+<small>File: <code data-demo-file="profiles.json">profiles.json</code></small></li>
+</ul>
+<p><strong>Where are these on disk?</strong> They are in the same folder as this page:
+<code id="demo-folder">the report's batch folder</code>.
+For the standard demo, start in <code>temp/management-demo/</code> in the VS Code
+file explorer, then open <code>batches/</code> and the report folder shown here.
+The source file is a saved copy, not a live SharePoint link.</p>
+<p>Your browser may download Excel instead of opening it. Look in your browser's
+Downloads list, then open the downloaded workbook in Excel.</p>
+</section>
 <p class="intro">{overview}</p>
 <div class="guide"><strong>What this report helps you understand</strong>
 <ul><li>Who may need follow-up because time has passed since the last contact?</li>
@@ -365,6 +394,11 @@ The source workbook and calculated records are checked before this report is cre
 <footer><p>This is a saved report, not a live system. Rerun processing to update it.
 Public review does not authorize production use.</p></footer>
 <script>
+const folderPath = decodeURIComponent(new URL('.', location.href).pathname);
+document.getElementById('demo-folder').textContent = folderPath;
+for (const label of document.querySelectorAll('[data-demo-file]')) {{
+  label.textContent = folderPath + label.dataset.demoFile;
+}}
 const office = document.getElementById('office');
 const alertFilter = document.getElementById('alert');
 const search = document.getElementById('search');
