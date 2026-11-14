@@ -10,11 +10,12 @@ digests, and local or Azure-hosted services.
 > case-notes XLSX (headers, title rows and the `Total Rows` footer). It matches
 > notes to cohort SIDs, scrubs them under the [PII protocol](docs/pii_protocol.md)
 > into a private, Git-ignored folder, and ships a seeded synthetic practice
-> dataset with PII ground truth. A separate synthetic SharePoint-first workbook
-> demo now implements deterministic ETL, a lossless custom TOON demo transform,
-> simulated refresh, and real Excel/HTML reporting. It does not connect to
-> SharePoint, recompute the 203/205 anti-join, classify case notes, persist to a
-> database, send Microsoft 365 messages, or deploy Azure services.
+> dataset with PII ground truth. The synthetic management rehearsal exercises
+> that paired-report validation/matching/scrubbing path, then generates Excel/HTML
+> dashboards and a custom TOON package from separate, invented human-review
+> profiles. It does not connect to SharePoint, recompute the 203/205 anti-join,
+> derive profile fields from case notes, classify notes, persist to a database,
+> send Microsoft 365 messages, or deploy Azure services.
 
 ## Management / IT / legal demo: start here
 
@@ -25,19 +26,22 @@ python -m pip install -r requirements-demo.txt
 python -m jvsg_triage.demo rehearse --output temp/management-demo
 ```
 
-Open `temp/management-demo/index.html` for the baseline/refreshed dashboards,
-Excel charts and watchlist, TOON output and verification evidence. No cloud
-credentials, model or web server is required. The repeatable rehearsal uses
-invented 18/19-row workbooks, simulates a new SharePoint file arrival and verifies
-hashes, source reconciliation and lossless TOON round trips before publishing.
-Outputs are Git-ignored; failed refreshes preserve the last successful batch.
+Open `temp/management-demo/index.html` for the raw synthetic anti-join and
+case-notes input pair, privacy-processing counts, separate human-review profiles,
+polished baseline/refreshed Excel charts and watchlists, TOON output and
+verification evidence. No cloud credentials, model or web server is required.
+The repeatable rehearsal simulates paired report arrival, verifies native
+reconciliation and scrubs notes, then creates the dashboard and TOON from the
+synthetic review inputs. Outputs are Git-ignored; failed refreshes preserve the
+last successful batch.
 
 See the [recording script](docs/management_demo_script.md) and
 [runbook](docs/management_demo_runbook.md) for the November 20 demonstration,
 exact expected counts, manual refresh commands and production boundaries.
-The cloud SharePoint workbook is the intended MVP driver; **delivery is locally
-simulated, not a live Microsoft 365 integration**. The custom `@TOON demo-1`
-dialect and aging thresholds are demo assumptions, not approved contracts/policy.
+**Delivery is locally simulated, not a live Microsoft 365 integration.** The
+native report pair does not supply the dashboard profile fields; those are
+separate synthetic human-review inputs. The custom `@TOON demo-1` dialect and
+aging thresholds are demo assumptions, not approved contracts or policy.
 
 ## Development environments
 

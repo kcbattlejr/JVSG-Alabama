@@ -6,7 +6,12 @@ from datetime import date
 from pathlib import Path
 
 from jvsg_triage.demo.models import DemoError
-from jvsg_triage.demo.pipeline import prepare, rehearse, run_pipeline, verify_batch
+from jvsg_triage.demo.pipeline import (
+    prepare_workflow,
+    rehearse,
+    run_pipeline,
+    verify_batch,
+)
 
 
 def main() -> int:
@@ -23,8 +28,14 @@ def main() -> int:
     args = parser.parse_args()
     try:
         if args.command == "prepare":
-            sources = prepare(args.output)
-            result: object = {"prepared": sorted(sources), "synthetic_only": True}
+            prepare_workflow(args.output)
+            result: object = {
+                "prepared": [
+                    "simulated SharePoint report pairs",
+                    "synthetic human-review profiles",
+                ],
+                "synthetic_only": True,
+            }
         elif args.command == "run":
             path = run_pipeline(args.source, as_of=args.as_of, output=args.output)
             result = {"verified": True, "batch_id": path.name}
