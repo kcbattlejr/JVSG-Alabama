@@ -8,8 +8,8 @@ Use the [runbook](./management_demo_runbook.md) for all commands and definitions
 
 - Activate the environment and run the complete `rehearse` command.
 - Confirm the verification message and the 18/19 expected participant counts.
-- Open the generated landing page, both dashboards, refreshed Excel workbook,
-  TOON file and `rehearsal.json` in separate tabs/windows.
+- Open the generated landing page, both dashboards and refreshed Excel workbook.
+  Keep the technical data and verification report available only for IT questions.
 - Enlarge the browser to 125% or a readable recording resolution. Collapse
   unrelated windows, notifications, account menus and file explorers.
 - Keep only generated synthetic files on screen. Do not open the Gemini
@@ -20,7 +20,7 @@ Use the [runbook](./management_demo_runbook.md) for all commands and definitions
 
 ## 0:00-0:45 | Purpose and honest boundaries
 
-**Show:** baseline HTML dashboard, synthetic/offline banner.
+**Show:** first report, fictional-demonstration banner and plain-language summary.
 
 **Say:**
 
@@ -39,8 +39,10 @@ Zoom to the column headers and first few invented IDs.
 **Say:**
 
 > This is the stand-in for a snapshot of the SharePoint Excel source. Each row
-> has an invented demo ID and office, assessment and last-contact dates, four
-> supplied barrier states and a human-review field. There are no names, SIDs,
+> has a made-up participant number and office, assessment and last-contact dates,
+> transportation, housing, health and legal support needs, and a staff-review
+> status. The columns and values are written out in full. There are no names,
+> real participant identifiers,
 > contact details or case narratives. These are invented examples, not real
 > caseload proportions.
 >
@@ -49,53 +51,56 @@ Zoom to the column headers and first few invented IDs.
 > generating a plausible-looking dashboard. A real agency workbook needs its
 > own approved mapping; we have not assumed this is its existing layout.
 
-## 1:45-2:40 | Execute real ETL
+## 1:45-2:40 | Run the workbook processing
 
 **Show:** terminal with only the baseline `run` command from the runbook.
 Run it, then show `latest.json` and the successful `status.json`.
 
 **Say:**
 
-> This is the actual Python pipeline. It validates the workbook, computes aging
-> with an explicit execution date, transforms the records and publishes a
-> verified batch. We use calendar days since contact, falling back to assessment
+> This is the actual processing, not a slideshow. It checks the workbook,
+> calculates days since contact for the report date, and creates a checked report.
+> We use calendar days since contact, falling back to assessment
 > when there is no contact. The 15- and 30-day thresholds are demo assumptions,
 > not a new approved operational policy.
 >
 > There are no cloud credentials or model calls in this execution. A successful
 > output is a real workbook, dashboard, normalized data and verification evidence.
 
-## 2:40-3:30 | TOON inspection and traceability
+## 2:40-3:30 | Explain one person's recorded needs
 
-**Show:** expand “Inspect TOON” for DEMO-0005; optionally open `profiles.toon`.
+**Show:** find DEMO-0005 and expand "View support needs".
+Leave the nested technical section closed unless IT requests it.
 
 **Say:**
 
-> This compact representation carries the same normalized fields as the JSON
-> profile, including each domain's state and the source review value. It is a
-> versioned, reference-inspired TOON demo dialect, not an approved federal
-> interface or the general TOON standard.
+> This example has a critical housing barrier and still needs health support.
+> Transportation has not yet been assessed, and the legal barrier is partly
+> addressed. Those are different situations; we show them separately rather
+> than hiding them behind one unexplained code.
 >
-> Before publishing, the pipeline parses every line back and checks exact
-> profile equality. The manifest also records hashes and byte counts. We are
-> not asserting a token-reduction target, model accuracy or production privacy
-> certification from this demonstration.
+> The system also creates a compact machine-readable version for future
+> integration. We call that the TOON demonstration format. It is checked against
+> the original calculated record so no information is lost. Management does not
+> need to read that technical format to understand this report.
 
 ## 3:30-4:35 | Staff and managerial views
 
-**Show:** baseline HTML. Select DEMO-NORTH, then RED; clear filters.
-Search DEMO-0005 and expand its inspector. Clear search and scroll to barrier bars.
+**Show:** first report. Select "North demonstration office", then
+"Extended gap in contact"; clear filters. Scroll to the support-needs overview.
 
 **Say:**
 
-> Staff can filter by invented office, aging and demo ID. The cards track the
-> visible roster. The management barrier overview is explicitly the entire
-> batch, so it does not silently change meaning when I filter the roster.
+> Staff can filter by office, follow-up status and participant number.
+> The three cards say recent contact, follow-up due, and extended gap in contact.
+> Each explains the number of days it represents. They count the people in the
+> filtered list. The support-needs overview always counts everyone in the report.
 >
-> The four domains are transit, housing, health and legal. States are critical,
-> active, mitigated, resolved or unknown. Unknown remains visible. These
-> states were supplied by the synthetic fixture; they were not inferred by AI.
-> The priority display is a demo rollup, not an eligibility or referral score.
+> For each area, needs are described as critical, needing support, partly
+> addressed, resolved, or not yet assessed. "Partly addressed" does not mean
+> resolved. "Not yet assessed" does not mean no problem exists.
+> These descriptions were supplied by the fictional workbook, not inferred by AI.
+> "Most pressing recorded need" is a summary, not an eligibility or referral score.
 > Qualified staff remain responsible for interpretation and referrals.
 
 **Show:** Excel Dashboard charts, then Watchlist filter dropdown.
@@ -114,8 +119,10 @@ Search DEMO-0005 and expand its inspector. Clear search and scroll to barrier ba
 > a new contact date and a supplied housing-state update. DEMO-0019 is new.
 > The pipeline is rerun; this is not a timed animation or a fake sync button.
 >
-> The cohort changes from 18 to 19. Green goes from 6 to 8, yellow stays at 6,
-> and red goes from 6 to 5. Existing human-review values are carried through
+> The number of people changes from 18 to 19. Recent contact goes from 6 to 8,
+> follow-up due stays at 6, and extended gaps in contact go from 6 to 5.
+> The housing barrier for our example is now partly addressed, not resolved.
+> Existing staff-review information is carried through
 > from the source. A recent contact does not imply every barrier is resolved
 > and does not authorize a referral.
 

@@ -11,6 +11,13 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.utils.exceptions import InvalidFileException
 from pydantic import ValidationError
 
+from jvsg_triage.demo.labels import (
+    FIELD_LABELS,
+    OFFICE_LABELS,
+    REVIEW_LABELS,
+    SOURCE_VALUE_CODES,
+    STATE_LABELS,
+)
 from jvsg_triage.demo.models import (
     AS_OF,
     HEADERS,
@@ -58,14 +65,21 @@ def source_workbook(records: list[SourceRecord]) -> Workbook:
     assert sheet is not None
     sheet.title = "Demo Intake"
     sheet.append([MARKER])
-    sheet.append(HEADERS)
+    sheet.append([FIELD_LABELS[field] for field in HEADERS])
     for record in records:
-        values = record.model_dump(mode="json")
+        values = record.model_dump()
+        values["office"] = OFFICE_LABELS[record.office]
+        values["review"] = REVIEW_LABELS[record.review]
+        for field in ("TRN", "HSG", "MED", "LEG"):
+            values[field] = STATE_LABELS[getattr(record, field)]
         sheet.append([values[field] for field in HEADERS])
     sheet.freeze_panes = "C3"
     sheet.auto_filter.ref = f"A2:I{len(records) + 2}"
-    for column in ("A", "B", "C", "D"):
-        sheet.column_dimensions[column].width = 23
+    for column in ("A", "B", "C", "D", "E", "F", "G", "H", "I"):
+        sheet.column_dimensions[column].width = 29
+    for row in sheet.iter_rows(min_row=3, min_col=3, max_col=4):
+        for cell in row:
+            cell.number_format = "mmm d, yyyy"
     return workbook
 
 
@@ -93,7 +107,8 @@ def read_source(content: bytes) -> list[SourceRecord]:
         marker = next(rows, ())
         if marker != (MARKER, *([None] * (len(HEADERS) - 1))):
             raise DemoError("intake: synthetic marker missing")
-        if next(rows, ()) != HEADERS:
+        headers = next(rows, ())
+        if headers not in (HEADERS, tuple(FIELD_LABELS[field] for field in HEADERS)):
             raise DemoError("intake: headers differ from the demo contract")
         records = []
         seen: set[str] = set()
@@ -101,6 +116,10 @@ def read_source(content: bytes) -> list[SourceRecord]:
             if number > MAX_ROWS + 2 or len(row) != len(HEADERS):
                 raise DemoError("intake: row limit or column mismatch")
             values = dict(zip(HEADERS, row, strict=True))
+            for field, codes in SOURCE_VALUE_CODES.items():
+                value = values[field]
+                if isinstance(value, str) and value in codes:
+                    values[field] = codes[value]
             for field in ("assessment_date", "last_contact_date"):
                 value = values[field]
                 if isinstance(value, datetime):

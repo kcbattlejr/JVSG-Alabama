@@ -232,8 +232,8 @@ def test_excel_and_html_are_real_snapshots_with_matching_data(tmp_path: Path) ->
     assert workbook["Dashboard"]["B4"].value == 18
     rows = list(workbook["Watchlist"].iter_rows(min_row=2, values_only=True))
     assert len(rows) == 18
-    assert rows[4][10:12] == (30, "RED")
-    assert rows[1][8] == "Reviewed"
+    assert rows[4][10:12] == (30, "Extended gap in contact")
+    assert rows[1][8] == "Staff review recorded"
     assert workbook["TOON"]["B2"].value == encode(transform(fixture_records(), AS_OF)[0])
     workbook.close()
     with ZipFile(batch / "dashboard.xlsx") as archive:
@@ -244,6 +244,76 @@ def test_excel_and_html_are_real_snapshots_with_matching_data(tmp_path: Path) ->
     assert "No live connection" in html
     assert "<tr data-office=" in html
     assert "https://" not in html
+
+
+def test_management_surfaces_use_plain_language_and_hide_technical_details(tmp_path: Path) -> None:
+    from html.parser import HTMLParser
+
+    class VisibleText(HTMLParser):
+        def __init__(self) -> None:
+            super().__init__()
+            self.depth = 0
+            self.text: list[str] = []
+
+        def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+            if tag in ("script", "style", "details"):
+                self.depth += 1
+
+        def handle_endtag(self, tag: str) -> None:
+            if tag in ("script", "style", "details"):
+                self.depth -= 1
+
+        def handle_data(self, data: str) -> None:
+            if self.depth == 0:
+                self.text.append(data)
+
+    source = prepare(tmp_path / "intake")["baseline"]
+    batch = run_pipeline(source, as_of=AS_OF, output=tmp_path / "out")
+    parser = VisibleText()
+    parser.feed((batch / "dashboard.html").read_text())
+    visible = " ".join(parser.text)
+    for label in (
+        "Recent contact", "Follow-up due", "Extended gap in contact",
+        "Transportation", "Housing", "Health", "Legal", "Critical barrier",
+        "Needs support", "Partly addressed", "Resolved", "Not yet assessed",
+        "Awaiting staff review", "Nov 20, 2026",
+    ):
+        assert label in visible
+    for abbreviation in (
+        "TRN", "HSG", "MED", "LEG", "CRT", "ACT", "MIT", "RES", "UNK",
+        "GREEN", "YELLOW", "RED", "ETL", "TOON", "SHA-256", "idle_days",
+    ):
+        assert abbreviation not in visible.split()
+    workbook = load_workbook(batch / "dashboard.xlsx")
+    for name in ("TOON", "Provenance"):
+        assert workbook[name].sheet_state == "hidden"
+    headers = [cell.value for cell in workbook["Watchlist"][1]]
+    assert headers[4:9] == [
+        "Transportation", "Housing", "Health", "Legal", "Staff review status",
+    ]
+    assert workbook["Watchlist"]["F6"].value == "Critical barrier"
+    assert workbook["Watchlist"]["M6"].value == "Critical barrier: Housing"
+    workbook.close()
+    workbook = load_workbook(source)
+    assert workbook["Demo Intake"]["E2"].value == "Transportation"
+    assert workbook["Demo Intake"]["F7"].value == "Critical barrier"
+    assert workbook["Demo Intake"]["I3"].value == "Awaiting staff review"
+    workbook.close()
+
+
+def test_legacy_source_codes_remain_supported(tmp_path: Path) -> None:
+    from jvsg_triage.demo.models import HEADERS
+
+    workbook = source_workbook(fixture_records())
+    sheet = workbook["Demo Intake"]
+    for column, field in enumerate(HEADERS, start=1):
+        sheet.cell(2, column, field)
+    for number, record in enumerate(fixture_records(), start=3):
+        for column, value in enumerate(record.model_dump(mode="json").values(), start=1):
+            sheet.cell(number, column, value)
+    path = tmp_path / "legacy.xlsx"
+    save_workbook(workbook, path)
+    assert read_source(path.read_bytes()) == fixture_records()
 
 
 def test_xlsx_bytes_stable_across_wall_clock_changes(

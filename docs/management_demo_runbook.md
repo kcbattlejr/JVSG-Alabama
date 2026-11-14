@@ -89,14 +89,15 @@ No secret, HMAC key, model download, network service or cloud account is needed.
 | Metric | Baseline | Refreshed |
 |---|---:|---:|
 | Invented participants | 18 | 19 |
-| GREEN: less than 15 idle days | 6 | 8 |
-| YELLOW: 15-29 idle days | 6 | 6 |
-| RED: 30+ idle days | 6 | 5 |
-| Pending source human review | 16 | 17 |
+| Recent contact: 0-14 days | 6 | 8 |
+| Follow-up due: 15-29 days | 6 | 6 |
+| Extended gap in contact: 30 or more days | 6 | 5 |
+| Awaiting staff review | 16 | 17 |
 
-- `DEMO-0005`: contact date changes to November 20; idle days change from 30
-  to 0; HSG changes from CRT to MIT. Other barriers may still need review.
-- `DEMO-0019`: added to DEMO-SOUTH.
+- `DEMO-0005`: contact date changes to November 20; days since contact change from
+  30 to 0; the housing barrier changes from critical to partly addressed.
+  Other barriers may still need review.
+- `DEMO-0019`: added to the South demonstration office.
 - Existing source review values remain unchanged, including Reviewed records.
 - `rehearsal.json` records both snapshots and the exact changed/added IDs.
 - Nothing is sent to Teams, GeoSol, SharePoint, a partner or a model.
@@ -104,14 +105,19 @@ No secret, HMAC key, model download, network service or cloud account is needed.
 ## Workbook contract and demo assumptions
 
 The source contains exactly one worksheet, `Demo Intake`. Row 1 is
-`JVSG_SYNTHETIC_DEMO_V1`; row 2 is the ordered header:
+`JVSG_SYNTHETIC_DEMO_V1`; row 2 contains these human-readable column headings:
 
 ```text
-demo_id, office, assessment_date, last_contact_date, TRN, HSG, MED, LEG, review
+Demonstration participant, Demonstration office, Assessment date,
+Last recorded contact, Transportation, Housing, Health, Legal, Staff review status
 ```
 
-IDs are `DEMO-` plus four digits, not SIDs or HMACs. Offices are DEMO-NORTH,
-DEMO-CENTRAL, DEMO-SOUTH. Dates are YYYY-MM-DD or date-only Excel cells.
+Participant numbers are `DEMO-` plus four digits, not real identifiers. Office
+names are North, Central and South demonstration office. Dates appear as
+"Nov 20, 2026" in reports and date-formatted Excel cells; the loader also accepts
+YYYY-MM-DD text. Source dropdowns use full descriptions, not codes.
+Earlier code-based workbook headers and values remain accepted for compatibility;
+the normalized JSON and compact TOON keep their stable machine-readable fields.
 Contact may be empty; assessment is required. Reject duplicates, missing/extra
 columns, unknown state/office/review values, formula cells, empty batches,
 contact before assessment, future dates, additional sheets and oversized files.
@@ -121,9 +127,11 @@ The 15/30 boundaries are presentation assumptions, not approved follow-up policy
 The explicit `--as-of` date avoids a dashboard changing with the recording date.
 Never infer the meaning of native MIS `Date1`-style fields from this demo.
 
-TRN/HSG/MED/LEG are transit/housing/health/legal. CRT/ACT/MIT/RES/UNK are
-critical/active/mitigated/resolved/unknown. Priority is the first state present in
-CRT, ACT, UNK, MIT, RES order. It is an explanatory demo rollup, not an eligibility,
+Transportation, housing, health and legal needs are displayed as Critical barrier,
+Needs support, Partly addressed, Resolved or Not yet assessed. The "Most pressing
+recorded need" summary selects critical, needs support, not assessed, partly
+addressed, then resolved, and names the relevant support area(s).
+It is an explanatory demo rollup, not an eligibility,
 clinical or referral score. Barrier states are supplied synthetic input, not AI
 classification. Source review state is passed through; it is not independently
 verified authorization. A refresh never writes back to the source workbook.
@@ -146,8 +154,8 @@ Each immutable `batches/<SHA-256>/` directory contains:
 | `source.xlsx` | Exact synthetic input snapshot |
 | `profiles.json` / `profiles.toon` | Equivalent normalized profiles |
 | `summary.json` | Reconciled aggregate counts |
-| `dashboard.xlsx` | Dashboard charts, Watchlist table, TOON, Definitions, Provenance |
-| `dashboard.html` | Offline roster filters, profile inspector, KPI cards and barrier bars |
+| `dashboard.xlsx` | Plain-language charts/list and definitions; technical sheets hidden |
+| `dashboard.html` | Plain-language filters, contact counts, support details and overview |
 | `manifest.json` | Source/output hashes, execution date, version and dependency versions |
 
 `verify` checks hashes, source-to-profile reconciliation, all TOON round trips,
@@ -155,6 +163,14 @@ summary and HTML equivalence, row counts and serialized byte counts. Hashes
 detect accidental alteration; they are not signatures or authorization controls.
 The manifest reports UTF-8 bytes against equivalent compact JSON, **not tokens,
 real-data accuracy or a promised compression percentage**.
+
+The normal presentation does not require reading machine codes or a glossary.
+The HTML has explanations next to the measures and a plain-language support
+breakdown for each person. Technical encodings and fingerprints are tucked into
+closed "for IT review" sections. In Excel, TOON and Provenance are hidden sheets
+(a presentation choice, not a security control); Dashboard, Watchlist and
+Definitions remain visible. Contact frequency and support needs are deliberately
+separate: recent contact does not imply a person's barriers are resolved.
 
 Repeated rehearsals in separate output roots produce byte-identical artifacts
 with the same inputs, date, code and pinned runtime set. Workbook ZIP metadata

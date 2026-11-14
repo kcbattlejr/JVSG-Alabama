@@ -20,6 +20,7 @@ from jvsg_triage.demo.intake import (
 )
 from jvsg_triage.demo.models import AS_OF, VERSION, DemoError, Profile
 from jvsg_triage.demo.presentation import (
+    PRESENTATION_VERSION,
     add_source_validation,
     excel_dashboard,
     html_dashboard,
@@ -65,6 +66,7 @@ def runtime_versions() -> dict[str, str]:
 def batch_id(content: bytes, as_of: date, dependencies: dict[str, str]) -> str:
     metadata = json_text({
         "version": VERSION, "as_of": as_of.isoformat(), "dependencies": dependencies,
+        "presentation_version": PRESENTATION_VERSION,
     })
     return digest(content + metadata.encode("utf-8"))
 
@@ -231,15 +233,27 @@ def rehearse(output: Path) -> dict[str, object]:
     }
     write_json(root / "rehearsal.json", result)
     landing = f"""<!doctype html><html lang="en"><meta charset="utf-8">
-<title>JVSG Synthetic Demo Rehearsal</title><body>
-<h1>Synthetic-only SharePoint Excel rehearsal</h1>
-<p>Offline simulation. As of {AS_OF.isoformat()}. No production connection.</p>
-<ol><li><a href="batches/{first.batch_id}/dashboard.html">Baseline dashboard (18 rows)</a></li>
-<li><a href="batches/{second.batch_id}/dashboard.html">Refreshed dashboard (19 rows)</a></li>
-<li><a href="batches/{second.batch_id}/dashboard.xlsx">Refreshed Excel workbook</a></li>
-<li><a href="batches/{second.batch_id}/profiles.toon">TOON output</a></li>
-<li><a href="rehearsal.json">Verification and changes</a></li></ol>
-<p>DEMO-0005 receives simulated contact and a housing-state update.
-DEMO-0019 is added. Source human-review values are preserved.</p></body></html>"""
+<title>Veteran follow-up demonstration | Start here</title>
+<style>body{{font:20px/1.6 'Segoe UI',sans-serif;max-width:950px;margin:40px auto;
+padding:24px;background:#06182c;color:#f8fafc}}a,h1,h2{{color:#52d19c}}
+li{{margin:16px 0}}</style><body>
+<h1>Veteran follow-up and support needs</h1>
+<p>All people and situations are fictional. No live SharePoint connection.</p>
+<h2>Start with the first report, then see what changed</h2>
+<ol><li><a href="batches/{first.batch_id}/dashboard.html">First report: 18 fictional people</a>
+ - see who may need follow-up and what support needs are recorded.</li>
+<li><a href="batches/{second.batch_id}/dashboard.html">Updated report: 19 fictional people</a>
+ - see the result after a new workbook arrives.</li>
+<li><a href="batches/{second.batch_id}/dashboard.xlsx">Open the updated Excel report</a>
+ - the same information, with charts and a filterable list.</li></ol>
+<h2>What changed in this example?</h2>
+<ul><li>Participant DEMO-0005 has a new recorded contact: 0 days since contact instead of 30.</li>
+<li>The same person's housing barrier is now partly addressed instead of critical.</li>
+<li>Participant DEMO-0019 is added. Existing staff review information stays unchanged.</li></ul>
+<p>Qualified staff remain responsible for next steps. No referrals are sent.</p>
+<details><summary>Technical evidence (for IT review)</summary><ul>
+<li><a href="batches/{second.batch_id}/profiles.toon">Compact machine-readable data (TOON)</a></li>
+<li><a href="rehearsal.json">Processing checks and exact changes</a></li>
+</ul></details></body></html>"""
     (root / "index.html").write_text(landing, encoding="utf-8", newline="\n")
     return result
