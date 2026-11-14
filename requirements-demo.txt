@@ -1,0 +1,15 @@
+# Tested runtime set for the offline demo on Python 3.11.
+# Install with: python -m pip install -r requirements-demo.txt
+# Development tools remain in the pyproject.toml dev extra.
+annotated-types==0.8.0
+et-xmlfile==2.0.0
+openpyxl==3.1.5
+polars==2.1.0
+polars-runtime-32==2.1.0
+pydantic==2.14.3
+pydantic-core==2.50.4
+pydantic-settings==2.16.2
+python-dotenv==1.2.4
+typing-extensions==4.16.0
+typing-inspection==0.4.5
+-e .

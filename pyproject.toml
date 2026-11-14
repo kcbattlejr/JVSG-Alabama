@@ -14,11 +14,11 @@ dependencies = [
   "pydantic-settings>=2.5",
   "python-dotenv>=1.0",
   "openpyxl>=3.1",
+  "polars>=1.0",
 ]
 
 [project.optional-dependencies]
 data = [
-  "polars>=1.0",
   "pandas>=2.2",
 ]
 api = [
@@ -47,7 +47,6 @@ dev = [
   "types-openpyxl>=3.1",
 ]
 all = [
-  "polars>=1.0",
   "pandas>=2.2",
   "fastapi>=0.115",
   "uvicorn>=0.30",

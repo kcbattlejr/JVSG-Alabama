@@ -27,6 +27,8 @@ temp/
 data/raw/
 data/processed/
 data/private/
+# Unreviewed presentation references are local inspiration, not public deliverables.
+demo-temp/
 *.xlsx
 # Seeded synthetic practice data is fictional and intentionally versioned.
 !data/synthetic/*.xlsx
