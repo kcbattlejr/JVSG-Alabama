@@ -49,9 +49,17 @@ CSV and case-notes XLSX, matching notes to cohort SIDs, privacy scrubbing, and
 synthetic practice data. The anti-join report supplies the cohort; the current
 pipeline does not independently recompute it from separate 203 and 205 reports.
 
-SharePoint publishing, scheduled report collection, operational lists,
-dashboard refresh, AI classification, and DOL/VOMA integration are not
-implemented in this repository. A SharePoint library stores files; uploading
+The [synthetic management demo](./management_demo_runbook.md) now implements a
+separate, closed-vocabulary Excel input contract, deterministic ETL, lossless
+custom TOON demo serialization, simulated file arrival/refresh, and real
+Excel/HTML snapshots with integrity verification. The intended MVP driver is
+the cloud SharePoint workbook; its delivery is simulated locally in this demo.
+This does not establish a mapping to the existing agency workbook or approved
+production aging/barrier rules.
+
+Live SharePoint ingestion/publishing, scheduled report collection, operational
+lists, automatic cloud dashboard refresh, AI classification, and DOL/VOMA
+integration remain unimplemented. A SharePoint library stores files; uploading
 Python code or reports does not make SharePoint execute the ETL.
 
 Live reports require an approved processing environment. Keep GitHub,
