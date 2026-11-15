@@ -154,6 +154,19 @@ def test_rehearsal_refresh_reconciliation_and_exact_reproducibility(tmp_path: Pa
     assert first["added_demo_ids"] == ["DEMO-0019"]
     assert first["updated_demo_ids"] == ["DEMO-0005"]
     assert first["source_review_values_preserved"] is True
+    assert first["profile_inputs"] == (
+        "Synthetic human-review inputs; not extracted or classified from case notes."
+    )
+    intake = first["native_intake"]
+    assert isinstance(intake, dict)
+    for name, expected in (("baseline", 18), ("refreshed", 19)):
+        stage = intake[name]
+        assert isinstance(stage, dict)
+        assert stage["unique_participants"] == expected
+        assert stage["summary"]["matched_note_rows"] == expected
+        assert (first_root / stage["anti_join_file"]).is_file()
+        assert (first_root / stage["case_notes_file"]).is_file()
+        assert (first_root / stage["private_output"] / "redacted_notes.jsonl").is_file()
     first_files = {
         str(path.relative_to(first_root)): path.read_bytes()
         for path in first_root.rglob("*") if path.is_file()
@@ -229,7 +242,21 @@ def test_excel_and_html_are_real_snapshots_with_matching_data(tmp_path: Path) ->
     assert workbook.sheetnames == [
         "Dashboard", "Watchlist", "TOON", "Definitions", "Provenance",
     ]
-    assert workbook["Dashboard"]["B4"].value == 18
+    dashboard = workbook["Dashboard"]
+    assert dashboard["A1"].value == "Veteran follow-up and support needs"
+    assert dashboard["A5"].value == 18
+    assert [dashboard[cell].value for cell in ("D5", "G5", "J5")] == [6, 6, 6]
+    assert dashboard["A1"].font.size == 22
+    assert dashboard["A1"].fill.fgColor.rgb.endswith("16324F")
+    assert dashboard.row_dimensions[1].height == 42
+    assert len(dashboard._charts) == 2
+    assert dashboard.page_setup.orientation == "landscape"
+    assert dashboard.page_setup.fitToWidth == 1
+    watchlist = workbook["Watchlist"]
+    assert watchlist["A1"].alignment.wrap_text is True
+    assert watchlist.column_dimensions["M"].width == 40
+    assert watchlist.row_dimensions[2].height == 42
+    assert watchlist.freeze_panes == "C2"
     rows = list(workbook["Watchlist"].iter_rows(min_row=2, values_only=True))
     assert len(rows) == 18
     assert rows[4][10:12] == (30, "Extended gap in contact")
@@ -332,12 +359,14 @@ def test_demo_file_links_are_visible_and_resolve_to_generated_files(tmp_path: Pa
         parser.feed(html)
         assert len(parser.downloads) >= 3
         assert {Path(link).name for link in parser.downloads} >= {
-            "dashboard.xlsx", "source.xlsx", "profiles.toon",
+            "dashboard.xlsx", "reviewed_profiles.xlsx", "profiles.toon",
         }
         for link in parser.downloads:
             assert (page.parent / link).is_file()
         assert "temp/management-demo/" in html
         assert "Downloads list" in html
+        if page.name == "index.html":
+            assert "paired report upload" in html.lower()
 
 
 def test_legacy_source_codes_remain_supported(tmp_path: Path) -> None:

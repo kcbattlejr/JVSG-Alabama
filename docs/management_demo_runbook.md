@@ -7,20 +7,27 @@ to process real records in this repository.
 ## What actually works
 
 ```text
-Simulated SharePoint Excel file drop (baseline / refreshed XLSX)
-  -> strict workbook schema and closed synthetic vocabulary
-  -> Polars date transformation and aging
-  -> lossless @TOON demo-1 serialization and parsing
+Simulated SharePoint raw report-pair upload (anti-join CSV + case-notes XLSX)
+  -> native layout/footer validation, cohort matching, HMAC tokenization and scrubbing
+  -> separate synthetic human-review profile input (not derived from case notes)
+  -> deterministic aging and closed-vocabulary profile validation
+  -> generated Excel/HTML dashboards and lossless @TOON demo-1 package
   -> verified immutable batch
-  -> real Excel charts, filterable watchlist, standalone HTML
 ```
 
-The cloud SharePoint workbook is the intended MVP source of operational state.
-The demonstration represents its delivery using local workbook snapshots.
-It does not authenticate to Microsoft 365 or download a tenant file. An
-authorized operator could later supply an approved downloaded workbook through
-the same file boundary, after a separate production contract and permissions
-review. This demo schema is **not** a schema for an existing agency workbook.
+The demonstration represents the paired native report upload using local,
+synthetic-only snapshots in `temp/management-demo/simulated_sharepoint/`. It
+does not authenticate to Microsoft 365 or download/upload a tenant file.
+Processing validates the native contracts, matches notes to the supplied
+anti-join cohort, tokenizes identifiers with a fixed synthetic-only demo key,
+and writes scrubbed notes under `temp/management-demo/restricted/`.
+
+The native reports do **not** supply the office, aging, or four-domain fields in
+the current dashboard. Those come from a separate invented human-review profile
+workbook under `reviewed_profiles/`; they are not extracted or classified from
+case notes. The demo makes this boundary visible. Production would need approved
+source/profile contracts, a qualified review process, and an approved TOON
+contract before those steps could be joined.
 
 The Gemini references are visual inspiration only. No reference workbook data,
 embedded logos, baseline figures, infrastructure details or claimed validation
@@ -35,11 +42,12 @@ python -m pip install -r requirements-demo.txt
 python -m jvsg_triage.demo rehearse --output temp/management-demo
 ```
 
-Open `temp/management-demo/index.html` in a browser. It links to baseline and
-refreshed HTML dashboards, the refreshed Excel workbook, TOON and verification
-evidence. The HTML has no remote dependencies, fonts, assets, requests or backend.
-The prominent **Demo files - open or download here** section on the landing page
-and each report links directly to the Excel report, source workbook and TOON file.
+Open `temp/management-demo/index.html` in a browser. It starts with links to the
+raw synthetic anti-join CSV and paired case-notes workbook, then shows validation
+and privacy-processing counts, the separate synthetic review input, and the
+generated baseline/refreshed dashboards and TOON files. The HTML has no remote
+dependencies, fonts, assets, requests or backend. The **Demo files** section and
+each report link to the Excel report, reviewed-profile input and TOON file.
 Each report shows its actual folder and file locations from the page address.
 For local files this is the filesystem path; when served over HTTP it is the URL
 path. On disk, expand `temp/management-demo/batches/` in VS Code and select the
@@ -67,16 +75,11 @@ python -m ruff check .
 python -m mypy src
 ```
 
-### Separate the intake and refresh steps on camera
+### Prepare and rehearse the paired workflow
 
 ```bash
-python -m jvsg_triage.demo prepare --output temp/management-demo/simulated_sharepoint
-python -m jvsg_triage.demo run \
-  --source temp/management-demo/simulated_sharepoint/baseline.xlsx \
-  --as-of 2026-11-20 --output temp/management-demo
-python -m jvsg_triage.demo run \
-  --source temp/management-demo/simulated_sharepoint/refreshed.xlsx \
-  --as-of 2026-11-20 --output temp/management-demo
+python -m jvsg_triage.demo prepare --output temp/management-demo
+python -m jvsg_triage.demo rehearse --output temp/management-demo
 ```
 
 `latest.json` identifies the last successfully verified batch. For explicit
@@ -86,9 +89,13 @@ verification, substitute the printed batch ID (no angle brackets):
 python -m jvsg_triage.demo verify --batch temp/management-demo/batches/BATCH_ID
 ```
 
-The `rehearse` command creates the convenient landing page and change report;
-individual `run` commands create batches and status files, not that landing page.
-No secret, HMAC key, model download, network service or cloud account is needed.
+`prepare` creates the raw synthetic report pairs and reviewed-profile inputs.
+`rehearse` validates and scrubs both native report snapshots, then generates and
+verifies their corresponding dashboard/profile batches. Its `rehearsal.json`
+contains only file hashes and aggregate counts; the scrubbed note files are
+restricted outputs and are not linked from the presentation page. The HMAC key
+is a public synthetic-demo constant, not a credential; never use it for real
+records. No model download, network service or cloud account is needed.
 
 ## Expected results
 
@@ -100,6 +107,8 @@ No secret, HMAC key, model download, network service or cloud account is needed.
 | Extended gap in contact: 30 or more days | 6 | 5 |
 | Awaiting staff review | 16 | 17 |
 
+- The synthetic native pair contains 18/19 cohort members and the same number
+  of matched notes in each snapshot.
 - `DEMO-0005`: contact date changes to November 20; days since contact change from
   30 to 0; the housing barrier changes from critical to partly addressed.
   Other barriers may still need review.
@@ -108,9 +117,9 @@ No secret, HMAC key, model download, network service or cloud account is needed.
 - `rehearsal.json` records both snapshots and the exact changed/added IDs.
 - Nothing is sent to Teams, GeoSol, SharePoint, a partner or a model.
 
-## Workbook contract and demo assumptions
+## Synthetic human-review profile contract and demo assumptions
 
-The source contains exactly one worksheet, `Demo Intake`. Row 1 is
+The separate human-review input contains exactly one worksheet, `Demo Intake`. Row 1 is
 `JVSG_SYNTHETIC_DEMO_V1`; row 2 contains these human-readable column headings:
 
 ```text
@@ -122,7 +131,7 @@ Participant numbers are `DEMO-` plus four digits, not real identifiers. Office
 names are North, Central and South demonstration office. Dates appear as
 "Nov 20, 2026" in reports and date-formatted Excel cells; the loader also accepts
 YYYY-MM-DD text. Source dropdowns use full descriptions, not codes.
-Earlier code-based workbook headers and values remain accepted for compatibility;
+Earlier code-based profile headers and values remain accepted for compatibility;
 the normalized JSON and compact TOON keep their stable machine-readable fields.
 Contact may be empty; assessment is required. Reject duplicates, missing/extra
 columns, unknown state/office/review values, formula cells, empty batches,
@@ -138,10 +147,11 @@ Needs support, Partly addressed, Resolved or Not yet assessed. The "Most pressin
 recorded need" summary selects critical, needs support, not assessed, partly
 addressed, then resolved, and names the relevant support area(s).
 It is an explanatory demo rollup, not an eligibility,
-clinical or referral score. Barrier states are supplied synthetic input, not AI
-classification. Source review state is passed through; it is not independently
-verified authorization. A refresh never writes back to the source workbook.
-Make operational edits in the synthetic source, not a generated dashboard.
+clinical or referral score. Barrier states and review status are supplied synthetic human-review inputs, not
+AI classification or fields extracted from the native reports. Review state is
+passed through; it is not independently verified authorization. A refresh never
+writes back to the profile workbook. Make demo edits in that synthetic input,
+not in a generated dashboard.
 
 ## TOON and reproducibility
 
@@ -157,7 +167,7 @@ Each immutable `batches/<SHA-256>/` directory contains:
 
 | File | Purpose |
 |---|---|
-| `source.xlsx` | Exact synthetic input snapshot |
+| `reviewed_profiles.xlsx` | Exact synthetic human-review profile input |
 | `profiles.json` / `profiles.toon` | Equivalent normalized profiles |
 | `summary.json` | Reconciled aggregate counts |
 | `dashboard.xlsx` | Plain-language charts/list and definitions; technical sheets hidden |
@@ -203,11 +213,11 @@ to this demo. All generated outputs stay under Git-ignored `temp/`,
 and artifacts before sharing; do not capture terminals with secrets, file lists
 outside the demo, real Teams chats or browser account information.
 
-The existing native MIS intake/scrubber remains a separate workflow; it is not
-bypassed, reinterpreted or a dependency of this closed-vocabulary workbook demo.
-Unstructured production case notes still require the privacy protocol and
-qualified review before any inference. No real-world scrubber efficacy is
-claimed here.
+The native MIS intake/scrubber is exercised in the rehearsal using paired
+synthetic reports. Its scrubbed notes are not used to populate the barrier
+profile: that is a separate synthetic human-review input. Unstructured
+production case notes still require the privacy protocol and qualified review
+before any inference. No real-world scrubber efficacy is claimed here.
 
 Before any live pilot, IT/legal/domain owners must approve the actual workbook
 contract and ownership, refresh/receipt/version rules, least-privilege site/file

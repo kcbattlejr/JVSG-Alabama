@@ -2,14 +2,17 @@
 
 **Target:** Friday, November 20, 2026. **Length:** approximately 8 minutes.
 **Format:** recorded screen demonstration for a Teams meeting.
-Use the [runbook](./management_demo_runbook.md) for all commands and definitions.
+Use the [runbook](./management_demo_runbook.md) for commands and definitions.
 
 ## Before recording
 
-- Activate the environment and run the complete `rehearse` command.
-- Confirm the verification message and the 18/19 expected participant counts.
-- Open the generated landing page, both dashboards and refreshed Excel workbook.
-  Keep the technical data and verification report available only for IT questions.
+- Activate the environment and run `python -m jvsg_triage.demo rehearse
+  --output temp/management-demo`.
+- Confirm the verification message, the paired-report counts and the 18/19
+  reviewed-profile results.
+- Open the landing page, the raw baseline anti-join CSV, its paired case-notes
+  workbook, the polished Excel Dashboard, and the refreshed TOON file.
+- Keep the restricted scrubbed-note outputs closed. Do not display their contents.
 - Enlarge the browser to 125% or a readable recording resolution. Collapse
   unrelated windows, notifications, account menus and file explorers.
 - Keep only generated synthetic files on screen. Do not open the Gemini
@@ -20,163 +23,132 @@ Use the [runbook](./management_demo_runbook.md) for all commands and definitions
 
 ## 0:00-0:45 | Purpose and honest boundaries
 
-**Show:** first report, fictional-demonstration banner and plain-language summary.
+**Show:** landing page and the four-step workflow.
 
 **Say:**
 
-> This is a working synthetic prototype of a SharePoint-first Excel workflow.
-> Our intended MVP starts with an approved cloud workbook as the main driver,
-> not a new web application. Today I am simulating delivery of that workbook
-> locally so the demonstration is repeatable and contains no live veteran data.
-> We are demonstrating real data processing and generated Excel and HTML outputs,
-> not claiming a deployed agency system.
+> This is a synthetic rehearsal of the MVP workflow we want to evaluate:
+> upload the native anti-join and case-notes report pair, validate and privacy-
+> process it, then populate a reviewed dashboard and package a TOON output.
+> Delivery is simulated with local files. There is no live SharePoint connection,
+> production deployment, or use of real veteran data.
 
-## 0:45-1:45 | The workbook drives the pipeline
+## 0:45-1:45 | Start with the raw anti-join upload
 
-**Show:** generated `simulated_sharepoint/baseline.xlsx`, `Demo Intake` sheet.
-Zoom to the column headers and first few invented IDs.
-
-**Say:**
-
-> This is the stand-in for a snapshot of the SharePoint Excel source. Each row
-> has a made-up participant number and office, assessment and last-contact dates,
-> transportation, housing, health and legal support needs, and a staff-review
-> status. The columns and values are written out in full. There are no names,
-> real participant identifiers,
-> contact details or case narratives. These are invented examples, not real
-> caseload proportions.
->
-> The input contract is deliberately strict. Unknown values, duplicate IDs,
-> formulas, future dates and malformed workbooks fail visibly rather than
-> generating a plausible-looking dashboard. A real agency workbook needs its
-> own approved mapping; we have not assumed this is its existing layout.
-
-## 1:45-2:40 | Run the workbook processing
-
-**Show:** terminal with only the baseline `run` command from the runbook.
-Run it, then show `latest.json` and the successful `status.json`.
+**Show:** `temp/management-demo/simulated_sharepoint/` and open
+`baseline_203_205_anti_join.synthetic.csv` as a table. Briefly show the paired
+`baseline_case_notes.synthetic.xlsx` file without exposing individual note text.
 
 **Say:**
 
-> This is the actual processing, not a slideshow. It checks the workbook,
-> calculates days since contact for the report date, and creates a checked report.
-> We use calendar days since contact, falling back to assessment
-> when there is no contact. The 15- and 30-day thresholds are demo assumptions,
-> not a new approved operational policy.
->
-> There are no cloud credentials or model calls in this execution. A successful
-> output is a real workbook, dashboard, normalized data and verification evidence.
+> These are the two synthetic files at the simulated SharePoint intake boundary.
+> The anti-join supplies the cohort; the case-notes workbook supplies notes to
+> match against that cohort. These files use the native report layouts, but every
+> value is invented. In production, the upload location and access controls would
+> need agency approval; this local folder is not SharePoint.
 
-## 2:40-3:30 | Explain one person's recorded needs
+## 1:45-2:50 | Validate, match and privacy-process
 
-**Show:** find DEMO-0005 and expand "View support needs".
-Leave the nested technical section closed unless IT requests it.
+**Show:** run the `rehearse` command from the runbook. Then show only the
+aggregate `native_intake` section in `rehearsal.json`.
 
 **Say:**
 
-> This example has a critical housing barrier and still needs health support.
-> Transportation has not yet been assessed, and the legal barrier is partly
-> addressed. Those are different situations; we show them separately rather
-> than hiding them behind one unexplained code.
+> The actual pipeline checks the report headers and case-notes footer, matches
+> notes to the supplied cohort, and HMAC-tokenizes the join key. It scrubs matched
+> notes and writes them to a restricted local folder. We show counts and hashes
+> here—not note text, names, or raw identifiers.
 >
-> The system also creates a compact machine-readable version for future
-> integration. We call that the TOON demonstration format. It is checked against
-> the original calculated record so no information is lost. Management does not
-> need to read that technical format to understand this report.
+> The synthetic baseline has 18 cohort members; the refresh has 19. The
+> anti-join defines membership; this process does not recompute the 203/205
+> anti-join from separate reports. The demo HMAC key is public and synthetic-only.
 
-## 3:30-4:35 | Staff and managerial views
+## 2:50-3:40 | Make the human-review boundary explicit
 
-**Show:** first report. Select "North demonstration office", then
-"Extended gap in contact"; clear filters. Scroll to the support-needs overview.
+**Show:** `reviewed_profiles/baseline.xlsx`, `Demo Intake` sheet.
 
 **Say:**
 
-> Staff can filter by office, follow-up status and participant number.
-> The three cards say recent contact, follow-up due, and extended gap in contact.
-> Each explains the number of days it represents. They count the people in the
-> filtered list. The support-needs overview always counts everyone in the report.
->
-> For each area, needs are described as critical, needing support, partly
-> addressed, resolved, or not yet assessed. "Partly addressed" does not mean
-> resolved. "Not yet assessed" does not mean no problem exists.
-> These descriptions were supplied by the fictional workbook, not inferred by AI.
-> "Most pressing recorded need" is a summary, not an eligibility or referral score.
-> Qualified staff remain responsible for interpretation and referrals.
+> The native report pair does not contain the office, aging, or four support-
+> domain fields shown in our dashboard. These separate profile inputs are
+> fictional human-review examples. They are not extracted from the case notes
+> and are not AI classifications. A real pilot needs an approved profile source,
+> definitions, and qualified review workflow before those fields can be populated.
 
-**Show:** Excel Dashboard charts, then Watchlist filter dropdown.
+## 3:40-5:10 | Automatically populate the Excel visualization
 
-> The same processed data also produces actual Excel charts and a filterable
-> table. We can start with Excel in the approved workflow without requiring
-> custom web hosting.
-
-## 4:35-5:45 | Simulate the next workbook arrival
-
-**Show:** run the refreshed `run` command, then switch to refreshed HTML.
+**Show:** refreshed `dashboard.xlsx`, first on Dashboard, then Watchlist.
+Point out the headline cards, the contact-status chart, support-needs chart,
+and filterable rows.
 
 **Say:**
 
-> This second file simulates a new SharePoint workbook snapshot. DEMO-0005 has
-> a new contact date and a supplied housing-state update. DEMO-0019 is new.
-> The pipeline is rerun; this is not a timed animation or a fake sync button.
+> After the synthetic reviewed profiles are supplied, the run deterministically
+> calculates the demo aging bands and generates this Excel workbook. The cards
+> and charts summarize the same profile rows shown in the filterable Watchlist.
+> The colors and 15/30-day boundaries are presentation assumptions—not approved
+> agency policy.
 >
-> The number of people changes from 18 to 19. Recent contact goes from 6 to 8,
-> follow-up due stays at 6, and extended gaps in contact go from 6 to 5.
-> The housing barrier for our example is now partly addressed, not resolved.
-> Existing staff-review information is carried through
-> from the source. A recent contact does not imply every barrier is resolved
-> and does not authorize a referral.
+> The support descriptions are independent. Recent contact does not mean a
+> barrier is resolved. “Most pressing recorded need” is an explanatory summary,
+> not an eligibility or referral score. Qualified staff remain responsible for
+> interpretation and next steps.
 
-**Show:** `rehearsal.json` added/updated IDs and preserved-review result.
+## 5:10-6:00 | Package and verify TOON
 
-## 5:45-6:35 | Reproducibility and failure behavior
-
-**Show:** run `verify` against the refreshed batch using its actual batch ID.
-Show the verification result, not a long opaque path.
+**Show:** refreshed `profiles.toon`, then the actual batch verification result.
+Leave hidden technical workbook sheets closed unless IT asks to see them.
 
 **Say:**
 
-> This command checks file integrity, counts, source reconciliation and the TOON
-> round trip independently. Repeated runs with the same code, inputs, execution
-> date and pinned runtime produce byte-identical artifacts, including Excel.
->
-> A failed refresh returns an error and does not replace the last successful
-> batch. Operators must check the status file; an already-open static dashboard
-> is not a live health monitor. Automated scheduling and stale-status delivery
-> are production work, not something we claim is implemented here.
+> The same reviewed profiles produce a compact, lossless custom TOON demo file.
+> The verifier checks its round trip against the normalized profile records and
+> verifies the report artifacts. This `@TOON demo-1` format is illustrative; it
+> is not an approved federal or VOMA contract, and no data is transmitted.
 
-## 6:35-7:35 | IT and legal review
+## 6:00-6:50 | Simulate a refreshed report pair
 
-**Show:** dashboard guardrails or runbook production-boundary section.
+**Show:** refreshed raw synthetic pair and refreshed Dashboard. Then show
+`rehearsal.json` for the added and updated demo IDs.
 
 **Say:**
 
-> The public repository and this recording use synthetic material only. Public
-> visibility is not an open-source license, security approval or authority to
-> upload real records. A synthetic marker does not sanitize an arbitrary workbook.
+> The refreshed pair simulates a new delivery. The profile review fixture also
+> includes one added and one updated fictional record, with existing review
+> values preserved. The report is regenerated from the reviewed inputs; it is
+> not a live sync or a write-back to SharePoint.
+
+## 6:50-7:35 | IT and legal review
+
+**Show:** dashboard guardrails or the runbook production-boundary section.
+
+**Say:**
+
+> This demo uses generated data only. A synthetic marker does not sanitize an
+> arbitrary workbook, and public visibility is not security approval or authority
+> to upload live records. Before a pilot, owners must approve the actual source
+> and profile contracts, permissions, processing environment, retention, support,
+> and operational definitions.
 >
-> The next review should establish who owns the cloud workbook, its approved
-> schema, who may read or update it, how a processing identity receives a versioned
-> snapshot, where Python executes, and how retention, access and failures are
-> handled. Direct Microsoft 365 ingestion is not connected today.
->
-> GeoSol remains the system of record. There is no write-back, partner messaging,
-> autonomous referral, medical judgment or AI classification in this demo.
+> GeoSol remains the system of record. Direct SharePoint ingestion, automated
+> scheduling, AI classification, notifications, referrals, and VOMA integration
+> are not implemented here.
 
 ## 7:35-8:00 | Close with the decision requested
 
-**Show:** refreshed Excel Dashboard or HTML overview.
+**Show:** refreshed Excel Dashboard.
 
 **Say:**
 
-> The proposed first step is a limited, approved SharePoint Excel pilot with a
-> reproducible processing pipeline and Excel reporting. We are asking for review
-> of the data contract, ownership, permissions and operating boundary, not broad
-> tenant access or approval of autonomous decisions. The prototype lets us test
-> the workflow safely before connecting any live source.
+> The MVP to review is a controlled paired-report intake, validated privacy-
+> processing, a qualified human-review step, and generated Excel visualization
+> plus a separately governed TOON package. We are asking for agreement on the
+> data contracts, ownership, permissions, review process, and operating boundary—
+> not broad tenant access or approval of autonomous decisions.
 
 ## If something fails during recording
 
 Stop and inspect the sanitized error and `status.json`. Do not describe the old
-dashboard as newly refreshed. Correct the synthetic input or permissions, rerun
-the documented commands, and rerecord the segment. Never substitute a live
-workbook or use an unverified screenshot to imply successful execution.
+dashboard as newly refreshed. Correct the synthetic input, rerun the documented
+commands, and rerecord the segment. Never substitute a live workbook or use an
+unverified screenshot to imply successful execution.

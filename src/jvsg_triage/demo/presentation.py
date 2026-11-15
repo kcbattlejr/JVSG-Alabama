@@ -10,7 +10,10 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 from openpyxl import Workbook
 from openpyxl.chart import BarChart, Reference
-from openpyxl.styles import Font, PatternFill
+from openpyxl.chart.label import DataLabelList
+from openpyxl.chart.marker import DataPoint
+from openpyxl.chart.shapes import GraphicalProperties
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.worksheet.table import Table, TableStyleInfo
@@ -32,7 +35,7 @@ from jvsg_triage.demo.models import DOMAINS, Alert, Office, Profile, Review, Sta
 from jvsg_triage.toon.demo import encode
 
 FIXED_TIME = datetime(2026, 1, 1)
-PRESENTATION_VERSION = "plain-language-files-1"
+PRESENTATION_VERSION = "paired-report-review-excel-3"
 PROFILE_FIELDS = (
     "demo_id", "office", "assessment_date", "last_contact_date",
     "TRN", "HSG", "MED", "LEG", "review", "as_of", "idle_days", "alert",
@@ -112,59 +115,91 @@ def add_source_validation(workbook: Workbook) -> None:
 
 
 def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
+    navy = "16324F"
+    blue = "245B7A"
+    green = "2E8B57"
+    amber = "D28B16"
+    red = "C94C4C"
+    ink = "243746"
+    muted = "587080"
+    pale = "EAF1F6"
+    line = "D7E1E8"
+    white = "FFFFFF"
+    state_colors = {
+        State.CRT: red,
+        State.ACT: amber,
+        State.MIT: blue,
+        State.RES: green,
+        State.UNK: "8999A6",
+    }
+
     workbook = Workbook()
     dashboard = workbook.create_sheet("Dashboard", 0)
     workbook.remove(workbook["Sheet"])
-    dashboard.append(["Veteran follow-up and support needs | Fictional demonstration"])
-    dashboard.append(["Offline snapshot - not connected to SharePoint; no live case decisions"])
-    dashboard.append(["Report date", display_date(profiles[0].as_of)])
-    dashboard.append(["People in this demonstration", len(profiles)])
-    dashboard.append(["Awaiting staff review", sum(p.review == Review.PENDING for p in profiles)])
-    dashboard.append([])
-    dashboard.append(["Time since last contact", "Number of people"])
-    counts = Counter(p.alert for p in profiles)
-    for alert in Alert:
-        dashboard.append([ALERT_LABELS[alert], counts[alert]])
-    chart = BarChart()
-    chart.title = "How long since the last contact?"
-    chart.y_axis.title = "Number of people"
-    chart.add_data(Reference(dashboard, min_col=2, min_row=7, max_row=10), titles_from_data=True)
-    chart.set_categories(Reference(dashboard, min_col=1, min_row=8, max_row=10))
-    dashboard.add_chart(chart, "H3")
-    dashboard.append([])
-    dashboard.append(["Area of support", *STATE_LABELS.values()])
-    for domain in DOMAINS:
-        dashboard.append([
-            DOMAIN_LABELS[domain],
-            *(sum(getattr(p, domain) == state for p in profiles) for state in State),
-        ])
-    barrier_chart = BarChart()
-    barrier_chart.type = "bar"
-    barrier_chart.grouping = "stacked"
-    barrier_chart.overlap = 100
-    barrier_chart.title = "What support needs are recorded?"
-    barrier_chart.add_data(
-        Reference(dashboard, min_col=2, max_col=6, min_row=12, max_row=16),
-        titles_from_data=True,
+    dashboard.sheet_view.showGridLines = False
+    dashboard.sheet_view.zoomScale = 85
+    for column in range(1, 13):
+        dashboard.column_dimensions[get_column_letter(column)].width = 13
+
+    dashboard.merge_cells("A1:L1")
+    dashboard["A1"] = "Veteran follow-up and support needs"
+    dashboard["A1"].font = Font(name="Aptos Display", size=22, bold=True, color=white)
+    dashboard["A1"].fill = PatternFill("solid", fgColor=navy)
+    dashboard["A1"].alignment = Alignment(vertical="center", indent=1)
+    dashboard.row_dimensions[1].height = 42
+
+    dashboard.merge_cells("A2:L2")
+    dashboard["A2"] = (
+        "SYNTHETIC DEMONSTRATION  |  Offline snapshot  |  No live SharePoint connection"
     )
-    barrier_chart.set_categories(Reference(dashboard, min_col=1, min_row=13, max_row=16))
-    dashboard.add_chart(barrier_chart, "H20")
-    dashboard.append([])
-    dashboard.append(["How to read this report", "All people and situations are fictional."])
-    for alert in Alert:
-        dashboard.append([ALERT_LABELS[alert], ALERT_MEANINGS[alert]])
-    dashboard.append([
-        "When no contact is recorded",
-        "Days are counted from assessment instead. These thresholds are demo assumptions.",
-    ])
-    dashboard.append([
-        "Contact is not a service outcome",
-        "Recent contact does not mean a person's support needs are resolved.",
-    ])
-    dashboard.append([
-        "Who makes decisions?",
-        "Qualified staff interpret needs and approve referrals. Nothing is sent automatically.",
-    ])
+    dashboard["A2"].font = Font(name="Aptos", size=10, bold=True, color=muted)
+    dashboard["A2"].fill = PatternFill("solid", fgColor=pale)
+    dashboard["A2"].alignment = Alignment(vertical="center", indent=1)
+    dashboard.row_dimensions[2].height = 24
+
+    counts = Counter(profile.alert for profile in profiles)
+    cards = (
+        ("A4:C4", "A5:C6", "PEOPLE IN SNAPSHOT", len(profiles), navy),
+        ("D4:F4", "D5:F6", ALERT_LABELS[Alert.GREEN].upper(), counts[Alert.GREEN], green),
+        ("G4:I4", "G5:I6", ALERT_LABELS[Alert.YELLOW].upper(), counts[Alert.YELLOW], amber),
+        ("J4:L4", "J5:L6", ALERT_LABELS[Alert.RED].upper(), counts[Alert.RED], red),
+    )
+    card_border = Border(
+        left=Side(style="thin", color=line),
+        right=Side(style="thin", color=line),
+        top=Side(style="thin", color=line),
+        bottom=Side(style="thin", color=line),
+    )
+    for label_range, value_range, label, value, accent in cards:
+        dashboard.merge_cells(label_range)
+        dashboard.merge_cells(value_range)
+        label_cell = dashboard[label_range.split(":")[0]]
+        value_cell = dashboard[value_range.split(":")[0]]
+        label_cell.value = label
+        value_cell.value = value
+        label_cell.font = Font(name="Aptos", size=9, bold=True, color=muted)
+        label_cell.alignment = Alignment(horizontal="center", vertical="center")
+        value_cell.font = Font(name="Aptos Display", size=26, bold=True, color=accent)
+        value_cell.alignment = Alignment(horizontal="center", vertical="center")
+        for cell_range, fill in ((label_range, pale), (value_range, white)):
+            for row in dashboard[cell_range]:
+                for cell in row:
+                    cell.fill = PatternFill("solid", fgColor=fill)
+                    cell.border = card_border
+    dashboard.row_dimensions[4].height = 22
+    dashboard.row_dimensions[5].height = 25
+    dashboard.row_dimensions[6].height = 25
+
+    pending = sum(profile.review == Review.PENDING for profile in profiles)
+    reviewed = len(profiles) - pending
+    dashboard.merge_cells("A7:L7")
+    dashboard["A7"] = (
+        f"Staff review status: {pending} awaiting review  |  {reviewed} reviewed"
+    )
+    dashboard["A7"].font = Font(name="Aptos", size=10, color=ink)
+    dashboard["A7"].fill = PatternFill("solid", fgColor="F4F7F9")
+    dashboard["A7"].alignment = Alignment(vertical="center", indent=1)
+    dashboard.row_dimensions[7].height = 24
 
     watchlist = workbook.create_sheet("Watchlist")
     watchlist.append([
@@ -177,21 +212,162 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
             *(values[field] for field in PROFILE_FIELDS), barrier_summary(profile),
             "Qualified staff review; no automatic referral",
         ])
+    watchlist["P1"] = "Contact status"
+    watchlist["Q1"] = "Number of people"
+    for alert in Alert:
+        row = 2 + list(Alert).index(alert)
+        watchlist.cell(row, 16, ALERT_LABELS[alert])
+        watchlist.cell(row, 17, counts[alert])
+    watchlist["P6"] = "Area of support"
+    for column, state in enumerate(State, start=17):
+        watchlist.cell(6, column, STATE_LABELS[state])
+    for row, domain in enumerate(DOMAINS, start=7):
+        watchlist.cell(row, 16, DOMAIN_LABELS[domain])
+        for column, state in enumerate(State, start=17):
+            watchlist.cell(
+                row, column,
+                sum(getattr(profile, domain) == state for profile in profiles),
+            )
+    for column in range(16, 22):
+        watchlist.column_dimensions[get_column_letter(column)].hidden = True
+
+    chart = BarChart()
+    chart.type = "bar"
+    chart.style = 10
+    chart.title = "Time since last contact"
+    chart.y_axis.title = "Contact status"
+    chart.x_axis.title = "Number of people"
+    chart.add_data(Reference(watchlist, min_col=17, min_row=1, max_row=4), titles_from_data=True)
+    chart.set_categories(Reference(watchlist, min_col=16, min_row=2, max_row=4))
+    chart.series[0].data_points = [
+        DataPoint(idx=index, spPr=GraphicalProperties(solidFill=color))
+        for index, color in enumerate((green, amber, red))
+    ]
+    chart.dataLabels = DataLabelList()
+    chart.dataLabels.showVal = True
+    chart.legend = None
+    chart.width = 14
+    chart.height = 8
+    chart.visible_cells_only = False
+    dashboard.add_chart(chart, "A9")
+
+    barrier_chart = BarChart()
+    barrier_chart.type = "bar"
+    barrier_chart.grouping = "stacked"
+    barrier_chart.overlap = 100
+    barrier_chart.style = 10
+    barrier_chart.title = "Recorded support needs by area"
+    barrier_chart.x_axis.title = "Number of people"
+    barrier_chart.y_axis.title = "Area of support"
+    barrier_chart.add_data(
+        Reference(watchlist, min_col=17, max_col=21, min_row=6, max_row=10),
+        titles_from_data=True,
+    )
+    barrier_chart.set_categories(Reference(watchlist, min_col=16, min_row=7, max_row=10))
+    for series, state in zip(barrier_chart.series, State, strict=True):
+        series.graphicalProperties.solidFill = state_colors[state]
+        series.graphicalProperties.line.solidFill = state_colors[state]
+    barrier_chart.legend.position = "b"
+    barrier_chart.width = 16
+    barrier_chart.height = 8
+    barrier_chart.visible_cells_only = False
+    dashboard.add_chart(barrier_chart, "G9")
+
+    dashboard.merge_cells("A25:L25")
+    dashboard["A25"] = "HOW TO READ THIS SNAPSHOT"
+    dashboard["A25"].font = Font(name="Aptos", size=11, bold=True, color=white)
+    dashboard["A25"].fill = PatternFill("solid", fgColor=navy)
+    dashboard["A25"].alignment = Alignment(vertical="center", indent=1)
+    dashboard.row_dimensions[25].height = 24
+    for alert in Alert:
+        row = dashboard.max_row + 1
+        dashboard.merge_cells(start_row=row, start_column=2, end_row=row, end_column=12)
+        dashboard.cell(row, 1, ALERT_LABELS[alert])
+        dashboard.cell(row, 2, ALERT_MEANINGS[alert])
+    notes = (
+        (
+            "When no contact is recorded",
+            "Days are counted from assessment instead. These thresholds are demo assumptions.",
+        ),
+        (
+            "Contact is not a service outcome",
+            "Recent contact does not mean a person's support needs are resolved.",
+        ),
+        (
+            "Who makes decisions?",
+            "Qualified staff interpret needs and approve referrals. Nothing is sent automatically.",
+        ),
+    )
+    for label, meaning in notes:
+        row = dashboard.max_row + 1
+        dashboard.merge_cells(start_row=row, start_column=2, end_row=row, end_column=12)
+        dashboard.cell(row, 1, label)
+        dashboard.cell(row, 2, meaning)
+    for row in range(26, dashboard.max_row + 1):
+        dashboard.cell(row, 1).font = Font(name="Aptos", size=10, bold=True, color=blue)
+        dashboard.cell(row, 2).font = Font(name="Aptos", size=10, color=ink)
+        dashboard.cell(row, 1).alignment = Alignment(vertical="top", wrap_text=True)
+        dashboard.cell(row, 2).alignment = Alignment(vertical="top", wrap_text=True)
+        dashboard.row_dimensions[row].height = 30
+        for cell in dashboard[row][:12]:
+            cell.fill = PatternFill("solid", fgColor="F4F7F9" if row % 2 == 0 else white)
+            cell.border = Border(bottom=Side(style="hair", color=line))
+    dashboard.freeze_panes = "A4"
+    dashboard.print_area = f"A1:L{dashboard.max_row}"
+    dashboard.page_setup.orientation = "landscape"
+    dashboard.page_setup.fitToWidth = 1
+    dashboard.page_setup.fitToHeight = 1
+    dashboard.sheet_properties.pageSetUpPr.fitToPage = True
+    dashboard.page_margins.left = 0.25
+    dashboard.page_margins.right = 0.25
+    dashboard.page_margins.top = 0.4
+    dashboard.page_margins.bottom = 0.4
+
     watchlist.freeze_panes = "C2"
     table = Table(displayName="SyntheticWatchlist", ref=f"A1:N{len(profiles) + 1}")
-    table.tableStyleInfo = TableStyleInfo(name="TableStyleMedium2", showRowStripes=True)
+    table.tableStyleInfo = TableStyleInfo(
+        name="TableStyleMedium2", showFirstColumn=False, showLastColumn=False,
+        showRowStripes=True, showColumnStripes=False,
+    )
     watchlist.add_table(table)
     colors = {
-        ALERT_LABELS[Alert.GREEN]: "D3F9D8",
-        ALERT_LABELS[Alert.YELLOW]: "FFF3BF",
-        ALERT_LABELS[Alert.RED]: "FFE3E3",
+        ALERT_LABELS[Alert.GREEN]: "DDF2E5",
+        ALERT_LABELS[Alert.YELLOW]: "FFF0CC",
+        ALERT_LABELS[Alert.RED]: "FCE1E1",
     }
+    watchlist.sheet_view.showGridLines = False
+    watchlist.sheet_view.zoomScale = 80
+    watchlist.row_dimensions[1].height = 38
+    for cell in watchlist[1]:
+        cell.font = Font(name="Aptos", size=10, bold=True, color=white)
+        cell.fill = PatternFill("solid", fgColor=navy)
+        cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
     for row in watchlist.iter_rows(min_row=2):
         row[11].fill = PatternFill("solid", fgColor=colors[str(row[11].value)])
+        row[8].fill = PatternFill(
+            "solid", fgColor="FFF0CC" if row[8].value == REVIEW_LABELS[Review.PENDING]
+            else "DDF2E5",
+        )
         for index in (2, 3, 9):
-            row[index].number_format = "mmm d, yyyy"
+            row[index].number_format = "mmm d, yyyy;@"
+        for cell in row:
+            cell.font = Font(name="Aptos", size=10, color=ink)
+            cell.alignment = Alignment(vertical="center", wrap_text=True)
         if row[3].value is None:
             watchlist.cell(row[3].row, 4, "No contact recorded; counted from assessment")
+    watchlist_widths = (
+        15, 26, 18, 30, 21, 21, 21, 21, 24, 18, 13, 26, 40, 42,
+    )
+    for index, width in enumerate(watchlist_widths, start=1):
+        watchlist.column_dimensions[get_column_letter(index)].width = width
+    for row_index in range(2, len(profiles) + 2):
+        watchlist.row_dimensions[row_index].height = 42
+    watchlist.auto_filter.ref = table.ref
+    watchlist.print_title_rows = "1:1"
+    watchlist.page_setup.orientation = "landscape"
+    watchlist.page_setup.fitToWidth = 1
+    watchlist.page_setup.fitToHeight = 0
+    watchlist.sheet_properties.pageSetUpPr.fitToPage = True
 
     toon = workbook.create_sheet("TOON")
     toon.sheet_state = "hidden"
@@ -213,21 +389,32 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
         ("Technical details", "Hidden TOON and Provenance sheets are for technical review only."),
     ):
         definitions.append(row)
+    definitions.sheet_view.showGridLines = False
+    definitions.sheet_view.zoomScale = 95
+    definitions.row_dimensions[1].height = 28
+    definitions.column_dimensions["A"].width = 34
+    definitions.column_dimensions["B"].width = 100
+    for cell in definitions[1]:
+        cell.font = Font(name="Aptos", size=11, bold=True, color=white)
+        cell.fill = PatternFill("solid", fgColor=navy)
+        cell.alignment = Alignment(vertical="center", wrap_text=True)
+    for row in definitions.iter_rows(min_row=2):
+        definitions.row_dimensions[row[0].row].height = 32
+        for cell in row:
+            cell.font = Font(name="Aptos", size=10, color=ink)
+            cell.alignment = Alignment(vertical="center", wrap_text=True)
+            if cell.row % 2 == 0:
+                cell.fill = PatternFill("solid", fgColor="F4F7F9")
+
     provenance = workbook.create_sheet("Provenance")
     provenance.sheet_state = "hidden"
     provenance.append(["Source SHA-256", source_hash])
     provenance.append(["As of", profiles[0].as_of.isoformat()])
     provenance.append(["Refresh", "Static snapshot; rerun ETL to refresh"])
     provenance.append(["Record count", len(profiles)])
+    provenance.sheet_view.showGridLines = False
     for sheet in workbook:
         sheet.sheet_view.showGridLines = False
-        for cell in sheet[1]:
-            cell.font = Font(color="FFFFFF", bold=True)
-            cell.fill = PatternFill("solid", fgColor="122D52")
-        for index, column in enumerate(sheet.columns, start=1):
-            sheet.column_dimensions[get_column_letter(index)].width = min(
-                75, max(16, max(len(str(cell.value or "")) for cell in column) + 2),
-            )
     return workbook
 
 
@@ -326,9 +513,10 @@ you are viewing.</p>
 <li><a href="dashboard.xlsx" download>Download the Excel report</a>
  - charts and the readable participant list.
 <small>File: <code data-demo-file="dashboard.xlsx">dashboard.xlsx</code></small></li>
-<li><a href="source.xlsx" download>Download the source Excel workbook</a>
- - the fictional input used to create this report.
-<small>File: <code data-demo-file="source.xlsx">source.xlsx</code></small></li>
+<li><a href="reviewed_profiles.xlsx" download>Download the synthetic review input</a>
+ - fictional profile fields supplied for this demonstration, not extracted from case notes.
+<small>File: <code data-demo-file="reviewed_profiles.xlsx">
+reviewed_profiles.xlsx</code></small></li>
 <li><a href="profiles.toon" download>Download the TOON data file</a>
  - the compact machine-readable version for technical review.
 <small>File: <code data-demo-file="profiles.toon">profiles.toon</code></small></li>
@@ -389,7 +577,9 @@ it is not a referral or eligibility score.</li>
 <li>All support descriptions are invented input, not AI findings.</li></ul>
 <details class="technical"><summary>Technical processing and verification (for IT review)</summary>
 <p>Custom TOON demo-1 serialization, not standard TOON or an approved federal interface.
-The source workbook and calculated records are checked before this report is created.</p>
+The synthetic review-profile workbook and calculated records are checked before this
+report is created.
+The profile fields are not extracted or classified from native case notes.</p>
 <p>Source file fingerprint (SHA-256): {source_hash}</p></details>
 <footer><p>This is a saved report, not a live system. Rerun processing to update it.
 Public review does not authorize production use.</p></footer>
