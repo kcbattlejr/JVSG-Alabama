@@ -142,7 +142,7 @@ criteria, is in the [sprint TODO](./sprint_todo.md).
 
 | Sprint | Objective / task range | Exit gate | Rollout alignment |
 |---|---|---|---|
-| 0 | Baseline and decisions, S0-01..S0-04 | Starting point recorded; required D01-D11 decisions approved or explicitly blocking downstream work | Phase 1 evidence reconciliation |
+| 0 | Baseline, decisions, and demo readiness, S0-01..S0-05 | Starting point recorded; required D01-D11 decisions approved or explicitly blocking downstream work; synthetic-only demonstration rehearsed by 2026-11-19 | Phase 1 evidence reconciliation |
 | 1 | Contracts and fixtures, S1-01..S1-04 | Reproducible baseline, noise/boundary fixtures, and separate scale dataset validated offline | Phase 1 / Phase 2 foundation |
 | 2 | Cohort and aging, S2-01..S2-04 | Exact 48/2 results, clean office/role scope, all age boundaries, measured throughput | Phase 2 |
 | 3 | Privacy and reviewed synthesis, S3-01..S3-06 | Scrub-before-inference, strict taxonomy, visible fallback, cache, >=0.85 kappa on 20 scenarios | Phase 2 |

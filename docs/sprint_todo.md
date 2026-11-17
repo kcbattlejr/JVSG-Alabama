@@ -22,7 +22,8 @@ Execution companion to the [implementation plan](./implementation_plan.md) and
 
 ## Sprint 0 - Baseline and requirement decisions
 
-Goal: establish an honest starting point and resolve implementation contracts.
+Goal: establish an honest starting point, resolve implementation contracts, and
+prepare the synthetic-only demonstration.
 
 - [ ] **S0-01 - Verify and record repository/operational baseline**
   - Depends: none.
@@ -49,6 +50,25 @@ Goal: establish an honest starting point and resolve implementation contracts.
   - Done when: timezone, queues, review/fallback policy, cloud/store/identity,
     Graph and Teams mechanism, live-data authorization boundary, rollout
     milestones, and operational approvers are explicit.
+- [ ] **S0-05 - Prepare the synthetic prototype demonstration and review**
+  - Depends: none.
+  - Target: 2026-11-19.
+  - Output: a rehearsed 45-minute run-of-show, synthetic walkthrough checklist,
+    implemented/proposed/production-requirements capability matrix, and legal/
+    IT-security decision and next-steps record.
+  - Done when: the timed agenda covers purpose and operational need (5 min),
+    scope and safeguards (5), synthetic CSV/XLSX layout validation, case-note
+    matching, privacy scrubbing, reconciliation and evaluation results (15),
+    proposed operational workflow (5), legal and IT/security review (10), and
+    decisions/next steps (5); the walkthrough is rehearsed offline using only
+    synthetic data; each shown capability is verified as implemented, while
+    gaps are identified rather than simulated; residual privacy limits and
+    qualified human review are explicit; SharePoint/M365 is labeled proposed;
+    source ownership/publication rights, proposed Apache-2.0 licensing, hosting,
+    access, retention, repository safeguards, and historical public-content
+    removal are listed with unresolved items clearly marked and next steps
+    assigned by responsible role. No live records or production-readiness
+    claims appear in the demo.
 
 ## Sprint 1 - Schemas, fixtures, and runtime validation
 
