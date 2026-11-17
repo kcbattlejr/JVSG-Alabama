@@ -10,9 +10,38 @@ digests, and local or Azure-hosted services.
 > case-notes XLSX (headers, title rows and the `Total Rows` footer). It matches
 > notes to cohort SIDs, scrubs them under the [PII protocol](docs/pii_protocol.md)
 > into a private, Git-ignored folder, and ships a seeded synthetic practice
-> dataset with PII ground truth. It does not recompute the 203/205 anti-join,
-> classify case notes, persist to a database, send Microsoft 365 messages, or
-> deploy Azure services.
+> dataset with PII ground truth. The synthetic management rehearsal exercises
+> that paired-report validation/matching/scrubbing path, then generates Excel/HTML
+> dashboards and a custom TOON package from separate, invented human-review
+> profiles. It does not connect to SharePoint, recompute the 203/205 anti-join,
+> derive profile fields from case notes, classify notes, persist to a database,
+> send Microsoft 365 messages, or deploy Azure services.
+
+## Management / IT / legal demo: start here
+
+In an activated Python 3.11 environment, from the repository root:
+
+```bash
+python -m pip install -r requirements-demo.txt
+python -m jvsg_triage.demo rehearse --output temp/management-demo
+```
+
+Open `temp/management-demo/index.html` for the raw synthetic anti-join and
+case-notes input pair, privacy-processing counts, separate human-review profiles,
+polished baseline/refreshed Excel charts and watchlists, TOON output and
+verification evidence. No cloud credentials, model or web server is required.
+The repeatable rehearsal simulates paired report arrival, verifies native
+reconciliation and scrubs notes, then creates the dashboard and TOON from the
+synthetic review inputs. Outputs are Git-ignored; failed refreshes preserve the
+last successful batch.
+
+See the [recording script](docs/management_demo_script.md) and
+[runbook](docs/management_demo_runbook.md) for the November 20 demonstration,
+exact expected counts, manual refresh commands and production boundaries.
+**Delivery is locally simulated, not a live Microsoft 365 integration.** The
+native report pair does not supply the dashboard profile fields; those are
+separate synthetic human-review inputs. The custom `@TOON demo-1` dialect and
+aging thresholds are demo assumptions, not approved contracts or policy.
 
 ## Development environments
 
@@ -147,6 +176,7 @@ data/
   private/           Git-ignored scrubbed (T2) extraction outputs
 src/jvsg_triage/     Installable Python package
   etl/               Native MIS contract, intake, extraction pipeline, CLI
+  demo/              Synthetic SharePoint file-drop ETL, Excel/HTML snapshots, CLI
   privacy/           PII scrubber (protocol v1.0)
   synthetic/         Synthetic dataset generator and recall evaluator
   m365/              Microsoft 365 workbook, Graph, and digest integrations
@@ -156,8 +186,9 @@ src/jvsg_triage/     Installable Python package
 tests/               Automated tests
 ```
 
-The `etl`, `privacy` and `synthetic` packages are implemented. Other domain
-modules remain directory scaffolding; integrations are not implemented.
+The `etl`, `privacy`, `synthetic` and `demo` packages are implemented, together
+with a custom demo TOON codec. Other domain modules remain directory scaffolding;
+live integrations and the production TOON/VOMA contract are not implemented.
 
 ## Native MIS report intake
 

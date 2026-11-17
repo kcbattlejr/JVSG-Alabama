@@ -63,6 +63,20 @@ not copy live artifacts into the repository.
 
 ## 4. Decisions that block implementation
 
+### Synthetic SharePoint-first presentation slice (November 14, 2026)
+
+The [management demo runbook](./management_demo_runbook.md) records the current
+owner-requested presentation scope: cloud SharePoint Excel as the intended MVP
+driver, local simulated file delivery, deterministic ETL, lossless custom
+`@TOON demo-1`, and generated Excel/HTML reports. The
+[recording script](./management_demo_script.md) supports the November 20 demo.
+The closed synthetic schema, 15/30-day aging and barrier rollup are explicit
+demonstration assumptions. They do not resolve D02-D05/D08-D09, map unknown MIS
+date fields, approve inference, or establish production/federal contracts.
+Live SharePoint access, deployment and operational approvals remain open.
+See the sprint TODO's matching presentation-slice entry; no approval-dependent
+sprint gate is closed by this offline demo.
+
 ### Confirmed native intake scope (November 6, 2026)
 
 The project owner confirmed a precomputed 203/205 anti-join CSV and case-notes
