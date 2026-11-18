@@ -35,7 +35,7 @@ from jvsg_triage.demo.models import DOMAINS, Alert, Office, Profile, Review, Sta
 from jvsg_triage.toon.demo import encode
 
 FIXED_TIME = datetime(2026, 1, 1)
-PRESENTATION_VERSION = "paired-report-review-excel-3"
+PRESENTATION_VERSION = "paired-report-review-excel-4"
 PROFILE_FIELDS = (
     "demo_id", "office", "assessment_date", "last_contact_date",
     "TRN", "HSG", "MED", "LEG", "review", "as_of", "idle_days", "alert",
@@ -362,7 +362,6 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
         watchlist.column_dimensions[get_column_letter(index)].width = width
     for row_index in range(2, len(profiles) + 2):
         watchlist.row_dimensions[row_index].height = 42
-    watchlist.auto_filter.ref = table.ref
     watchlist.print_title_rows = "1:1"
     watchlist.page_setup.orientation = "landscape"
     watchlist.page_setup.fitToWidth = 1

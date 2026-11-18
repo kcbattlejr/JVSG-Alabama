@@ -3,6 +3,7 @@
 import json
 from datetime import timedelta
 from pathlib import Path
+from xml.etree import ElementTree
 from zipfile import ZipFile
 
 import pytest
@@ -360,6 +361,10 @@ def test_excel_and_html_are_real_snapshots_with_matching_data(tmp_path: Path) ->
     with ZipFile(batch / "dashboard.xlsx") as archive:
         assert len([name for name in archive.namelist() if name.startswith("xl/charts/chart")]) == 2
         assert not any("externalLinks" in name for name in archive.namelist())
+        sheet_xml = ElementTree.fromstring(archive.read("xl/worksheets/sheet2.xml"))
+        table_xml = ElementTree.fromstring(archive.read("xl/tables/table1.xml"))
+        assert sheet_xml.find("{*}autoFilter") is None
+        assert table_xml.find("{*}autoFilter[@ref='A1:N19']") is not None
     html = (batch / "dashboard.html").read_text()
     assert 'id="count-RED">6' in html
     assert "No live connection" in html
