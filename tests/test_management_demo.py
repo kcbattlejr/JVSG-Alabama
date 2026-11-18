@@ -340,7 +340,12 @@ def test_excel_and_html_are_real_snapshots_with_matching_data(tmp_path: Path) ->
     dashboard = workbook["Dashboard"]
     assert dashboard["A1"].value == "Veteran follow-up and support needs"
     assert dashboard["A5"].value == 18
-    assert [dashboard[cell].value for cell in ("D5", "G5", "J5")] == [6, 6, 6]
+    assert [dashboard[cell].value for cell in ("E5", "J5", "N5")] == [6, 6, 6]
+    assert dashboard.max_column == 17
+    assert dashboard.print_area == "'Dashboard'!$A$1:$Q$36"
+    assert {str(area) for area in dashboard.merged_cells.ranges} >= {
+        "A1:Q1", "A7:Q7", "A28:H28", "J28:Q28", "A29:Q29", "A30:D30", "E30:Q30",
+    }
     assert dashboard["A1"].font.size == 22
     assert dashboard["A1"].fill.fgColor.rgb.endswith("16324F")
     assert dashboard.row_dimensions[1].height == 42
@@ -379,6 +384,12 @@ def test_refreshed_chart_columns_have_explicit_labels_and_counts(tmp_path: Path)
     with ZipFile(batch / "dashboard.xlsx") as archive:
         contact = ElementTree.fromstring(archive.read("xl/charts/chart1.xml"))
         support = ElementTree.fromstring(archive.read("xl/charts/chart2.xml"))
+        drawing = ElementTree.fromstring(archive.read("xl/drawings/drawing1.xml"))
+    assert [
+        tuple(anchor.findtext(f"{{*}}{marker}/{{*}}{coord}")
+              for marker in ("from", "to") for coord in ("col", "row"))
+        for anchor in drawing.findall("{*}twoCellAnchor")
+    ] == [("0", "8", "8", "26"), ("9", "8", "17", "26")]
     assert [point.text for point in contact.findall(".//{*}strCache/{*}pt/{*}v")] == [
         "0-14 days", "15-29 days", "30+ days",
     ]
@@ -394,7 +405,7 @@ def test_refreshed_chart_columns_have_explicit_labels_and_counts(tmp_path: Path)
     ref = support.findtext(".//{*}ser/{*}val/{*}numRef/{*}f")
     assert ref == "'Watchlist'!$Q$7:$Q$10"
     assert [row[0].value for row in workbook["Watchlist"]["Q7":"Q10"]] == [9, 7, 6, 7]
-    assert "more than one" in str(workbook["Dashboard"]["G24"].value)
+    assert "more than one" in str(workbook["Dashboard"]["J28"].value)
     workbook.close()
 
 

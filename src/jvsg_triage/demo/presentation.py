@@ -14,6 +14,7 @@ from openpyxl.chart.data_source import AxDataSource, StrData, StrRef, StrVal
 from openpyxl.chart.label import DataLabelList
 from openpyxl.chart.marker import DataPoint
 from openpyxl.chart.shapes import GraphicalProperties
+from openpyxl.drawing.spreadsheet_drawing import AnchorMarker, TwoCellAnchor
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
@@ -36,7 +37,7 @@ from jvsg_triage.demo.models import DOMAINS, Alert, Office, Profile, Review, Sta
 from jvsg_triage.toon.demo import encode
 
 FIXED_TIME = datetime(2026, 1, 1)
-PRESENTATION_VERSION = "paired-report-review-excel-6"
+PRESENTATION_VERSION = "paired-report-review-excel-7"
 PROFILE_FIELDS = (
     "demo_id", "office", "assessment_date", "last_contact_date",
     "TRN", "HSG", "MED", "LEG", "review", "as_of", "idle_days", "alert",
@@ -140,17 +141,17 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
     workbook.remove(workbook["Sheet"])
     dashboard.sheet_view.showGridLines = False
     dashboard.sheet_view.zoomScale = 85
-    for column in range(1, 13):
-        dashboard.column_dimensions[get_column_letter(column)].width = 13
+    for column in range(1, 18):
+        dashboard.column_dimensions[get_column_letter(column)].width = 4 if column == 9 else 13
 
-    dashboard.merge_cells("A1:L1")
+    dashboard.merge_cells("A1:Q1")
     dashboard["A1"] = "Veteran follow-up and support needs"
     dashboard["A1"].font = Font(name="Aptos Display", size=22, bold=True, color=white)
     dashboard["A1"].fill = PatternFill("solid", fgColor=navy)
     dashboard["A1"].alignment = Alignment(vertical="center", indent=1)
     dashboard.row_dimensions[1].height = 42
 
-    dashboard.merge_cells("A2:L2")
+    dashboard.merge_cells("A2:Q2")
     dashboard["A2"] = (
         "SYNTHETIC DEMONSTRATION  |  Offline snapshot  |  No live SharePoint connection"
     )
@@ -161,10 +162,10 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
 
     counts = Counter(profile.alert for profile in profiles)
     cards = (
-        ("A4:C4", "A5:C6", "PEOPLE IN SNAPSHOT", len(profiles), navy),
-        ("D4:F4", "D5:F6", ALERT_LABELS[Alert.GREEN].upper(), counts[Alert.GREEN], green),
-        ("G4:I4", "G5:I6", ALERT_LABELS[Alert.YELLOW].upper(), counts[Alert.YELLOW], amber),
-        ("J4:L4", "J5:L6", ALERT_LABELS[Alert.RED].upper(), counts[Alert.RED], red),
+        ("A4:D4", "A5:D6", "PEOPLE IN SNAPSHOT", len(profiles), navy),
+        ("E4:H4", "E5:H6", ALERT_LABELS[Alert.GREEN].upper(), counts[Alert.GREEN], green),
+        ("J4:M4", "J5:M6", ALERT_LABELS[Alert.YELLOW].upper(), counts[Alert.YELLOW], amber),
+        ("N4:Q4", "N5:Q6", ALERT_LABELS[Alert.RED].upper(), counts[Alert.RED], red),
     )
     card_border = Border(
         left=Side(style="thin", color=line),
@@ -194,7 +195,7 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
 
     pending = sum(profile.review == Review.PENDING for profile in profiles)
     reviewed = len(profiles) - pending
-    dashboard.merge_cells("A7:L7")
+    dashboard.merge_cells("A7:Q7")
     dashboard["A7"] = (
         f"Staff review status: {pending} awaiting review  |  {reviewed} reviewed"
     )
@@ -254,36 +255,37 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
     barrier_chart.y_axis.axPos = "l"
     barrier_chart.series[0].graphicalProperties.solidFill = blue
     barrier_chart.series[0].graphicalProperties.line.solidFill = blue
-    for figure, anchor in ((chart, "A9"), (barrier_chart, "G9")):
+    for figure, first_col, end_col in ((chart, 0, 8), (barrier_chart, 9, 17)):
         figure.dataLabels = DataLabelList(showVal=True, dLblPos="outEnd")
         figure.legend = None
-        figure.width = 13
-        figure.height = 7.5
         figure.visible_cells_only = False
-        dashboard.add_chart(figure, anchor)
+        anchor = TwoCellAnchor(
+            editAs="twoCell",
+            _from=AnchorMarker(col=first_col, row=8),
+            to=AnchorMarker(col=end_col, row=26),
+        )
+        # openpyxl accepts drawing anchors; the installed stub only declares str.
+        figure.anchor = anchor  # type: ignore[assignment]
+        dashboard.add_chart(figure)
 
-    dashboard.row_dimensions[24].height = 40
+    dashboard.row_dimensions[28].height = 36
     for start, end, caption in (
-        ("A24", "F24", "Counts show people in each day range. Each person is counted once."),
-        ("G24", "L24", "Each column counts people. A person can appear in more than one area."),
+        ("A28", "H28", "Counts show people in each day range. Each person is counted once."),
+        ("J28", "Q28", "Each column counts people. A person can appear in more than one area."),
     ):
         dashboard.merge_cells(f"{start}:{end}")
         dashboard[start] = caption
         dashboard[start].font = Font(name="Aptos", size=10, color=ink)
         dashboard[start].alignment = Alignment(vertical="center", wrap_text=True, indent=1)
 
-    dashboard.merge_cells("A25:L25")
-    dashboard["A25"] = "HOW TO READ THIS SNAPSHOT"
-    dashboard["A25"].font = Font(name="Aptos", size=11, bold=True, color=white)
-    dashboard["A25"].fill = PatternFill("solid", fgColor=navy)
-    dashboard["A25"].alignment = Alignment(vertical="center", indent=1)
-    dashboard.row_dimensions[25].height = 24
-    for alert in Alert:
-        row = dashboard.max_row + 1
-        dashboard.merge_cells(start_row=row, start_column=2, end_row=row, end_column=12)
-        dashboard.cell(row, 1, ALERT_LABELS[alert])
-        dashboard.cell(row, 2, ALERT_MEANINGS[alert])
+    dashboard.merge_cells("A29:Q29")
+    dashboard["A29"] = "HOW TO READ THIS SNAPSHOT"
+    dashboard["A29"].font = Font(name="Aptos", size=11, bold=True, color=white)
+    dashboard["A29"].fill = PatternFill("solid", fgColor=navy)
+    dashboard["A29"].alignment = Alignment(vertical="center", indent=1)
+    dashboard.row_dimensions[29].height = 24
     notes = (
+        *((ALERT_LABELS[alert], ALERT_MEANINGS[alert]) for alert in Alert),
         (
             "Support chart",
             "Shows critical and needs-support records only. See Watchlist for all recorded states.",
@@ -301,22 +303,21 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
             "Qualified staff interpret needs and approve referrals. Nothing is sent automatically.",
         ),
     )
-    for label, meaning in notes:
-        row = dashboard.max_row + 1
-        dashboard.merge_cells(start_row=row, start_column=2, end_row=row, end_column=12)
+    for row, (label, meaning) in enumerate(notes, start=30):
+        dashboard.merge_cells(f"A{row}:D{row}")
+        dashboard.merge_cells(f"E{row}:Q{row}")
         dashboard.cell(row, 1, label)
-        dashboard.cell(row, 2, meaning)
-    for row in range(26, dashboard.max_row + 1):
+        dashboard.cell(row, 5, meaning)
         dashboard.cell(row, 1).font = Font(name="Aptos", size=10, bold=True, color=blue)
-        dashboard.cell(row, 2).font = Font(name="Aptos", size=10, color=ink)
-        dashboard.cell(row, 1).alignment = Alignment(vertical="top", wrap_text=True)
-        dashboard.cell(row, 2).alignment = Alignment(vertical="top", wrap_text=True)
+        dashboard.cell(row, 5).font = Font(name="Aptos", size=10, color=ink)
+        dashboard.cell(row, 1).alignment = Alignment(vertical="center", wrap_text=True, indent=1)
+        dashboard.cell(row, 5).alignment = Alignment(vertical="center", wrap_text=True, indent=1)
         dashboard.row_dimensions[row].height = 30
-        for cell in dashboard[row][:12]:
+        for cell in dashboard[row]:
             cell.fill = PatternFill("solid", fgColor="F4F7F9" if row % 2 == 0 else white)
             cell.border = Border(bottom=Side(style="hair", color=line))
     dashboard.freeze_panes = "A4"
-    dashboard.print_area = f"A1:L{dashboard.max_row}"
+    dashboard.print_area = f"A1:Q{dashboard.max_row}"
     dashboard.page_setup.orientation = "landscape"
     dashboard.page_setup.fitToWidth = 1
     dashboard.page_setup.fitToHeight = 1

@@ -57,6 +57,8 @@ path. On disk, expand `temp/management-demo/batches/` in VS Code and select the
 matching report folder. Excel links may download; check the browser Downloads list.
 Open the Excel workbook in desktop Excel or an approved Excel browser viewer;
 there is no requirement to host a web application.
+The Dashboard tab uses columns A through Q, with a spacer between the two
+charts. If Q is off-screen, lower the Excel zoom before screen sharing.
 If an older download prompts Excel to repair the Watchlist table, rerun
 `rehearse` and download a fresh workbook from the refreshed landing page.
 Check that Excel opens it without a repair prompt and that the Watchlist
