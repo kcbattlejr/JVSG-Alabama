@@ -49,9 +49,18 @@ CSV and case-notes XLSX, matching notes to cohort SIDs, privacy scrubbing, and
 synthetic practice data. The anti-join report supplies the cohort; the current
 pipeline does not independently recompute it from separate 203 and 205 reports.
 
-SharePoint publishing, scheduled report collection, operational lists,
-dashboard refresh, AI classification, and DOL/VOMA integration are not
-implemented in this repository. A SharePoint library stores files; uploading
+The [synthetic management demo](./management_demo_runbook.md) now rehearses the
+paired native reports end to end: local simulated upload, native contract
+validation, cohort matching, HMAC tokenization and note scrubbing, followed by
+separate synthetic human-review profile inputs that populate Excel/HTML
+visualizations and a lossless custom TOON demo package. The profile fields are
+not extracted or classified from case notes. This does not establish a
+production profile mapping, approved aging/barrier rules, or federal TOON
+contract.
+
+Live SharePoint ingestion/publishing, scheduled report collection, operational
+lists, automatic cloud dashboard refresh, AI classification, and DOL/VOMA
+integration remain unimplemented. A SharePoint library stores files; uploading
 Python code or reports does not make SharePoint execute the ETL.
 
 Live reports require an approved processing environment. Keep GitHub,
@@ -79,14 +88,24 @@ Approved ETL execution environment
   - Apply privacy controls and reconcile counts
   - Record batch status; quarantine invalid inputs
              |
-       +-----+-------------------+
-       |                         |
-       v                         v
-Restricted JVSG workspace    Approved aggregate dataset
-Authorized staff only            |
-                                 v
-                        Internal statewide dashboard
+             |
+             v
+Qualified human review and approved profile source
+             |
+       +-----+--------------------+
+       |                          |
+       v                          v
+Approved aggregate dataset    Separately approved TOON package
+       |                          |
+       v                          v
+Excel / SharePoint dashboard  Authorized receiving contract only
 ```
+
+The synthetic rehearsal reflects this boundary: it processes the native report
+pair, then uses a separate, explicitly synthetic human-review profile input to
+generate its charts and custom TOON file. It does not infer a profile from the
+notes. The TOON branch remains disabled for production until its schema,
+receiving purpose, authorization and security review are approved.
 
 ### Intake and processing
 
@@ -99,12 +118,15 @@ Authorized staff only            |
 3. Before processing, confirm both reports belong to the same agreed batch
    and reporting period. Do not mix a new report with an older counterpart.
 4. An authorized operator initially runs the existing ETL in an approved
-   environment. Additional dashboard transformations must be implemented and
-   validated before publishing their outputs.
+   environment. Qualified staff review case information and maintain an
+   approved profile source; automation must not silently infer or authorize
+   case decisions.
 5. Record a batch ID, source receipt times, reconciliation counts, processing
    result, and last successful refresh without recording case-note content
    in logs. Reject or quarantine malformed batches and notify an owner.
-6. Publish only validated outputs. Retries must not duplicate records or
+6. Generate charts only from validated, approved profile data. Package TOON
+   separately against an approved contract and keep transmission disabled
+   until expressly authorized. Retries must not duplicate records or
    notifications. Preserve the last successful dashboard on failure, but
    visibly mark it stale and display its reporting period.
 

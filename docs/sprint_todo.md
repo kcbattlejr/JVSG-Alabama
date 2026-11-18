@@ -3,10 +3,166 @@
 Execution companion to the [implementation plan](./implementation_plan.md) and
 [source specification](./executive_summary_enterprise_technical_specification_jvsg_non_cm_triage_azure_architecture.md).
 
+## Active short sprint - Friday MVP readiness, November 17-20, 2026
+
+**Goal:** present a reliable, clearly bounded synthetic MVP to ADOW management,
+IT and legal on Friday morning, November 20. The branch name
+`presentation/2026-11-19` is retained; November 19 is the final rehearsal day,
+not the presentation date. Proposed working deadlines below use Central Time;
+target technical readiness by 08:00 Friday, before the actual meeting time.
+Owners are proposed roles, not confirmed individual assignments.
+
+### Branch assessment and Tuesday execution evidence
+
+Assessed November 17 at commit `67bc646`. The working tree was clean before
+this documentation update; the remote branch tip matched local HEAD.
+Relative to `main`, the branch adds the synthetic management demo, custom demo
+TOON codec, pinned demo requirements, tests and presentation documentation.
+It is a working offline presentation slice, not the complete implementation
+described by the longer-term sprints below.
+
+| Capability | Verified now | Friday boundary |
+|---|---|---|
+| Native CSV/XLSX intake | Layout/footer validation, cohort matching, HMAC tokenization, scrubbing and aggregate reconciliation run on generated fixtures | Uses the supplied anti-join; does not calculate the 203/205 cohort from separate reports |
+| Reviewed profiles and aging | Separate synthetic workbook, strict fields, deterministic 15/30-day contact bands, preserved input review values | Not derived from case notes; not AI classification, approved policy or durable staff-review storage |
+| Reporting | Baseline/refreshed Excel and HTML dashboards, two Excel charts per batch, watchlists and working file links | Static generated snapshots; presentation-machine rendering and usability still need human review |
+| TOON and publication | Custom `@TOON demo-1`, hash/reconciliation checks, lossless round trips, verified batch publishing | Not an approved VOMA contract, token-savings benchmark or access-control system |
+| Integrations | Local simulated file arrival | No live SharePoint/Graph, Teams, database, model, VOMA or Azure deployment |
+
+Executed successfully before defining this sprint:
+
+```bash
+python -m jvsg_triage.demo rehearse --output temp/management-demo
+python -m pytest
+python -m ruff check .
+python -m mypy src
+```
+
+The documented Python 3.11 environment was used. Results: **141 tests passed**,
+Ruff passed, and strict mypy passed for 28 source files. GitHub
+[CI run 19](https://github.com/kcbattlejr/JVSG-Alabama/actions/runs/44118381110)
+also passed for the assessed commit. Both generated batches passed the explicit
+CLI `verify` command. Additional checks against the actual generated artifacts
+confirmed the Excel card/watchlist counts, two charts per workbook, exact changed
+profile values, and all 21 local presentation file links. No presentation link
+targets the restricted scrubbed-note outputs. Generated outputs are Git-ignored.
+
+| Expected measure, confirmed in Tuesday's run | Baseline | Refreshed |
+|---|---:|---:|
+| Synthetic participants / matched notes | 18 / 18 | 19 / 19 |
+| Recent contact, 0-14 days | 6 | 8 |
+| Follow-up due, 15-29 days | 6 | 6 |
+| Extended contact gap, 30+ days | 6 | 5 |
+| Awaiting staff review | 16 | 17 |
+| Cohort participants without notes / unmatched notes | 0 / 0 | 0 / 0 |
+
+`DEMO-0005` changes from 30 to 0 days since contact and from critical to partly
+addressed housing; `DEMO-0019` is added. Existing source review values remain
+unchanged. The fixture residual scan reported zero findings; this is **not**
+evidence of anonymity or real-world scrubber efficacy.
+
+Open the generated [landing page](../temp/management-demo/index.html) first.
+It links the baseline/refreshed HTML dashboards, Excel workbooks, reviewed-profile
+inputs and TOON. The [rehearsal evidence](../temp/management-demo/rehearsal.json)
+contains synthetic aggregate results. These links work after a local run;
+generated outputs are intentionally absent from GitHub. See the
+[runbook](./management_demo_runbook.md) for local viewing and loopback-only
+serving if the remote browser cannot open files.
+
+**Readiness verdict:** technical rehearsal is green. Presentation acceptance is
+pending the project owner's output review, target-machine visual checks, final
+recording and content review. Repository safeguards, historical-content removal,
+licensing and live-pilot approvals remain unverified/open as documented in
+[SECURITY.md](../SECURITY.md); passing tests does not close those gates.
+
+### Executable Tuesday-Friday checklist
+
+- [x] **FRI-01 - Establish the runnable baseline** - Tuesday, November 17.
+  - Owner: engineering. Depends: none.
+  - Done: execute the existing demo before changing behavior; verify both
+    batches, exact expected counts, actual Excel outputs and links, tests,
+    lint, types and current-commit CI. Evidence: assessment above and local
+    rehearsal evidence. No demo behavior changes were made for this assessment.
+- [ ] **FRI-02 - Review the output and prioritize changes** - Tuesday, 17:00.
+  - Owner: project owner, supported by engineering. Depends: FRI-01.
+  - Review the landing page, both dashboards, Excel charts/watchlist, updated
+    contact/housing example and visible human-review boundary.
+  - Done when: feedback identifies the screen/artifact, observed issue and
+    desired result; classify each item as P0 (incorrect/unsafe/misleading or
+    blocks the demonstration), P1 (needed for a clear presentation), or deferred.
+    Explicitly accept the output or identify bounded changes; silence is not
+    acceptance. Do not copy sensitive review material into this public file.
+- [ ] **FRI-03 - Apply accepted demo corrections** - Wednesday, November 18, 17:00.
+  - Owner: engineering; project owner accepts output. Depends: FRI-02.
+  - Done when: agreed P0/P1 changes have focused regression tests where behavior
+    changes, related runbook/script updates, a successful full rehearsal and
+    passing quality checks. If an intentional fixture change alters expected
+    counts, update the documented expectations and tests together, with owner
+    acceptance. Defer feature expansion; no changes if output is accepted as-is.
+- [ ] **FRI-04 - Finalize the management/IT/legal narrative** - Wednesday, 17:00.
+  - Owner: presenter, with designated program/IT/legal reviewers. Depends: none.
+  - Use the [recording script](./management_demo_script.md) and capability matrix
+    above. Frame the request as agreement on contracts, ownership and next
+    review steps, not approval of production readiness.
+  - Done when: slides/script distinguish native intake from separate reviewed
+    profiles, local simulation from M365, and custom TOON from an approved
+    contract; human decision authority and privacy limitations are explicit.
+    List source ownership/licensing, hosting/access, retention, repository
+    safeguards and historical-content follow-up as approved or still open,
+    never presumed complete. Capture actual assignments/approvals privately
+    through an approved channel.
+- [ ] **FRI-05 - Rehearse on the presentation machine and freeze** - Thursday,
+  November 19, 12:00. Owner: presenter and engineering.
+  - Depends: FRI-03, FRI-04.
+  - Done when: HTML filters and all needed file links work in the target browser;
+    Excel opens with readable charts, labels, dates and watchlist at presentation
+    zoom; baseline/refreshed totals agree. Time the 8-minute recording and the
+    full 45-minute meeting agenda below. Confirm the failure message/last-good
+    batch behavior without altering the accepted output; automated regression
+    coverage already passes. Record the frozen commit and batch IDs in the
+    approved handoff record. No dependency upgrades or new integrations after
+    freeze; a blocking fix requires regeneration, tests and another review.
+- [ ] **FRI-06 - Record and check the offline fallback** - Thursday, 16:00.
+  - Owner: presenter. Depends: FRI-05.
+  - Done when: the reviewed recording plays with readable text/audio, and a
+    local copy of the complete synthetic output folder opens without network
+    access on the presentation machine. Review everything before sharing;
+    keep restricted note outputs closed and out of the presentation bundle,
+    and exclude secrets, account menus, unrelated files and notifications.
+    Keep the generated dashboards/Excel and recording as the fallback; do not
+    substitute stale output while claiming a fresh run.
+- [ ] **FRI-07 - Perform the morning go/no-go** - Friday, November 20, by 08:00.
+  - Owner: presenter and engineering. Depends: FRI-06.
+  - Done when: the frozen batches still verify, the latest pointer and success
+    status identify the accepted refresh, files/recording open, and the owner
+    confirms no unresolved P0/P1 items. Use the reviewed offline fallback if
+    live execution/display fails, explicitly identifying it as prerecorded or
+    previously verified output. If neither path is verified, stop the demo
+    rather than misrepresent success. Do not rerun `rehearse` over manual edits:
+    it resets generated source fixtures.
+
+### Meeting scope and finish line
+
+Retain the proposed **45-minute review**: purpose 5 minutes, safeguards 5, live
+synthetic walkthrough 15, proposed workflow 5, legal/IT review 10, and decisions
+5. The existing approximately 8-minute recording fits inside the walkthrough;
+use the balance for opening Excel, refresh comparison and questions. This does
+not replace the longer meeting with an 8-minute presentation.
+
+Friday is ready when the owner accepts the visible outputs, no P0/P1 issue is
+open, the accepted batches and checks pass, the target-machine rehearsal and
+offline fallback pass, and the capability/approval boundaries are clear.
+Production approvals may remain open for a clearly labeled synthetic discussion;
+they block a live pilot and any release-ready claim, not the offline review.
+Do not attempt SharePoint authentication, cloud deployment, AI classification,
+third-party-name NER, a production TOON contract or new referral automation in
+this short sprint. Those remain separately governed backlog work.
+
 ## How to execute
 
-- All tasks start unchecked. Existing scaffold is context, not completed domain
-  functionality. Verification tasks close only after their own criteria pass.
+- Longer-term tasks below retain their original status unless their own
+  acceptance criteria are verified. The active Friday checklist records only
+  presentation-slice evidence; it does not close production sprint gates.
 - `Depends` lists actual prerequisites; `none` means independently startable.
   Decisions D01-D11 are defined in the implementation plan.
 - Each task names a concrete output and measurable completion criteria. Include
@@ -52,7 +208,9 @@ prepare the synthetic-only demonstration.
     milestones, and operational approvers are explicit.
 - [ ] **S0-05 - Prepare the synthetic prototype demonstration and review**
   - Depends: none.
-  - Target: 2026-11-19.
+  - Target: Friday morning, 2026-11-20; final rehearsal 2026-11-19.
+  - Execution: active Friday MVP readiness sprint above; output review and
+    presentation sign-off remain open.
   - Output: a rehearsed 45-minute run-of-show, synthetic walkthrough checklist,
     implemented/proposed/production-requirements capability matrix, and legal/
     IT-security decision and next-steps record.

@@ -63,6 +63,26 @@ not copy live artifacts into the repository.
 
 ## 4. Decisions that block implementation
 
+### Synthetic SharePoint-first presentation slice (November 14, 2026)
+
+The [management demo runbook](./management_demo_runbook.md) records the current
+owner-requested presentation scope: cloud SharePoint Excel as the intended MVP
+driver, local simulated file delivery, deterministic ETL, lossless custom
+`@TOON demo-1`, and generated Excel/HTML reports. The
+[recording script](./management_demo_script.md) supports the November 20 demo.
+The closed synthetic schema, 15/30-day aging and barrier rollup are explicit
+demonstration assumptions. They do not resolve D02-D05/D08-D09, map unknown MIS
+date fields, approve inference, or establish production/federal contracts.
+Live SharePoint access, deployment and operational approvals remain open.
+See the sprint TODO's matching presentation-slice entry; no approval-dependent
+sprint gate is closed by this offline demo.
+
+The [active Friday readiness sprint](./sprint_todo.md#active-short-sprint---friday-mvp-readiness-november-17-20-2026)
+records the November 17 branch assessment and successful synthetic run, followed
+by owner output review, bounded corrections, IT/legal framing, a November 19
+rehearsal/freeze and a November 20 morning go/no-go. This dated presentation plan
+does not accelerate or close the production implementation gates below.
+
 ### Confirmed native intake scope (November 6, 2026)
 
 The project owner confirmed a precomputed 203/205 anti-join CSV and case-notes
@@ -142,7 +162,7 @@ criteria, is in the [sprint TODO](./sprint_todo.md).
 
 | Sprint | Objective / task range | Exit gate | Rollout alignment |
 |---|---|---|---|
-| 0 | Baseline, decisions, and demo readiness, S0-01..S0-05 | Starting point recorded; required D01-D11 decisions approved or explicitly blocking downstream work; synthetic-only demonstration rehearsed by 2026-11-19 | Phase 1 evidence reconciliation |
+| 0 | Baseline, decisions, and demo readiness, S0-01..S0-05 | Starting point recorded; required D01-D11 decisions approved or explicitly blocking downstream work; synthetic-only demonstration rehearsed by 2026-11-19 for the 2026-11-20 morning review | Phase 1 evidence reconciliation |
 | 1 | Contracts and fixtures, S1-01..S1-04 | Reproducible baseline, noise/boundary fixtures, and separate scale dataset validated offline | Phase 1 / Phase 2 foundation |
 | 2 | Cohort and aging, S2-01..S2-04 | Exact 48/2 results, clean office/role scope, all age boundaries, measured throughput | Phase 2 |
 | 3 | Privacy and reviewed synthesis, S3-01..S3-06 | Scrub-before-inference, strict taxonomy, visible fallback, cache, >=0.85 kappa on 20 scenarios | Phase 2 |
