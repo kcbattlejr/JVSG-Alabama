@@ -5,6 +5,8 @@ import hashlib
 import json
 import os
 import tempfile
+from collections.abc import Iterator
+from contextlib import contextmanager
 from dataclasses import replace
 from datetime import date
 from html import escape
@@ -149,56 +151,77 @@ def verify_batch(path: Path) -> Manifest:
         raise DemoError("verify: missing or invalid batch artifact") from None
 
 
+@contextmanager
+def track_refresh(root: Path, operation: Literal["batch", "rehearsal"]) -> Iterator[None]:
+    root.mkdir(parents=True, exist_ok=True)
+    completed = False
+    try:
+        atomic_json(root / "status.json", {"state": "in_progress", "operation": operation})
+        yield
+        completed = True
+    finally:
+        if not completed:
+            atomic_json(root / "status.json", {
+                "state": "failed", "operation": operation,
+                "last_success_preserved": (root / "latest.json").exists(),
+                "message": "Refresh failed. Do not present the previous snapshot as current.",
+            })
+
+
+def publish_latest(
+    root: Path, batch: Path, as_of: date, operation: Literal["batch", "rehearsal"],
+) -> None:
+    atomic_json(root / "status.json", {
+        "state": "success", "operation": operation, "batch_id": batch.name,
+    })
+    atomic_json(root / "latest.json", {
+        "batch_id": batch.name, "path": f"batches/{batch.name}", "as_of": as_of.isoformat(),
+    })
+
+
+def build_batch(source: Path, *, as_of: date, root: Path) -> Path:
+    content = read_bytes(source)
+    profiles = transform(read_source(content), as_of)
+    dependencies = runtime_versions()
+    identity = batch_id(content, as_of, dependencies)
+    batches = root / "batches"
+    batches.mkdir(exist_ok=True)
+    destination = batches / identity
+    if destination.exists():
+        existing = verify_batch(destination)
+        if existing.batch_id != identity:
+            raise DemoError("publish: existing batch identity mismatch")
+        return destination
+    with tempfile.TemporaryDirectory(prefix=".staging-", dir=batches) as temporary:
+        stage = Path(temporary)
+        (stage / "reviewed_profiles.xlsx").write_bytes(content)
+        write_json(stage / "profiles.json", [p.model_dump(mode="json") for p in profiles])
+        toon = encode(profiles)
+        (stage / "profiles.toon").write_text(toon, encoding="utf-8", newline="\n")
+        write_json(stage / "summary.json", summary(profiles))
+        (stage / "dashboard.html").write_text(
+            html_dashboard(profiles, digest(content)), encoding="utf-8", newline="\n",
+        )
+        save_workbook(excel_dashboard(profiles, digest(content)), stage / "dashboard.xlsx")
+        manifest = Manifest(
+            as_of=as_of, batch_id=identity, source_sha256=digest(content),
+            records=len(profiles), dependencies=dependencies,
+            sha256={name: digest((stage / name).read_bytes()) for name in sorted(ARTIFACTS)},
+            json_utf8_bytes=compact_json_bytes(profiles),
+            toon_utf8_bytes=len(toon.encode("utf-8")),
+        )
+        write_json(stage / "manifest.json", manifest.model_dump(mode="json"))
+        verify_batch(stage)
+        stage.rename(destination)
+    return destination
+
+
 def run_pipeline(source: Path, *, as_of: date, output: Path) -> Path:
     root = output_root(output)
-    root.mkdir(parents=True, exist_ok=True)
-    try:
-        content = read_bytes(source)
-        profiles = transform(read_source(content), as_of)
-        dependencies = runtime_versions()
-        identity = batch_id(content, as_of, dependencies)
-        batches = root / "batches"
-        batches.mkdir(exist_ok=True)
-        destination = batches / identity
-        if destination.exists():
-            existing = verify_batch(destination)
-            if existing.batch_id != identity:
-                raise DemoError("publish: existing batch identity mismatch")
-        else:
-            with tempfile.TemporaryDirectory(prefix=".staging-", dir=batches) as temporary:
-                stage = Path(temporary)
-                (stage / "reviewed_profiles.xlsx").write_bytes(content)
-                write_json(stage / "profiles.json", [p.model_dump(mode="json") for p in profiles])
-                toon = encode(profiles)
-                (stage / "profiles.toon").write_text(toon, encoding="utf-8", newline="\n")
-                write_json(stage / "summary.json", summary(profiles))
-                (stage / "dashboard.html").write_text(
-                    html_dashboard(profiles, digest(content)), encoding="utf-8", newline="\n",
-                )
-                save_workbook(excel_dashboard(profiles, digest(content)), stage / "dashboard.xlsx")
-                manifest = Manifest(
-                    as_of=as_of, batch_id=identity, source_sha256=digest(content),
-                    records=len(profiles), dependencies=dependencies,
-                    sha256={
-                        name: digest((stage / name).read_bytes()) for name in sorted(ARTIFACTS)
-                    },
-                    json_utf8_bytes=compact_json_bytes(profiles),
-                    toon_utf8_bytes=len(toon.encode("utf-8")),
-                )
-                write_json(stage / "manifest.json", manifest.model_dump(mode="json"))
-                verify_batch(stage)
-                stage.rename(destination)
-        atomic_json(root / "latest.json", {
-            "batch_id": identity, "path": f"batches/{identity}", "as_of": as_of.isoformat(),
-        })
-        atomic_json(root / "status.json", {"state": "success", "batch_id": identity})
-        return destination
-    except (DemoError, OSError):
-        atomic_json(root / "status.json", {
-            "state": "failed", "last_success_preserved": (root / "latest.json").exists(),
-            "message": "Refresh failed. Do not present the last successful snapshot as current.",
-        })
-        raise
+    with track_refresh(root, "batch"):
+        batch = build_batch(source, as_of=as_of, root=root)
+        publish_latest(root, batch, as_of, "batch")
+    return batch
 
 
 def prepare(output: Path) -> dict[str, Path]:
@@ -292,6 +315,12 @@ def prepare_workflow(output: Path) -> dict[str, object]:
 
 def rehearse(output: Path, *, reviewed_briefing: Path | None = None) -> dict[str, object]:
     root = output_root(output)
+    with track_refresh(root, "rehearsal"):
+        result = build_rehearsal(root, reviewed_briefing=reviewed_briefing)
+    return result
+
+
+def build_rehearsal(root: Path, *, reviewed_briefing: Path | None) -> dict[str, object]:
     profile_sources = prepare(root / "reviewed_profiles")
     baseline_profiles = transform(read_source(read_bytes(profile_sources["baseline"])), AS_OF)
     refreshed_profiles = transform(read_source(read_bytes(profile_sources["refreshed"])), AS_OF)
@@ -336,8 +365,8 @@ def rehearse(output: Path, *, reviewed_briefing: Path | None = None) -> dict[str
             "notes_with_residual_findings": manifest.notes_with_residual_findings,
             "private_output": f"restricted/{name}",
         }
-    baseline = run_pipeline(profile_sources["baseline"], as_of=AS_OF, output=root)
-    refreshed = run_pipeline(profile_sources["refreshed"], as_of=AS_OF, output=root)
+    baseline = build_batch(profile_sources["baseline"], as_of=AS_OF, root=root)
+    refreshed = build_batch(profile_sources["refreshed"], as_of=AS_OF, root=root)
     first = verify_batch(baseline)
     second = verify_batch(refreshed)
     old = {p.demo_id: p for p in baseline_profiles}
@@ -436,4 +465,5 @@ Each report also has its own file links at the top of the page.</p></section>
 <li><a href="rehearsal.json">Processing checks and exact changes</a></li>
 </ul></details></section></body></html>"""
     (root / "index.html").write_text(landing, encoding="utf-8", newline="\n")
+    publish_latest(root, refreshed, AS_OF, "rehearsal")
     return result

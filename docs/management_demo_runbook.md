@@ -71,7 +71,10 @@ from jvsg_triage.demo.pipeline import verify_batch
 
 status = json.loads(Path("status.json").read_text())
 rehearsal = json.loads(Path("rehearsal.json").read_text())
-if status["state"] != "success" or status["batch_id"] != Path(rehearsal["refreshed"]["path"]).name:
+latest = json.loads(Path("latest.json").read_text())
+refreshed_path = rehearsal["refreshed"]["path"]
+if (status["state"] != "success" or status.get("operation") != "rehearsal"
+        or status["batch_id"] != Path(refreshed_path).name or latest["path"] != refreshed_path):
     raise SystemExit("Rehearsal is not current. Rerun it before packaging.")
 files = [Path("index.html"), Path("rehearsal.json")]
 for name in ("baseline", "refreshed"):
@@ -250,9 +253,9 @@ confirm the fallback label before presenting.
 | Metric | Baseline | Refreshed |
 |---|---:|---:|
 | Invented participants | 18 | 19 |
-| Recent contact: 0-14 days | 6 | 8 |
-| Follow-up due: 15-29 days | 6 | 6 |
-| Extended gap in contact: 30 or more days | 6 | 5 |
+| Follow-up band: 0-14 days | 6 | 8 |
+| Follow-up band: 15-29 days | 6 | 6 |
+| Follow-up band: 30 or more days | 6 | 5 |
 | Awaiting staff review | 16 | 17 |
 
 - The synthetic native pair contains 18/19 cohort members and the same number
@@ -349,10 +352,14 @@ Dependency upgrades can change output bytes; runtime versions are included in
 batch identity. This is not a claim of byte stability across every Python,
 operating-system or library release.
 
-The publisher stages and verifies a batch before advancing `latest.json`.
-Failed refreshes exit nonzero, leave the prior batch/pointer intact, and write
-`status.json` with `state: failed`. A previously opened static dashboard does
-not poll status: an operator must check status before presenting it as current.
+The publisher stages and verifies each batch before advancing `latest.json`.
+A rehearsal stays `in_progress` while both batches, the landing page, and the
+rehearsal metadata are built. It records success before replacing the latest
+pointer. Failed refreshes exit nonzero, leave the prior verified batch and
+pointer intact, and mark `status.json` as failed if the file can be written.
+Packaging requires a successful rehearsal and a matching latest pointer.
+A previously opened static dashboard does not poll status: check the latest
+rehearsal result before presenting it as current.
 Runs are single-operator; concurrent writers and a managed scheduler are not
 implemented. Rerunning `prepare`/`rehearse` resets their generated source fixtures;
 use a separately named copy for manual experiments.

@@ -37,7 +37,7 @@ from jvsg_triage.demo.models import DOMAINS, Alert, Office, Profile, Review, Sta
 from jvsg_triage.toon.demo import encode
 
 FIXED_TIME = datetime(2026, 1, 1)
-PRESENTATION_VERSION = "paired-report-review-excel-7"
+PRESENTATION_VERSION = "paired-report-review-excel-8"
 PROFILE_FIELDS = (
     "demo_id", "office", "assessment_date", "last_contact_date",
     "TRN", "HSG", "MED", "LEG", "review", "as_of", "idle_days", "alert",
@@ -217,7 +217,7 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
         ])
     watchlist["P1"] = "Contact status"
     watchlist["Q1"] = "Number of people"
-    contact_labels = ("0-14 days", "15-29 days", "30+ days")
+    contact_labels = tuple(ALERT_LABELS[alert] for alert in Alert)
     for row, (alert, label) in enumerate(zip(Alert, contact_labels, strict=True), start=2):
         watchlist.cell(row, 16, label)
         watchlist.cell(row, 17, counts[alert])
@@ -232,7 +232,7 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
     chart = BarChart()
     chart.type = "bar"
     chart.style = 10
-    chart.title = "Days since last contact"
+    chart.title = "Days since contact or assessment"
     chart.add_data(Reference(watchlist, min_col=17, min_row=1, max_row=4), titles_from_data=True)
     label_categories(chart, Reference(watchlist, min_col=16, min_row=2, max_row=4), contact_labels)
     chart.series[0].data_points = [
@@ -270,7 +270,7 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
 
     dashboard.row_dimensions[28].height = 36
     for start, end, caption in (
-        ("A28", "H28", "Counts show people in each day range. Each person is counted once."),
+        ("A28", "H28", "Each person is counted once. If no contact is recorded, use assessment."),
         ("J28", "Q28", "Each column counts people. A person can appear in more than one area."),
     ):
         dashboard.merge_cells(f"{start}:{end}")
@@ -346,7 +346,7 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
         cell.font = Font(name="Aptos", size=10, bold=True, color=white)
         cell.fill = PatternFill("solid", fgColor=navy)
         cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-    for row in watchlist.iter_rows(min_row=2):
+    for row in watchlist.iter_rows(min_row=2, max_row=len(profiles) + 1, max_col=14):
         row[11].fill = PatternFill("solid", fgColor=colors[str(row[11].value)])
         row[8].fill = PatternFill(
             "solid", fgColor="FFF0CC" if row[8].value == REVIEW_LABELS[Review.PENDING]
@@ -471,7 +471,8 @@ def html_dashboard(profiles: list[Profile], source_hash: str) -> str:
     contact_counts = Counter(profile.alert for profile in profiles)
     overview = (
         f"{len(profiles)} fictional people are in this report. "
-        f"{contact_counts[Alert.RED]} have gone 30 or more days without recorded contact; "
+        f"{contact_counts[Alert.RED]} are in the 30+ day band "
+        "(since contact, or assessment if no contact was recorded); "
         f"{sum(p.review == Review.PENDING for p in profiles)} are awaiting staff review."
     )
     return f"""<!doctype html>
@@ -537,12 +538,12 @@ Downloads list, then open the downloaded workbook in Excel.</p>
 </section>
 <p class="intro">{overview}</p>
 <div class="guide"><strong>What this report helps you understand</strong>
-<ul><li>Who may need follow-up because time has passed since the last contact?</li>
+<ul><li>Who may need follow-up based on time since contact or assessment?</li>
 <li>What transportation, housing, health or legal needs are recorded?</li>
 <li>Which records are still awaiting staff review?</li></ul>
 <strong>How it works:</strong> Receive an Excel workbook &rarr; check its contents &rarr;
 calculate follow-up information &rarr; create this report and an Excel dashboard.</div>
-<h2>How long since the last recorded contact?</h2>
+<h2>How long since recorded contact, or assessment if none?</h2>
 <p>These cards count the people shown in the list below. Changing a filter updates them.</p>
 <section class="cards">{cards}</section>
 <h2>People who may need follow-up</h2>

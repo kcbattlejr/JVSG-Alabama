@@ -9,6 +9,7 @@ from zipfile import ZipFile
 import pytest
 from openpyxl import load_workbook
 
+from jvsg_triage.demo import pipeline
 from jvsg_triage.demo.__main__ import main
 from jvsg_triage.demo.briefing import MAX_BRIEFING_BYTES, fingerprint
 from jvsg_triage.demo.intake import (
@@ -288,6 +289,37 @@ def test_invalid_opt_in_briefing_does_not_publish(
         assert not (root / name).exists()
 
 
+def test_failed_rehearsal_invalidates_previous_success(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "demo"
+    rehearse(root)
+    latest = root / "latest.json"
+    previous = latest.read_bytes()
+
+    with pytest.raises(DemoError, match="draft must be reviewed"):
+        rehearse(root, reviewed_briefing=BRIEFING_DRAFT)
+    assert json.loads((root / "status.json").read_bytes())["state"] == "failed"
+    assert latest.read_bytes() == previous
+
+    rehearse(root)
+    write_text = Path.write_text
+
+    def fail_landing(path, *args, **kwargs):
+        if path == root / "index.html":
+            status = json.loads((root / "status.json").read_bytes())
+            assert status["state"] == "in_progress"
+            assert latest.read_bytes() == previous
+            raise OSError("could not write landing page")
+        return write_text(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "write_text", fail_landing)
+    with pytest.raises(OSError, match="could not write landing page"):
+        rehearse(root)
+    assert json.loads((root / "status.json").read_bytes())["state"] == "failed"
+    assert latest.read_bytes() == previous
+
+
 @pytest.mark.parametrize("artifact", sorted(ARTIFACTS))
 def test_tampering_is_detected(tmp_path: Path, artifact: str) -> None:
     source = prepare(tmp_path / "intake")["baseline"]
@@ -322,6 +354,49 @@ def test_failed_refresh_preserves_last_good_batch_and_marks_failure(tmp_path: Pa
     assert json.loads((root / "status.json").read_bytes())["state"] == "failed"
     assert verify_batch(batch).records == 18
     assert not list((root / "batches").glob(".staging-*"))
+
+
+@pytest.mark.parametrize("failed_write", ["status.json", "latest.json"])
+def test_publication_write_failure_preserves_latest(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failed_write: str,
+) -> None:
+    sources = prepare(tmp_path / "intake")
+    root = tmp_path / "out"
+    run_pipeline(sources["baseline"], as_of=AS_OF, output=root)
+    previous = (root / "latest.json").read_bytes()
+
+    def fail_publish(path: Path, payload: dict[str, object]) -> None:
+        if path.name == failed_write and payload.get("state") in (None, "success"):
+            raise OSError("could not publish refresh")
+        atomic_json(path, payload)
+
+    atomic_json = pipeline.atomic_json
+    monkeypatch.setattr(pipeline, "atomic_json", fail_publish)
+    with pytest.raises(OSError, match="could not publish refresh"):
+        run_pipeline(sources["refreshed"], as_of=AS_OF, output=root)
+    assert (root / "latest.json").read_bytes() == previous
+    assert json.loads((root / "status.json").read_bytes())["state"] == "failed"
+
+
+@pytest.mark.parametrize("count", [1, 8])
+def test_small_workbook_with_no_contact_uses_assessment(
+    tmp_path: Path, count: int,
+) -> None:
+    records = fixture_records()[:count]
+    records[0] = records[0].model_copy(update={"assessment_date": AS_OF, "last_contact_date": None})
+    source = tmp_path / "small.xlsx"
+    save_workbook(source_workbook(records), source)
+    batch = run_pipeline(source, as_of=AS_OF, output=tmp_path / "out")
+    assert verify_batch(batch).records == count
+    workbook = load_workbook(batch / "dashboard.xlsx")
+    watchlist = workbook["Watchlist"]
+    assert watchlist["D2"].value == "No contact recorded; counted from assessment"
+    assert watchlist["L2"].value == "0-14 days"
+    assert watchlist.tables["SyntheticWatchlist"].ref == f"A1:N{count + 1}"
+    workbook.close()
+    html = (batch / "dashboard.html").read_text()
+    assert "How long since recorded contact, or assessment if none?" in html
+    assert "No contact recorded; counted from assessment" in html
 
 
 def test_failed_first_refresh_does_not_publish_success(tmp_path: Path) -> None:
@@ -366,7 +441,7 @@ def test_excel_and_html_are_real_snapshots_with_matching_data(tmp_path: Path) ->
     assert watchlist.freeze_panes == "C2"
     rows = list(workbook["Watchlist"].iter_rows(min_row=2, values_only=True))
     assert len(rows) == 18
-    assert rows[4][10:12] == (30, "Extended gap in contact")
+    assert rows[4][10:12] == (30, "30+ days")
     assert rows[1][8] == "Staff review recorded"
     row_toon = workbook["TOON"]["B2"].value
     assert isinstance(row_toon, str)
@@ -445,7 +520,7 @@ def test_management_surfaces_use_plain_language_and_hide_technical_details(tmp_p
     parser.feed((batch / "dashboard.html").read_text())
     visible = " ".join(parser.text)
     for label in (
-        "Recent contact", "Follow-up due", "Extended gap in contact",
+        "0-14 days", "15-29 days", "30+ days",
         "Transportation", "Housing", "Health", "Legal", "Critical barrier",
         "Needs support", "Partly addressed", "Resolved", "Not yet assessed",
         "Awaiting staff review", "Nov 19, 2026",
