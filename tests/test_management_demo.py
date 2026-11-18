@@ -417,7 +417,7 @@ def test_excel_and_html_are_real_snapshots_with_matching_data(tmp_path: Path) ->
     batch = run_pipeline(sources["baseline"], as_of=AS_OF, output=tmp_path / "out")
     workbook = load_workbook(batch / "dashboard.xlsx", data_only=True)
     assert workbook.sheetnames == [
-        "Dashboard", "Watchlist", "TOON", "Definitions", "Provenance",
+        "Dashboard", "More Charts", "Watchlist", "TOON", "Definitions", "Provenance",
     ]
     dashboard = workbook["Dashboard"]
     assert dashboard["A1"].value == "Veteran follow-up and support needs"
@@ -448,17 +448,52 @@ def test_excel_and_html_are_real_snapshots_with_matching_data(tmp_path: Path) ->
     assert decode(row_toon + "\n") == transform(fixture_records(), AS_OF)[:1]
     workbook.close()
     with ZipFile(batch / "dashboard.xlsx") as archive:
-        assert len([name for name in archive.namelist() if name.startswith("xl/charts/chart")]) == 2
+        assert len([name for name in archive.namelist() if name.startswith("xl/charts/chart")]) == 6
         assert not any("externalLinks" in name for name in archive.namelist())
-        sheet_xml = ElementTree.fromstring(archive.read("xl/worksheets/sheet2.xml"))
+        sheet_xml = ElementTree.fromstring(archive.read("xl/worksheets/sheet3.xml"))
         table_xml = ElementTree.fromstring(archive.read("xl/tables/table1.xml"))
         assert sheet_xml.find("{*}autoFilter") is None
         assert table_xml.find("{*}autoFilter[@ref='A1:N19']") is not None
     html = (batch / "dashboard.html").read_text()
     assert 'id="count-RED">6' in html
+    assert html.count("<svg ") == 4
+    assert "Staff may want to look here first" in html
+    assert "<td>DEMO-" not in html.split('id="review-first"')[1].split("</table>")[0]
     assert "No live connection" in html
     assert "<tr data-office=" in html
     assert "https://" not in html
+
+
+def test_insight_counts_cover_every_person_once(tmp_path: Path) -> None:
+    from jvsg_triage.demo.insights import (
+        office_follow_up,
+        office_review,
+        people_by_area_count,
+        review_first,
+        support_by_area,
+    )
+
+    profiles = transform(fixture_records(), AS_OF)
+    for rows in (
+        office_follow_up(profiles), office_review(profiles), people_by_area_count(profiles),
+    ):
+        assert sum(sum(values) for _, values in rows) == len(profiles)
+    assert all(sum(values) == len(profiles) for _, values in support_by_area(profiles))
+    first = review_first(profiles)
+    assert [p.demo_id for p in first] == ["DEMO-0006", "DEMO-0018", "DEMO-0005", "DEMO-0011"]
+    assert all(p.alert == Alert.RED and p.priority == State.CRT for p in first)
+    assert review_first([]) == []
+
+    workbook = load_workbook(
+        run_pipeline(prepare(tmp_path / "intake")["baseline"], as_of=AS_OF,
+                     output=tmp_path / "out") / "dashboard.xlsx",
+    )
+    sheet = workbook["More Charts"]
+    assert len(sheet._charts) == 4
+    assert [sheet[f"{column}9"].value for column in "ABCD"] == [
+        "North demonstration office", 2, 2, 2,
+    ]
+    workbook.close()
 
 
 def test_refreshed_chart_columns_have_explicit_labels_and_counts(tmp_path: Path) -> None:
@@ -645,3 +680,11 @@ def test_cli_runs_rehearsal_and_sanitizes_errors(
         main()
     assert error.value.code == 2
     assert "SYNTHETIC_REJECTED_SENTINEL" not in capsys.readouterr().err
+
+
+def test_long_chart_labels_wrap_instead_of_overrunning_bars() -> None:
+    from jvsg_triage.demo.svg_charts import BAR_LEFT, LABEL_CHARS, stacked_bars
+
+    svg = stacked_bars([("Central demonstration office", [3])], ["People"], ["#fff"], "t")
+    assert svg.count("<tspan") == 2
+    assert LABEL_CHARS * 10 <= BAR_LEFT

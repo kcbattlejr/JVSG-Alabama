@@ -15,7 +15,7 @@ python -m jvsg_triage.demo rehearse
 
 Open `temp/management-demo/index.html` locally in a browser. Use this folder
 for the current rehearsal; open the refreshed HTML dashboard or download the
-Excel dashboard and standard `profiles.toon` from the landing page. No web
+Excel dashboard and standard `profiles.toon` from the landing page. The dashboards add plain-language charts by office, staff review status and support area. No web
 server, model, or cloud account is needed.
 
 For the state laptop and Teams call, use the

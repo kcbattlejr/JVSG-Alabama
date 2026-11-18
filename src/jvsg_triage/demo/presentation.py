@@ -20,6 +20,17 @@ from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.worksheet.table import Table, TableStyleInfo
 
+from jvsg_triage.demo.insights import (
+    ALERT_SERIES,
+    REVIEW_SERIES,
+    STATE_SERIES,
+    most_common_areas,
+    office_follow_up,
+    office_review,
+    people_by_area_count,
+    review_first,
+    support_by_area,
+)
 from jvsg_triage.demo.labels import (
     ALERT_LABELS,
     ALERT_MEANINGS,
@@ -34,10 +45,12 @@ from jvsg_triage.demo.labels import (
     profile_values,
 )
 from jvsg_triage.demo.models import DOMAINS, Alert, Office, Profile, Review, State
+from jvsg_triage.demo.more_charts import add_more_charts, make_readable
+from jvsg_triage.demo.svg_charts import legend, number_table, stacked_bars
 from jvsg_triage.toon.demo import encode
 
 FIXED_TIME = datetime(2026, 1, 1)
-PRESENTATION_VERSION = "paired-report-review-excel-8"
+PRESENTATION_VERSION = "paired-report-review-excel-9"
 PROFILE_FIELDS = (
     "demo_id", "office", "assessment_date", "last_contact_date",
     "TRN", "HSG", "MED", "LEG", "review", "as_of", "idle_days", "alert",
@@ -198,6 +211,7 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
     dashboard.merge_cells("A7:Q7")
     dashboard["A7"] = (
         f"Staff review status: {pending} awaiting review  |  {reviewed} reviewed"
+        "  |  More charts by office and support area: see the More Charts tab"
     )
     dashboard["A7"].font = Font(name="Aptos", size=10, color=ink)
     dashboard["A7"].fill = PatternFill("solid", fgColor="F4F7F9")
@@ -256,9 +270,13 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
     barrier_chart.series[0].graphicalProperties.solidFill = blue
     barrier_chart.series[0].graphicalProperties.line.solidFill = blue
     for figure, first_col, end_col in ((chart, 0, 8), (barrier_chart, 9, 17)):
-        figure.dataLabels = DataLabelList(showVal=True, dLblPos="outEnd")
+        figure.dataLabels = DataLabelList(
+            showVal=True, showSerName=False, showCatName=False, showLegendKey=False,
+            showPercent=False, dLblPos="outEnd",
+        )
         figure.legend = None
         figure.visible_cells_only = False
+        make_readable(figure)
         anchor = TwoCellAnchor(
             editAs="twoCell",
             _from=AnchorMarker(col=first_col, row=8),
@@ -380,6 +398,11 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
     definitions = workbook.create_sheet("Definitions")
     for row in (
         ("Label", "What it means"),
+        ("More Charts tab",
+         "Office, review and support-area charts with their numbers beside them."),
+        ("Staff may want to look here first",
+         "People in the 30+ day band with a critical barrier, longest wait first. A sorting aid, "
+         "not a referral or eligibility decision."),
         ("Fictional demonstration", "All people and situations are invented. Not a live system."),
         ("SharePoint", "Workbook delivery is simulated. No cloud account is connected."),
         ("Days since contact or assessment", "Calendar days; use assessment if contact is absent."),
@@ -409,6 +432,7 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
             if cell.row % 2 == 0:
                 cell.fill = PatternFill("solid", fgColor="F4F7F9")
 
+    add_more_charts(workbook, profiles)
     provenance = workbook.create_sheet("Provenance")
     provenance.sheet_state = "hidden"
     provenance.append(["Source SHA-256", source_hash])
@@ -419,6 +443,95 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
     for sheet in workbook:
         sheet.sheet_view.showGridLines = False
     return workbook
+
+
+HTML_ALERT_COLORS = ("#52d19c", "#f5b942", "#ff7b7b")
+HTML_REVIEW_COLORS = ("#f5b942", "#52d19c")
+HTML_STATE_COLORS = ("#ff7b7b", "#f5b942", "#7ab8ff", "#52d19c", "#a8b3c2")
+
+
+def chart_figure(
+    title: str, question: str, rows: list[tuple[str, list[int]]], series: list[str],
+    colors: tuple[str, ...], first_column: str, unit: str = "people",
+) -> str:
+    key = legend(series, colors) if len(series) > 1 else ""
+    return (
+        f'<figure class="chart"><h3>{escape(title)}</h3><p>{escape(question)}</p>{key}'
+        f'{stacked_bars(rows, series, colors, title, unit)}'
+        '<details><summary>Show these numbers as a table</summary>'
+        f'<div class="scroll">{number_table(rows, first_column, series)}</div></details>'
+        '</figure>'
+    )
+
+
+def at_a_glance(profiles: list[Profile]) -> str:
+    waiting = sum(p.alert == Alert.RED for p in profiles)
+    first = len(review_first(profiles))
+    pending = sum(p.review == Review.PENDING for p in profiles)
+    areas, count = most_common_areas(profiles)
+    return (
+        '<section class="glance" aria-labelledby="glance-title">'
+        '<h2 id="glance-title">At a glance</h2><ul>'
+        f"<li><strong>{waiting}</strong> of {len(profiles)} people are in the 30+ day band.</li>"
+        f"<li><strong>{first}</strong> of them also have a critical barrier recorded.</li>"
+        f"<li><strong>{pending}</strong> people are still awaiting staff review.</li>"
+        f"<li>Most often marked critical or needing support: <strong>{' and '.join(areas)}"
+        f"</strong> ({count} people each).</li></ul></section>"
+    )
+
+
+def chart_section(profiles: list[Profile]) -> str:
+    first = review_first(profiles)
+    if first:
+        body = "".join(
+            f"<tr><th>{p.demo_id}</th><td>{OFFICE_LABELS[p.office]}</td><td>{p.idle_days}</td>"
+            f"<td>{barrier_summary(p)}</td><td>{REVIEW_LABELS[p.review]}</td></tr>"
+            for p in first
+        )
+        priority = (
+            '<div class="scroll"><table id="review-first"><thead><tr>'
+            "<th>Demonstration participant</th><th>Demonstration office</th>"
+            "<th>Days since contact or assessment</th><th>Most pressing recorded need</th>"
+            f"<th>Staff review status</th></tr></thead><tbody>{body}</tbody></table></div>"
+        )
+    else:
+        priority = "<p>No one in this report is in the 30+ day band with a critical barrier.</p>"
+    return (
+        '<section aria-labelledby="charts-title"><h2 id="charts-title">Where staff attention '
+        "may be needed</h2>"
+        "<p>These charts count people across the whole report. The filters further down "
+        "change only the participant list. Every number counts people, not referrals.</p>"
+        '<div class="charts">'
+        + chart_figure(
+            "Which offices have people waiting longest?",
+            "Each bar is one office. Colors show days since recorded contact, "
+            "or since assessment if no contact is recorded.",
+            office_follow_up(profiles), ALERT_SERIES, HTML_ALERT_COLORS, "Demonstration office",
+        )
+        + chart_figure(
+            "How far along is staff review?",
+            "\u201cAwaiting staff review\u201d means no staff review is recorded yet.",
+            office_review(profiles), REVIEW_SERIES, HTML_REVIEW_COLORS, "Demonstration office",
+        )
+        + chart_figure(
+            "What kinds of support are recorded?",
+            "Each bar is one area of support. Colors show the recorded status "
+            "for everyone in the report.",
+            support_by_area(profiles), STATE_SERIES, HTML_STATE_COLORS, "Area of support",
+        )
+        + chart_figure(
+            "How many areas of support does each person have?",
+            "Counts areas marked critical or needing support. "
+            "People with several areas may benefit from coordinated follow-up.",
+            people_by_area_count(profiles), ["People"], ("#7ab8ff",), "Areas marked", "people",
+        )
+        + "</div>"
+        '<h2>Staff may want to look here first</h2>'
+        "<p>This list only sorts people who are in the 30+ day band <em>and</em> have a "
+        "critical barrier recorded, longest wait first. It is a sorting aid. Qualified "
+        "staff decide who to contact and what support to offer.</p>"
+        f"{priority}</section>"
+    )
 
 
 def html_dashboard(profiles: list[Profile], source_hash: str) -> str:
@@ -502,6 +615,18 @@ th,td{{padding:12px;text-align:left;border-bottom:1px solid #345988;vertical-ali
 #roster{{min-width:1350px}} #barriers{{min-width:850px}} td{{min-width:100px}}
 tr:nth-child(even){{background:#122d52}} pre{{white-space:pre-wrap;overflow-wrap:anywhere}}
 summary{{cursor:pointer;color:#52d19c}} .scroll{{overflow-x:auto}}
+.glance{{background:#122d52;border-left:6px solid #52d19c;padding:8px 24px;margin:20px 0}}
+.glance li{{font-size:20px;line-height:1.7}} .glance strong{{font-size:26px;color:#8ce9bf}}
+.charts{{display:grid;grid-template-columns:repeat(auto-fit,minmax(520px,1fr));gap:28px;
+margin:24px 0}} .chart{{margin:0;background:#122d52;border:1px solid #7496d2;padding:22px}}
+.chart h3{{margin:0 0 8px;font-size:22px;color:#f8fafc}} .chart p{{margin:0 0 14px;
+font-size:17px;line-height:1.5;color:#cbd5e1}} .chart svg{{width:100%;height:auto;
+display:block;margin:12px 0}} .legend{{list-style:none;display:flex;flex-wrap:wrap;gap:8px 22px;
+padding:0;margin:0 0 6px;font-size:16px}} .swatch{{display:inline-block;width:16px;
+height:16px;margin-right:8px;vertical-align:-2px;border-radius:3px}}
+.chart table{{margin:8px 0;min-width:0}} .chart details{{margin-top:8px}}
+#review-first{{min-width:900px}}
+@media (max-width:640px){{.charts{{grid-template-columns:1fr}}}}
 [hidden]{{display:none}} footer{{color:#cbd5e1;overflow-wrap:anywhere}}
 </style></head><body>
 <p>Alabama Department of Workforce discussion prototype - not an approved agency system</p>
@@ -537,6 +662,8 @@ The source file is a saved copy, not a live SharePoint link.</p>
 Downloads list, then open the downloaded workbook in Excel.</p>
 </section>
 <p class="intro">{overview}</p>
+{at_a_glance(profiles)}
+{chart_section(profiles)}
 <div class="guide"><strong>What this report helps you understand</strong>
 <ul><li>Who may need follow-up based on time since contact or assessment?</li>
 <li>What transportation, housing, health or legal needs are recorded?</li>

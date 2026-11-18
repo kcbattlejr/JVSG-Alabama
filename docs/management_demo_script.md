@@ -83,7 +83,9 @@ aggregate `native_intake` section in `rehearsal.json`.
 
 **Show:** refreshed `dashboard.xlsx`, first on Dashboard, then Watchlist.
 Point out the headline cards, the contact-status chart, support-needs chart,
-and filterable rows.
+the **More Charts** tab (offices, staff review, support areas, number of areas
+per person), and filterable rows. In the HTML dashboard, start with "At a
+glance" and the four charts below it.
 
 **Say:**
 
@@ -99,6 +101,18 @@ and filterable rows.
 > Watchlist shows the full status for each person. “Most pressing recorded need”
 > is an explanatory summary, not an eligibility or referral score. Qualified
 > staff remain responsible for interpretation and next steps.
+>
+> The More Charts tab and the HTML charts answer four plain questions: which
+> offices have people waiting longest, how far along staff review is, what kinds
+> of support are recorded, and how many areas each person has. They count people
+> across the whole report, not referrals. “Staff may want to look here first”
+> only sorts people who are 30+ days out and have a critical barrier recorded;
+> qualified staff decide who to contact and what to offer.
+>
+> Reading the charts: each bar is one office or support area, with the count
+> written on every colored segment, so there is no axis to decode. Long labels
+> wrap onto two lines, text is sized for a shared screen, and every HTML chart
+> has a “Show these numbers as a table” option for anyone who prefers numbers.
 
 ## 5:10-6:00 | Package and verify TOON
 

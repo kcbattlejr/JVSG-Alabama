@@ -119,6 +119,7 @@ open a public port, or serve the workspace or full rehearsal folder.
 |---|---|
 | Codespace is starting or `activate` is missing | Wait for container setup. If setup failed, run `bash .devcontainer/scripts/setup.sh` from the repository root, then activate again. Use the already downloaded copy if setup cannot finish before the meeting. |
 | `No module named jvsg_triage` or dependency errors | Activate the Codespaces environment, then run `python -m pip install -r requirements-demo.txt` and retry. If installation is blocked, use the downloaded copy. |
+| Rehearsal stops with `verify: HTML differs from profiles` | The `temp/management-demo/` folder holds reports made by an older version of the code. Run `rm -rf temp/management-demo`, then rerun `python -m jvsg_triage.demo rehearse`. |
 | Rehearsal exits with an error or the counts are wrong | Read the terminal error and `temp/management-demo/status.json`. Do not present an older run as a fresh refresh. Rerun the default `rehearse` with no custom inputs; if it still fails, use the verified laptop copy and describe it as a saved rehearsal. |
 | Preview says `Address already in use` | Stop your old preview with Ctrl+C, or change `8765` to `8766` in the command and open the matching port. |
 | Browser opens raw HTML or linked files are missing | Extract the whole ZIP first, then open the extracted `index.html` in Edge, not in the VS Code editor or inside the ZIP. |
@@ -176,7 +177,13 @@ matching report folder. Excel links may download; check the browser Downloads li
 Open the Excel workbook in desktop Excel or an approved Excel browser viewer;
 there is no requirement to host a web application.
 The Dashboard tab uses columns A through Q, with a spacer between the two
-charts. If Q is off-screen, lower the Excel zoom before screen sharing.
+charts. The **More Charts** tab (second tab) adds four charts, each with its
+numbers in a small table beside it: people by days since contact per office,
+staff review progress per office, recorded support status per area, and how many
+areas of support each person has. Chart text (axes, legend, labels) is set to 12 pt and long labels wrap in both
+Excel and HTML so they stay readable when screen-shared or printed.
+A short "Staff may want to look here first"
+list sits at the bottom. If Q is off-screen, lower the Excel zoom before screen sharing.
 If an older download prompts Excel to repair the Watchlist table, rerun
 `rehearse` and download a fresh workbook from the refreshed landing page.
 Check that Excel opens it without a repair prompt and that the Watchlist
@@ -327,8 +334,8 @@ Each immutable `batches/<SHA-256>/` directory contains:
 | `reviewed_profiles.xlsx` | Exact synthetic human-review profile input |
 | `profiles.json` / `profiles.toon` | Equivalent normalized profiles |
 | `summary.json` | Reconciled aggregate counts |
-| `dashboard.xlsx` | Plain-language charts/list and definitions; technical sheets hidden |
-| `dashboard.html` | Plain-language filters, contact counts, support details and overview |
+| `dashboard.xlsx` | Dashboard and More Charts tabs, Watchlist and definitions; technical sheets hidden |
+| `dashboard.html` | "At a glance" summary, four office/support charts (each with a "Show these numbers as a table" option), a "look here first" list, filters, contact counts and support details |
 | `manifest.json` | Source/output hashes, execution date, version and dependency versions |
 
 `verify` checks hashes, source-to-profile reconciliation, all TOON round trips,
