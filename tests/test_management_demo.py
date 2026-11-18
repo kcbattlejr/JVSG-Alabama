@@ -3,20 +3,15 @@
 import json
 from datetime import timedelta
 from pathlib import Path
-<<<<<<< HEAD
-=======
 from xml.etree import ElementTree
->>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
 from zipfile import ZipFile
 
 import pytest
 from openpyxl import load_workbook
 
+from jvsg_triage.demo import pipeline
 from jvsg_triage.demo.__main__ import main
-<<<<<<< HEAD
-=======
 from jvsg_triage.demo.briefing import MAX_BRIEFING_BYTES, fingerprint
->>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
 from jvsg_triage.demo.intake import (
     MAX_BYTES,
     fixture_records,
@@ -99,19 +94,12 @@ def test_closed_intake_rejects_bad_cells_without_echo(
 def test_intake_handles_native_excel_dates_and_rejects_time(tmp_path: Path) -> None:
     from datetime import datetime
 
-<<<<<<< HEAD
-    content = modified_source(tmp_path, "D3", datetime(2026, 11, 20))
-    assert read_source(content)[0].last_contact_date == AS_OF
-    with pytest.raises(DemoError, match="date-only"):
-        read_source(modified_source(tmp_path, "D3", datetime(2026, 11, 20, 12)))
-=======
     content = modified_source(tmp_path, "D3", datetime.combine(AS_OF, datetime.min.time()))
     assert read_source(content)[0].last_contact_date == AS_OF
     with pytest.raises(DemoError, match="date-only"):
         read_source(modified_source(tmp_path, "D3", datetime.combine(
             AS_OF, datetime.min.time().replace(hour=12),
         )))
->>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
 
 
 def test_intake_rejects_empty_other_sheets_and_corrupt_files(tmp_path: Path) -> None:
@@ -141,25 +129,6 @@ def test_all_profiles_round_trip_losslessly_including_nulls() -> None:
     values = profiles[0].model_dump()
     values.update(last_contact_date=None, idle_days=70, alert=Alert.RED)
     profiles.append(Profile.model_validate(values))
-<<<<<<< HEAD
-    for profile in profiles:
-        assert decode(encode(profile)) == profile
-
-
-@pytest.mark.parametrize("mutation", ["version", "extra", "order", "leading-zero", "inconsistent"])
-def test_toon_rejects_malformed_or_noncanonical_profiles(mutation: str) -> None:
-    text = encode(transform(fixture_records(), AS_OF)[0])
-    if mutation == "version":
-        text = text.replace("V:demo-1", "V:unapproved")
-    elif mutation == "extra":
-        text += "|EXTRA:1"
-    elif mutation == "order":
-        text = text.replace("ID:DEMO-0001", "OFF:DEMO-0001")
-    elif mutation == "leading-zero":
-        text = text.replace("IDLE:0", "IDLE:00")
-    else:
-        text = text.replace("ALERT:GREEN", "ALERT:RED")
-=======
     text = encode(profiles)
     assert text.startswith(
         "[20]{demo_id,office,assessment_date,last_contact_date,TRN,HSG,MED,LEG,"
@@ -184,7 +153,6 @@ def test_toon_rejects_malformed_or_noncanonical_profiles(mutation: str) -> None:
         text = text.replace(",0,GREEN", ",00,GREEN")
     else:
         text = text.replace(",GREEN", ",RED")
->>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
     with pytest.raises(DemoError):
         decode(text)
 
@@ -228,8 +196,6 @@ def test_rehearsal_refresh_reconciliation_and_exact_reproducibility(tmp_path: Pa
     assert baseline_summary["alerts"] == {"GREEN": 6, "YELLOW": 6, "RED": 6}
     refreshed_summary = summary(transform(fixture_records(refreshed=True), AS_OF))
     assert refreshed_summary["alerts"] == {"GREEN": 8, "YELLOW": 6, "RED": 5}
-<<<<<<< HEAD
-=======
     assert first["briefing"] == {"mode": "deterministic"}
     assert "Verified snapshot changes only (no AI copy)." in (first_root / "index.html").read_text()
 
@@ -321,7 +287,37 @@ def test_invalid_opt_in_briefing_does_not_publish(
         rehearse(root, reviewed_briefing=reviewed)
     for name in ("batches", "index.html", "rehearsal.json", "latest.json"):
         assert not (root / name).exists()
->>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
+
+
+def test_failed_rehearsal_invalidates_previous_success(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "demo"
+    rehearse(root)
+    latest = root / "latest.json"
+    previous = latest.read_bytes()
+
+    with pytest.raises(DemoError, match="draft must be reviewed"):
+        rehearse(root, reviewed_briefing=BRIEFING_DRAFT)
+    assert json.loads((root / "status.json").read_bytes())["state"] == "failed"
+    assert latest.read_bytes() == previous
+
+    rehearse(root)
+    write_text = Path.write_text
+
+    def fail_landing(path, *args, **kwargs):
+        if path == root / "index.html":
+            status = json.loads((root / "status.json").read_bytes())
+            assert status["state"] == "in_progress"
+            assert latest.read_bytes() == previous
+            raise OSError("could not write landing page")
+        return write_text(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "write_text", fail_landing)
+    with pytest.raises(OSError, match="could not write landing page"):
+        rehearse(root)
+    assert json.loads((root / "status.json").read_bytes())["state"] == "failed"
+    assert latest.read_bytes() == previous
 
 
 @pytest.mark.parametrize("artifact", sorted(ARTIFACTS))
@@ -360,6 +356,49 @@ def test_failed_refresh_preserves_last_good_batch_and_marks_failure(tmp_path: Pa
     assert not list((root / "batches").glob(".staging-*"))
 
 
+@pytest.mark.parametrize("failed_write", ["status.json", "latest.json"])
+def test_publication_write_failure_preserves_latest(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failed_write: str,
+) -> None:
+    sources = prepare(tmp_path / "intake")
+    root = tmp_path / "out"
+    run_pipeline(sources["baseline"], as_of=AS_OF, output=root)
+    previous = (root / "latest.json").read_bytes()
+
+    def fail_publish(path: Path, payload: dict[str, object]) -> None:
+        if path.name == failed_write and payload.get("state") in (None, "success"):
+            raise OSError("could not publish refresh")
+        atomic_json(path, payload)
+
+    atomic_json = pipeline.atomic_json
+    monkeypatch.setattr(pipeline, "atomic_json", fail_publish)
+    with pytest.raises(OSError, match="could not publish refresh"):
+        run_pipeline(sources["refreshed"], as_of=AS_OF, output=root)
+    assert (root / "latest.json").read_bytes() == previous
+    assert json.loads((root / "status.json").read_bytes())["state"] == "failed"
+
+
+@pytest.mark.parametrize("count", [1, 8])
+def test_small_workbook_with_no_contact_uses_assessment(
+    tmp_path: Path, count: int,
+) -> None:
+    records = fixture_records()[:count]
+    records[0] = records[0].model_copy(update={"assessment_date": AS_OF, "last_contact_date": None})
+    source = tmp_path / "small.xlsx"
+    save_workbook(source_workbook(records), source)
+    batch = run_pipeline(source, as_of=AS_OF, output=tmp_path / "out")
+    assert verify_batch(batch).records == count
+    workbook = load_workbook(batch / "dashboard.xlsx")
+    watchlist = workbook["Watchlist"]
+    assert watchlist["D2"].value == "No contact recorded; counted from assessment"
+    assert watchlist["L2"].value == "0-14 days"
+    assert watchlist.tables["SyntheticWatchlist"].ref == f"A1:N{count + 1}"
+    workbook.close()
+    html = (batch / "dashboard.html").read_text()
+    assert "How long since recorded contact, or assessment if none?" in html
+    assert "No contact recorded; counted from assessment" in html
+
+
 def test_failed_first_refresh_does_not_publish_success(tmp_path: Path) -> None:
     with pytest.raises(DemoError, match="cannot read"):
         run_pipeline(tmp_path / "missing.xlsx", as_of=AS_OF, output=tmp_path / "out")
@@ -378,21 +417,17 @@ def test_excel_and_html_are_real_snapshots_with_matching_data(tmp_path: Path) ->
     batch = run_pipeline(sources["baseline"], as_of=AS_OF, output=tmp_path / "out")
     workbook = load_workbook(batch / "dashboard.xlsx", data_only=True)
     assert workbook.sheetnames == [
-        "Dashboard", "Watchlist", "TOON", "Definitions", "Provenance",
+        "Dashboard", "More Charts", "Watchlist", "TOON", "Definitions", "Provenance",
     ]
     dashboard = workbook["Dashboard"]
     assert dashboard["A1"].value == "Veteran follow-up and support needs"
     assert dashboard["A5"].value == 18
-<<<<<<< HEAD
-    assert [dashboard[cell].value for cell in ("D5", "G5", "J5")] == [6, 6, 6]
-=======
     assert [dashboard[cell].value for cell in ("E5", "J5", "N5")] == [6, 6, 6]
     assert dashboard.max_column == 17
     assert dashboard.print_area == "'Dashboard'!$A$1:$Q$36"
     assert {str(area) for area in dashboard.merged_cells.ranges} >= {
         "A1:Q1", "A7:Q7", "A28:H28", "J28:Q28", "A29:Q29", "A30:D30", "E30:Q30",
     }
->>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
     assert dashboard["A1"].font.size == 22
     assert dashboard["A1"].fill.fgColor.rgb.endswith("16324F")
     assert dashboard.row_dimensions[1].height == 42
@@ -406,53 +441,61 @@ def test_excel_and_html_are_real_snapshots_with_matching_data(tmp_path: Path) ->
     assert watchlist.freeze_panes == "C2"
     rows = list(workbook["Watchlist"].iter_rows(min_row=2, values_only=True))
     assert len(rows) == 18
-    assert rows[4][10:12] == (30, "Extended gap in contact")
+    assert rows[4][10:12] == (30, "30+ days")
     assert rows[1][8] == "Staff review recorded"
-<<<<<<< HEAD
-    assert workbook["TOON"]["B2"].value == encode(transform(fixture_records(), AS_OF)[0])
-=======
     row_toon = workbook["TOON"]["B2"].value
     assert isinstance(row_toon, str)
     assert decode(row_toon + "\n") == transform(fixture_records(), AS_OF)[:1]
->>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
     workbook.close()
     with ZipFile(batch / "dashboard.xlsx") as archive:
-        assert len([name for name in archive.namelist() if name.startswith("xl/charts/chart")]) == 2
+        assert len([name for name in archive.namelist() if name.startswith("xl/charts/chart")]) == 6
         assert not any("externalLinks" in name for name in archive.namelist())
-<<<<<<< HEAD
-=======
-        sheet_xml = ElementTree.fromstring(archive.read("xl/worksheets/sheet2.xml"))
+        sheet_xml = ElementTree.fromstring(archive.read("xl/worksheets/sheet3.xml"))
         table_xml = ElementTree.fromstring(archive.read("xl/tables/table1.xml"))
         assert sheet_xml.find("{*}autoFilter") is None
         assert table_xml.find("{*}autoFilter[@ref='A1:N19']") is not None
->>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
     html = (batch / "dashboard.html").read_text()
     assert 'id="count-RED">6' in html
+    assert html.count("<svg ") == 4
+    assert "Staff may want to look here first" in html
+    assert "<td>DEMO-" not in html.split('id="review-first"')[1].split("</table>")[0]
     assert "No live connection" in html
     assert "<tr data-office=" in html
     assert "https://" not in html
 
 
-<<<<<<< HEAD
-@pytest.mark.parametrize("refreshed", [False, True])
-def test_watchlist_filter_belongs_only_to_the_excel_table(
-    tmp_path: Path, refreshed: bool,
-) -> None:
-    from xml.etree import ElementTree
+def test_insight_counts_cover_every_person_once(tmp_path: Path) -> None:
+    from jvsg_triage.demo.insights import (
+        office_follow_up,
+        office_review,
+        people_by_area_count,
+        review_first,
+        support_by_area,
+    )
 
-    profiles = transform(fixture_records(refreshed=refreshed), AS_OF)
-    path = tmp_path / "dashboard.xlsx"
-    save_workbook(excel_dashboard(profiles, "synthetic"), path)
-    namespace = {"s": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
-    with ZipFile(path) as archive:
-        sheet = ElementTree.fromstring(archive.read("xl/worksheets/sheet2.xml"))
-        table = ElementTree.fromstring(archive.read("xl/tables/table1.xml"))
-    assert sheet.find("s:autoFilter", namespace) is None
-    assert sheet.find("s:tableParts/s:tablePart", namespace) is not None
-    table_filter = table.find("s:autoFilter", namespace)
-    assert table_filter is not None
-    assert table_filter.attrib["ref"] == table.attrib["ref"] == f"A1:N{len(profiles) + 1}"
-=======
+    profiles = transform(fixture_records(), AS_OF)
+    for rows in (
+        office_follow_up(profiles), office_review(profiles), people_by_area_count(profiles),
+    ):
+        assert sum(sum(values) for _, values in rows) == len(profiles)
+    assert all(sum(values) == len(profiles) for _, values in support_by_area(profiles))
+    first = review_first(profiles)
+    assert [p.demo_id for p in first] == ["DEMO-0006", "DEMO-0018", "DEMO-0005", "DEMO-0011"]
+    assert all(p.alert == Alert.RED and p.priority == State.CRT for p in first)
+    assert review_first([]) == []
+
+    workbook = load_workbook(
+        run_pipeline(prepare(tmp_path / "intake")["baseline"], as_of=AS_OF,
+                     output=tmp_path / "out") / "dashboard.xlsx",
+    )
+    sheet = workbook["More Charts"]
+    assert len(sheet._charts) == 4
+    assert [sheet[f"{column}9"].value for column in "ABCD"] == [
+        "North demonstration office", 2, 2, 2,
+    ]
+    workbook.close()
+
+
 def test_refreshed_chart_columns_have_explicit_labels_and_counts(tmp_path: Path) -> None:
     source = prepare(tmp_path / "intake")["refreshed"]
     batch = run_pipeline(source, as_of=AS_OF, output=tmp_path / "out")
@@ -483,7 +526,6 @@ def test_refreshed_chart_columns_have_explicit_labels_and_counts(tmp_path: Path)
     assert [row[0].value for row in workbook["Watchlist"]["Q7":"Q10"]] == [9, 7, 6, 7]
     assert "more than one" in str(workbook["Dashboard"]["J28"].value)
     workbook.close()
->>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
 
 
 def test_management_surfaces_use_plain_language_and_hide_technical_details(tmp_path: Path) -> None:
@@ -513,14 +555,10 @@ def test_management_surfaces_use_plain_language_and_hide_technical_details(tmp_p
     parser.feed((batch / "dashboard.html").read_text())
     visible = " ".join(parser.text)
     for label in (
-        "Recent contact", "Follow-up due", "Extended gap in contact",
+        "0-14 days", "15-29 days", "30+ days",
         "Transportation", "Housing", "Health", "Legal", "Critical barrier",
         "Needs support", "Partly addressed", "Resolved", "Not yet assessed",
-<<<<<<< HEAD
-        "Awaiting staff review", "Nov 20, 2026",
-=======
         "Awaiting staff review", "Nov 19, 2026",
->>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
     ):
         assert label in visible
     for abbreviation in (
@@ -642,3 +680,11 @@ def test_cli_runs_rehearsal_and_sanitizes_errors(
         main()
     assert error.value.code == 2
     assert "SYNTHETIC_REJECTED_SENTINEL" not in capsys.readouterr().err
+
+
+def test_long_chart_labels_wrap_instead_of_overrunning_bars() -> None:
+    from jvsg_triage.demo.svg_charts import BAR_LEFT, LABEL_CHARS, stacked_bars
+
+    svg = stacked_bars([("Central demonstration office", [3])], ["People"], ["#fff"], "t")
+    assert svg.count("<tspan") == 2
+    assert LABEL_CHARS * 10 <= BAR_LEFT

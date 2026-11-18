@@ -25,14 +25,14 @@ STATE_MEANINGS = {
     State.UNK: "There is not enough information to describe this barrier.",
 }
 ALERT_LABELS = {
-    Alert.GREEN: "Recent contact",
-    Alert.YELLOW: "Follow-up due",
-    Alert.RED: "Extended gap in contact",
+    Alert.GREEN: "0-14 days",
+    Alert.YELLOW: "15-29 days",
+    Alert.RED: "30+ days",
 }
 ALERT_MEANINGS = {
-    Alert.GREEN: "0-14 days since contact",
-    Alert.YELLOW: "15-29 days since contact",
-    Alert.RED: "30 or more days since contact",
+    Alert.GREEN: "0-14 days since recorded contact, or assessment if no contact is recorded.",
+    Alert.YELLOW: "15-29 days since recorded contact, or assessment if no contact is recorded.",
+    Alert.RED: "30 or more days since recorded contact, or assessment if no contact is recorded.",
 }
 OFFICE_LABELS = {
     Office.NORTH: "North demonstration office",
