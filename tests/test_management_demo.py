@@ -9,6 +9,7 @@ import pytest
 from openpyxl import load_workbook
 
 from jvsg_triage.demo.__main__ import main
+from jvsg_triage.demo.briefing import MAX_BRIEFING_BYTES, fingerprint
 from jvsg_triage.demo.intake import (
     MAX_BYTES,
     fixture_records,
@@ -91,10 +92,12 @@ def test_closed_intake_rejects_bad_cells_without_echo(
 def test_intake_handles_native_excel_dates_and_rejects_time(tmp_path: Path) -> None:
     from datetime import datetime
 
-    content = modified_source(tmp_path, "D3", datetime(2026, 11, 20))
+    content = modified_source(tmp_path, "D3", datetime.combine(AS_OF, datetime.min.time()))
     assert read_source(content)[0].last_contact_date == AS_OF
     with pytest.raises(DemoError, match="date-only"):
-        read_source(modified_source(tmp_path, "D3", datetime(2026, 11, 20, 12)))
+        read_source(modified_source(tmp_path, "D3", datetime.combine(
+            AS_OF, datetime.min.time().replace(hour=12),
+        )))
 
 
 def test_intake_rejects_empty_other_sheets_and_corrupt_files(tmp_path: Path) -> None:
@@ -184,6 +187,97 @@ def test_rehearsal_refresh_reconciliation_and_exact_reproducibility(tmp_path: Pa
     assert baseline_summary["alerts"] == {"GREEN": 6, "YELLOW": 6, "RED": 6}
     refreshed_summary = summary(transform(fixture_records(refreshed=True), AS_OF))
     assert refreshed_summary["alerts"] == {"GREEN": 8, "YELLOW": 6, "RED": 5}
+    assert first["briefing"] == {"mode": "deterministic"}
+    assert "Verified snapshot changes only (no AI copy)." in (first_root / "index.html").read_text()
+
+
+BRIEFING_DRAFT = (
+    Path(__file__).resolve().parents[1] / "data/synthetic/management_briefing.draft.json"
+)
+
+
+def test_offline_prompt_and_reviewed_briefing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    import sys
+
+    monkeypatch.setattr(sys, "argv", ["demo", "briefing-prompt"])
+    assert main() == 0
+    prompt = json.loads(capsys.readouterr().out)
+    assert prompt["facts"] == {
+        "synthetic_only": True, "as_of": "2026-11-19", "records_added": 1,
+        "existing_records_updated": 1,
+        "baseline": {"participants": 18, "awaiting_staff_review": 16,
+                     "contact_bands": {"GREEN": 6, "YELLOW": 6, "RED": 6}},
+        "refreshed": {"participants": 19, "awaiting_staff_review": 17,
+                      "contact_bands": {"GREEN": 8, "YELLOW": 6, "RED": 5}},
+        "contact_band_definitions": {
+            "GREEN": "0-14 days", "YELLOW": "15-29 days", "RED": "30 or more days",
+        },
+    }
+    payload = json.loads(BRIEFING_DRAFT.read_bytes())
+    assert payload["review_status"] == "draft"
+    assert payload["facts_sha256"] == prompt["response_shape"]["facts_sha256"]
+    payload["review_status"] = "reviewed"  # Exercise the operator gate with a test fixture.
+    payload["talking_points"][0] = "<em>Fictional only</em>"
+    reviewed = tmp_path / "reviewed.json"
+    reviewed.write_text(json.dumps(payload))
+    root = tmp_path / "demo"
+    original = rehearse(root)
+    monkeypatch.setattr(sys, "argv", [
+        "demo", "rehearse", "--output", str(root), "--reviewed-briefing", str(reviewed),
+    ])
+    assert main() == 0
+    result = json.loads(capsys.readouterr().out)
+    assert {k: v for k, v in result.items() if k != "briefing"} == {
+        k: v for k, v in original.items() if k != "briefing"
+    }
+    assert result["briefing"] == {
+        "mode": "reviewed_ai_copy", "payload": payload, "sha256": fingerprint(payload),
+    }
+    assert json.loads((root / "rehearsal.json").read_bytes()) == result
+    assert verify_batch(root / result["refreshed"]["path"]).records == 19
+    html = (root / "index.html").read_text()
+    assert "AI-drafted; human-reviewed." in html
+    assert "&lt;em&gt;Fictional only&lt;/em&gt;" in html
+    assert "<em>Fictional only</em>" not in html
+
+
+@pytest.mark.parametrize(
+    ("case", "error"),
+    [
+        ("draft", "draft must be reviewed"),
+        ("stale", "source facts changed"),
+        ("unknown", "cannot read or validate"),
+        ("too_long", "cannot read or validate"),
+        ("too_large", "cannot read or validate"),
+        ("duplicate", "cannot read or validate"),
+    ],
+)
+def test_invalid_opt_in_briefing_does_not_publish(
+    tmp_path: Path, case: str, error: str,
+) -> None:
+    payload = json.loads(BRIEFING_DRAFT.read_bytes())
+    if case != "draft":
+        payload["review_status"] = "reviewed"
+    if case == "stale":
+        payload["facts_sha256"] = "0" * 64
+    elif case == "unknown":
+        payload["unapproved_field"] = True
+    elif case == "too_long":
+        payload["talking_points"][0] = "x" * 241
+    data = json.dumps(payload)
+    if case == "too_large":
+        data += " " * MAX_BRIEFING_BYTES
+    elif case == "duplicate":
+        data = '{"review_status": "draft", ' + data[1:]
+    reviewed = tmp_path / "reviewed.json"
+    reviewed.write_text(data)
+    root = tmp_path / "demo"
+    with pytest.raises(DemoError, match=error):
+        rehearse(root, reviewed_briefing=reviewed)
+    for name in ("batches", "index.html", "rehearsal.json", "latest.json"):
+        assert not (root / name).exists()
 
 
 @pytest.mark.parametrize("artifact", sorted(ARTIFACTS))
@@ -303,7 +397,7 @@ def test_management_surfaces_use_plain_language_and_hide_technical_details(tmp_p
         "Recent contact", "Follow-up due", "Extended gap in contact",
         "Transportation", "Housing", "Health", "Legal", "Critical barrier",
         "Needs support", "Partly addressed", "Resolved", "Not yet assessed",
-        "Awaiting staff review", "Nov 20, 2026",
+        "Awaiting staff review", "Nov 19, 2026",
     ):
         assert label in visible
     for abbreviation in (

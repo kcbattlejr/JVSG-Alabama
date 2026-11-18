@@ -100,9 +100,10 @@ The Mobile team received a JVSG incentive award for its FY 2026 performance.
 That award recognizes the team's performance; it was not awarded to this new
 project. The project is being brought to management as a proposal for the
 2027 NASWA Winter Workforce Innovation Awards, to discuss whether and how
-Alabama should submit a nomination. The prior NASWA announcement provided a
-December 4, 2026 nomination deadline; confirm the current requirements and
-timing. Management has greenlit the project and a demonstration is planned.
+Alabama should submit a nomination. The
+[stakeholder briefing](./management_presentation_briefing.md) records NASWA's
+December 4, 2026 deadline and the steps to confirm eligibility and prepare an
+approved submission. Management has greenlit the project and a demonstration is planned.
 No award or nomination outcome for this project is assumed.
 
 The presentation is project context, not a substitute for current-state

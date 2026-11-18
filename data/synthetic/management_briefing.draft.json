@@ -1,0 +1,10 @@
+{
+  "version": "aggregate-briefing-1",
+  "review_status": "draft",
+  "facts_sha256": "c2d3bfe8c067fac26628716ae44b74d6e43903c1f6df417add21448c2d4d8404",
+  "talking_points": [
+    "The refreshed demonstration includes 19 fictional participants, up from 18. One record was added and one existing record changed.",
+    "The 0-14 day follow-up band increased from 6 to 8. The 15-29 day band stayed at 6, and the 30-or-more-day band went from 6 to 5.",
+    "Records awaiting staff review increased from 16 to 17. These counts describe the review queue, not whether anyone received services or had a barrier resolved."
+  ]
+}

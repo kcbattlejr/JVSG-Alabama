@@ -69,7 +69,7 @@ The [management demo runbook](./management_demo_runbook.md) records the current
 owner-requested presentation scope: cloud SharePoint Excel as the intended MVP
 driver, local simulated file delivery, deterministic ETL, lossless custom
 `@TOON demo-1`, and generated Excel/HTML reports. The
-[recording script](./management_demo_script.md) supports the November 20 demo.
+[recording script](./management_demo_script.md) supports the November 19 demo.
 The closed synthetic schema, 15/30-day aging and barrier rollup are explicit
 demonstration assumptions. They do not resolve D02-D05/D08-D09, map unknown MIS
 date fields, approve inference, or establish production/federal contracts.

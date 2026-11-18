@@ -36,8 +36,10 @@ synthetic review inputs. Outputs are Git-ignored; failed refreshes preserve the
 last successful batch.
 
 See the [recording script](docs/management_demo_script.md) and
-[runbook](docs/management_demo_runbook.md) for the November 20 demonstration,
-exact expected counts, manual refresh commands and production boundaries.
+[runbook](docs/management_demo_runbook.md) for the November 19 demonstration,
+exact expected counts, the optional offline AI briefing and production boundaries.
+The [stakeholder briefing](docs/management_presentation_briefing.md) explains the
+proposal and the path to the December 4 NASWA nomination deadline.
 **Delivery is locally simulated, not a live Microsoft 365 integration.** The
 native report pair does not supply the dashboard profile fields; those are
 separate synthetic human-review inputs. The custom `@TOON demo-1` dialect and

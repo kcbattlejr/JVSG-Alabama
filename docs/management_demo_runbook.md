@@ -1,8 +1,11 @@
 # SharePoint-first management demonstration runbook
 
-Target recording: Friday, November 20, 2026. Synthetic-only discussion prototype
+Target presentation: Thursday, November 19, 2026. Synthetic-only discussion prototype
 for management, IT and legal; not a production deployment or approval request
 to process real records in this repository.
+
+For the value proposition, decisions and NASWA schedule, see the
+[stakeholder briefing](./management_presentation_briefing.md).
 
 ## What actually works
 
@@ -97,6 +100,35 @@ restricted outputs and are not linked from the presentation page. The HMAC key
 is a public synthetic-demo constant, not a credential; never use it for real
 records. No model download, network service or cloud account is needed.
 
+### Optional: show the AI-assisted management briefing
+
+The standard run displays **Verified snapshot changes only (no AI copy)**.
+The [starter AI draft](../data/synthetic/management_briefing.draft.json) is based
+only on the invented aggregate comparison. To see the exact facts, or prepare a
+fresh prompt for an approved model, run `python -m jvsg_triage.demo briefing-prompt`.
+Do not supply the full `rehearsal.json`, workbooks, identifiers or notes to a model.
+
+1. Copy the draft JSON to `temp/management-demo/briefing.reviewed.json`. Compare
+   each point against the prompt facts and verified snapshots. Edit or reject
+   any unsupported claim; no person-level inference or recommendation is allowed.
+2. Only after a person completes that review, set `review_status` to `reviewed`.
+   Keep the version and facts fingerprint unchanged. This is an operator
+   attestation, not an authenticated approval mechanism or a truth check.
+3. Generate and open the landing page:
+
+   ```bash
+   python -m jvsg_triage.demo rehearse --output temp/management-demo \
+     --reviewed-briefing temp/management-demo/briefing.reviewed.json
+   ```
+
+The renderer accepts exactly three short points and rejects drafts, malformed
+files and fingerprints for different facts. The landing page makes no model
+call. `rehearsal.json` records the rendered wording and its SHA-256 alongside
+the baseline and refreshed batch references; the immutable dashboard/TOON
+batches are unchanged. If the opt-in run is rejected, do not show an older
+landing page as current: rerun `rehearse` without `--reviewed-briefing` and
+confirm the fallback label before presenting.
+
 ## Expected results
 
 | Metric | Baseline | Refreshed |
@@ -109,13 +141,13 @@ records. No model download, network service or cloud account is needed.
 
 - The synthetic native pair contains 18/19 cohort members and the same number
   of matched notes in each snapshot.
-- `DEMO-0005`: contact date changes to November 20; days since contact change from
+- `DEMO-0005`: contact date changes to November 19; days since contact change from
   30 to 0; the housing barrier changes from critical to partly addressed.
   Other barriers may still need review.
 - `DEMO-0019`: added to the South demonstration office.
 - Existing source review values remain unchanged, including Reviewed records.
 - `rehearsal.json` records both snapshots and the exact changed/added IDs.
-- Nothing is sent to Teams, GeoSol, SharePoint, a partner or a model.
+- Rehearsal sends nothing to Teams, GeoSol, SharePoint, a partner or a model.
 
 ## Synthetic human-review profile contract and demo assumptions
 
@@ -129,7 +161,7 @@ Last recorded contact, Transportation, Housing, Health, Legal, Staff review stat
 
 Participant numbers are `DEMO-` plus four digits, not real identifiers. Office
 names are North, Central and South demonstration office. Dates appear as
-"Nov 20, 2026" in reports and date-formatted Excel cells; the loader also accepts
+"Nov 19, 2026" in reports and date-formatted Excel cells; the loader also accepts
 YYYY-MM-DD text. Source dropdowns use full descriptions, not codes.
 Earlier code-based profile headers and values remain accepted for compatibility;
 the normalized JSON and compact TOON keep their stable machine-readable fields.
