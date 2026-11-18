@@ -21,6 +21,12 @@ team; do not attach sensitive files to a public report.
   backup mappings, or live case notes. Scrubbed output remains private.
 - Keep third-party documents out until redistribution rights are confirmed.
 - Require passing CI and review for changes to protected branches.
+- Keep the rehearsal local. Do not serve the workspace or the rehearsal
+  folder, which contains restricted processing outputs. Review synthetic
+  presentation files and recordings before sharing; exclude `restricted/`,
+  source-like files of unknown origin and unreviewed references. Treat any
+  local copy of uncertain origin as restricted until its owner determines
+  approved storage or disposition.
 
 ## Administrator release checklist
 

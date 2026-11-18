@@ -5,7 +5,9 @@ import json
 from datetime import date
 from pathlib import Path
 
-from jvsg_triage.demo.models import DemoError
+from jvsg_triage.demo.briefing import briefing_facts, draft_prompt
+from jvsg_triage.demo.intake import fixture_records, transform
+from jvsg_triage.demo.models import AS_OF, DemoError
 from jvsg_triage.demo.pipeline import (
     prepare_workflow,
     rehearse,
@@ -23,6 +25,9 @@ def main() -> int:
         if name == "run":
             command.add_argument("--source", type=Path, required=True)
             command.add_argument("--as-of", type=date.fromisoformat, required=True)
+        if name == "rehearse":
+            command.add_argument("--reviewed-briefing", type=Path, help="reviewed synthetic JSON")
+    commands.add_parser("briefing-prompt", help="print a prompt with invented aggregate facts")
     verify = commands.add_parser("verify")
     verify.add_argument("--batch", type=Path, required=True)
     args = parser.parse_args()
@@ -42,8 +47,13 @@ def main() -> int:
         elif args.command == "verify":
             manifest = verify_batch(args.batch)
             result = {"verified": True, "batch_id": manifest.batch_id, "records": manifest.records}
+        elif args.command == "briefing-prompt":
+            result = draft_prompt(briefing_facts(
+                transform(fixture_records(), AS_OF),
+                transform(fixture_records(refreshed=True), AS_OF),
+            ))
         else:
-            result = rehearse(args.output)
+            result = rehearse(args.output, reviewed_briefing=args.reviewed_briefing)
     except DemoError as error:
         parser.exit(2, f"{error}\n")
     except OSError:

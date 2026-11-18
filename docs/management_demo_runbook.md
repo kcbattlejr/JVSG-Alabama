@@ -1,8 +1,102 @@
 # SharePoint-first management demonstration runbook
 
-Target recording: Friday, November 20, 2026. Synthetic-only discussion prototype
+Target presentation: Thursday, November 19, 2026. Synthetic-only discussion prototype
 for management, IT and legal; not a production deployment or approval request
 to process real records in this repository.
+
+For the value proposition, decisions and NASWA schedule, see the
+[stakeholder briefing](./management_presentation_briefing.md).
+
+## Codespaces and Teams: quick start
+
+**Before the call:** Open the repository on GitHub, select
+`presentation/2026-11-19`, then choose **Code > Codespaces**. Create a codespace
+on that branch or open a clean existing one. In **Terminal > New Terminal**,
+run `git status --short --branch` to confirm the branch and
+`git pull --ff-only` to get the final commit. If the branch is wrong or there
+are changes you need to keep, use a fresh codespace instead of resetting it.
+
+From the repository root in the Codespaces Bash terminal:
+
+```bash
+source "$HOME/.venvs/jvsg/bin/activate"
+python -m jvsg_triage.demo rehearse
+```
+
+Wait for `verification` to say **All hashes, reconciliation and TOON round
+trips passed**. Expect 18 fictional people in the baseline and 19 in the
+refresh. The default run is offline and has no AI copy; Copilot Chat is not
+needed. Prepare the laptop copy below before the call rather than relying
+on a browser port or a live rebuild.
+
+### Download a laptop-ready copy
+
+After a successful run, use this Bash block from the repository root. It
+packs only the named presentation files, not the full rehearsal directory:
+
+```bash
+(
+  set -eu
+  cd temp/management-demo
+  python - <<'PY'
+import hashlib
+import json
+from pathlib import Path
+from zipfile import ZIP_DEFLATED, ZipFile
+from jvsg_triage.demo.pipeline import verify_batch
+
+status = json.loads(Path("status.json").read_text())
+rehearsal = json.loads(Path("rehearsal.json").read_text())
+if status["state"] != "success" or status["batch_id"] != Path(rehearsal["refreshed"]["path"]).name:
+    raise SystemExit("Rehearsal is not current. Rerun it before packaging.")
+files = [Path("index.html"), Path("rehearsal.json")]
+for name in ("baseline", "refreshed"):
+    batch = Path(rehearsal[name]["path"])
+    verify_batch(batch)
+    files.extend(batch / filename for filename in (
+        "dashboard.html", "dashboard.xlsx", "reviewed_profiles.xlsx", "profiles.json", "profiles.toon",
+    ))
+    for kind, suffix in (("anti_join", "203_205_anti_join.synthetic.csv"),
+                         ("case_notes", "case_notes.synthetic.xlsx")):
+        source = Path(f"simulated_sharepoint/{name}_{suffix}")
+        expected = rehearsal["native_intake"][name]["source_sha256"][kind]
+        if hashlib.sha256(source.read_bytes()).hexdigest() != expected:
+            raise SystemExit("Synthetic source file changed. Rerun rehearsal before packaging.")
+        files.append(source)
+
+with ZipFile("../management-presentation.zip", "w", ZIP_DEFLATED) as archive:
+    for path in files:
+        archive.write(path)
+print("Ready to download: temp/management-presentation.zip")
+PY
+)
+```
+
+In the Codespaces **Explorer**, right-click
+`temp/management-presentation.zip` and choose **Download**, if allowed by
+laptop policy. On the laptop, right-click the ZIP and choose **Extract All**.
+Open the extracted `index.html` in Edge or another approved browser. Click
+**Updated report: 19 fictional people** for HTML or **Download the updated
+Excel report** for Excel. Keep the extracted folder structure intact. Have the
+Excel Dashboard and the HTML page open before the call. In Teams, share only
+the presentation window, switch to Excel when needed, and avoid showing the
+raw note text, restricted outputs, or account and terminal information.
+
+Treat the ZIP as **synthetic meeting material**, not an external-release
+package. Review it before showing or sharing it. Do not copy `restricted/`,
+open a public port, or serve the workspace or full rehearsal folder.
+
+### If something goes wrong
+
+| What you see | What to do |
+|---|---|
+| Codespace is starting or `activate` is missing | Wait for container setup. If setup failed, run `bash .devcontainer/scripts/setup.sh` from the repository root, then activate again. Use the already downloaded copy if setup cannot finish before the meeting. |
+| `No module named jvsg_triage` or dependency errors | Activate the Codespaces environment, then run `python -m pip install -r requirements-demo.txt` and retry. If installation is blocked, use the downloaded copy. |
+| Rehearsal exits with an error or the counts are wrong | Read the terminal error and `temp/management-demo/status.json`. Do not present an older run as a fresh refresh. Rerun the default `rehearse` with no custom inputs; if it still fails, use the verified laptop copy and describe it as a saved rehearsal. |
+| Browser opens raw HTML or linked files are missing | Extract the whole ZIP first, then open the extracted `index.html` in Edge, not in the VS Code editor or inside the ZIP. |
+| Excel prompts for repair or charts do not fit | Re-download the current workbook rather than opening a repaired copy. Lower Excel zoom until column Q is visible. If Excel is blocked or still fails, show the HTML dashboard. |
+| Codespaces or downloads are blocked | Use the verified copy prepared before the call. If no approved copy is available, present the stakeholder briefing and explain that the demo could not be opened; do not bypass device policy. |
+| Copilot Chat is blank or returns `null` | Continue with this runbook. No step requires chat or a model. |
 
 ## What actually works
 
@@ -11,7 +105,7 @@ Simulated SharePoint raw report-pair upload (anti-join CSV + case-notes XLSX)
   -> native layout/footer validation, cohort matching, HMAC tokenization and scrubbing
   -> separate synthetic human-review profile input (not derived from case notes)
   -> deterministic aging and closed-vocabulary profile validation
-  -> generated Excel/HTML dashboards and lossless @TOON demo-1 package
+  -> generated Excel/HTML dashboards and lossless standard TOON export
   -> verified immutable batch
 ```
 
@@ -29,9 +123,8 @@ case notes. The demo makes this boundary visible. Production would need approved
 source/profile contracts, a qualified review process, and an approved TOON
 contract before those steps could be joined.
 
-The Gemini references are visual inspiration only. No reference workbook data,
-embedded logos, baseline figures, infrastructure details or claimed validation
-results are redistributed in the implementation. All distributions are invented.
+Do not use third-party visual references, old workbooks, or unreviewed local
+copies as presentation inputs. All distributions in this rehearsal are invented.
 
 ## Install and run
 
@@ -54,17 +147,18 @@ path. On disk, expand `temp/management-demo/batches/` in VS Code and select the
 matching report folder. Excel links may download; check the browser Downloads list.
 Open the Excel workbook in desktop Excel or an approved Excel browser viewer;
 there is no requirement to host a web application.
+The Dashboard tab uses columns A through Q, with a spacer between the two
+charts. If Q is off-screen, lower the Excel zoom before screen sharing.
+If an older download prompts Excel to repair the Watchlist table, rerun
+`rehearse` and download a fresh workbook from the refreshed landing page.
+Check that Excel opens it without a repair prompt and that the Watchlist
+column filters are visible before recording.
 
-If a remote VS Code browser cannot open the local file, either download the
-generated folder to your recording computer or serve **only this synthetic
-output directory**, on loopback, while rehearsing:
-
-```bash
-python -m http.server 8765 --bind 127.0.0.1 --directory temp/management-demo
-```
-
-Open `http://127.0.0.1:8765/`; stop the server with Ctrl+C afterward. Do not serve
-the repository root or expose a development port publicly.
+If a remote browser cannot open the local file, download only the dashboard or
+prepare a reviewed synthetic presentation copy on the recording computer.
+Preserve relative paths for the files you intend to open from the landing page.
+Do not include `restricted/`; do not serve the workspace or rehearsal folder
+over HTTP. Hiding a link is not access control.
 
 For code validation, install the development extra and run:
 
@@ -97,6 +191,35 @@ restricted outputs and are not linked from the presentation page. The HMAC key
 is a public synthetic-demo constant, not a credential; never use it for real
 records. No model download, network service or cloud account is needed.
 
+### Optional: show the AI-assisted management briefing
+
+The standard run displays **Verified snapshot changes only (no AI copy)**.
+The [starter AI draft](../data/synthetic/management_briefing.draft.json) is based
+only on the invented aggregate comparison. To see the exact facts, or prepare a
+fresh prompt for an approved model, run `python -m jvsg_triage.demo briefing-prompt`.
+Do not supply the full `rehearsal.json`, workbooks, identifiers or notes to a model.
+
+1. Copy the draft JSON to `temp/management-demo/briefing.reviewed.json`. Compare
+   each point against the prompt facts and verified snapshots. Edit or reject
+   any unsupported claim; no person-level inference or recommendation is allowed.
+2. Only after a person completes that review, set `review_status` to `reviewed`.
+   Keep the version and facts fingerprint unchanged. This is an operator
+   attestation, not an authenticated approval mechanism or a truth check.
+3. Generate and open the landing page:
+
+   ```bash
+   python -m jvsg_triage.demo rehearse --output temp/management-demo \
+     --reviewed-briefing temp/management-demo/briefing.reviewed.json
+   ```
+
+The renderer accepts exactly three short points and rejects drafts, malformed
+files and fingerprints for different facts. The landing page makes no model
+call. `rehearsal.json` records the rendered wording and its SHA-256 alongside
+the baseline and refreshed batch references; the immutable dashboard/TOON
+batches are unchanged. If the opt-in run is rejected, do not show an older
+landing page as current: rerun `rehearse` without `--reviewed-briefing` and
+confirm the fallback label before presenting.
+
 ## Expected results
 
 | Metric | Baseline | Refreshed |
@@ -109,13 +232,13 @@ records. No model download, network service or cloud account is needed.
 
 - The synthetic native pair contains 18/19 cohort members and the same number
   of matched notes in each snapshot.
-- `DEMO-0005`: contact date changes to November 20; days since contact change from
+- `DEMO-0005`: contact date changes to November 19; days since contact change from
   30 to 0; the housing barrier changes from critical to partly addressed.
   Other barriers may still need review.
 - `DEMO-0019`: added to the South demonstration office.
 - Existing source review values remain unchanged, including Reviewed records.
 - `rehearsal.json` records both snapshots and the exact changed/added IDs.
-- Nothing is sent to Teams, GeoSol, SharePoint, a partner or a model.
+- Rehearsal sends nothing to Teams, GeoSol, SharePoint, a partner or a model.
 
 ## Synthetic human-review profile contract and demo assumptions
 
@@ -129,7 +252,7 @@ Last recorded contact, Transportation, Housing, Health, Legal, Staff review stat
 
 Participant numbers are `DEMO-` plus four digits, not real identifiers. Office
 names are North, Central and South demonstration office. Dates appear as
-"Nov 20, 2026" in reports and date-formatted Excel cells; the loader also accepts
+"Nov 19, 2026" in reports and date-formatted Excel cells; the loader also accepts
 YYYY-MM-DD text. Source dropdowns use full descriptions, not codes.
 Earlier code-based profile headers and values remain accepted for compatibility;
 the normalized JSON and compact TOON keep their stable machine-readable fields.
@@ -155,13 +278,19 @@ not in a generated dashboard.
 
 ## TOON and reproducibility
 
-`profiles.toon` uses the reference-inspired **custom @TOON demo-1 dialect**,
-not the general Token-Oriented Object Notation standard or an approved federal
-VOMA contract. Its fixed fields preserve every normalized profile attribute:
-identity, office, assessment/contact/as-of dates, four independent domain states,
-review status, idle days and alert. `~` encodes a missing contact date. The parser
-rejects unknown versions, reordered/extra fields and noncanonical values.
-Round-trip equality is verified for every record before publication.
+`profiles.toon` is a [standard TOON tabular array](https://toonformat.dev/guide/format-overview#arrays-of-objects-tabular-form)
+with one header and one row per profile. Its columns match `profiles.json`;
+a missing contact date stays `null` and days since contact stays a number.
+The offline verifier checks the row count, column order, canonical form and exact
+round-trip equality before publication. This is a demo profile, not an approved
+federal VOMA contract.
+
+Use the current batch linked from `temp/management-demo/index.html`; older
+downloads may still contain the custom `@TOON|V:demo-1` format. To check an
+export independently, the
+[reference TOON CLI](https://toonformat.dev/cli/) can decode it to JSON for
+comparison with the accompanying `profiles.json`. The CLI is not a dependency
+of the offline demo.
 
 Each immutable `batches/<SHA-256>/` directory contains:
 
@@ -229,6 +358,6 @@ work. SharePoint does not execute this Python by storing it in a document librar
 HTML hosting/embedding also requires tenant-specific review.
 
 See [SECURITY.md](../SECURITY.md), the
-[SharePoint proposal](./sharepoint_data_visualization_proposal.md) and
+[MVP scope and approval checklist](./deliverables_and_required_inputs.md) and
 [recording script](./management_demo_script.md). Public review is not licensing,
 deployment, security-settings or live-data approval.

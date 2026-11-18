@@ -7,6 +7,7 @@ import os
 import tempfile
 from dataclasses import replace
 from datetime import date
+from html import escape
 from importlib.metadata import version
 from pathlib import Path
 from typing import Literal
@@ -14,6 +15,7 @@ from typing import Literal
 from openpyxl import load_workbook
 from pydantic import BaseModel, ConfigDict, Field, SecretStr, ValidationError
 
+from jvsg_triage.demo.briefing import briefing_facts, fingerprint, read_reviewed_briefing
 from jvsg_triage.demo.intake import (
     fixture_records,
     read_bytes,
@@ -48,7 +50,7 @@ DEMO_HMAC_SECRET = SecretStr("synthetic-only-demonstration-key-0001")
 class Manifest(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, hide_input_in_errors=True)
 
-    version: Literal["demo-1"] = VERSION
+    version: Literal["demo-2"] = VERSION
     synthetic_only: Literal[True] = True
     sharepoint_delivery: Literal["simulated-file-drop"] = "simulated-file-drop"
     as_of: date
@@ -128,10 +130,8 @@ def verify_batch(path: Path) -> Manifest:
         if (path / "profiles.json").read_text(encoding="utf-8") != expected_json:
             raise DemoError("verify: normalized profiles differ from source")
         toon = (path / "profiles.toon").read_text(encoding="utf-8")
-        if [decode(line) for line in toon.splitlines()] != profiles:
+        if decode(toon) != profiles:
             raise DemoError("verify: TOON round trip differs from source")
-        if toon != "".join(encode(p) + "\n" for p in profiles):
-            raise DemoError("verify: noncanonical TOON stream")
         if (path / "summary.json").read_text(encoding="utf-8") != json_text(summary(profiles)):
             raise DemoError("verify: aggregate reconciliation failed")
         if (path / "dashboard.html").read_text(encoding="utf-8") != html_dashboard(
@@ -169,7 +169,7 @@ def run_pipeline(source: Path, *, as_of: date, output: Path) -> Path:
                 stage = Path(temporary)
                 (stage / "reviewed_profiles.xlsx").write_bytes(content)
                 write_json(stage / "profiles.json", [p.model_dump(mode="json") for p in profiles])
-                toon = "".join(encode(profile) + "\n" for profile in profiles)
+                toon = encode(profiles)
                 (stage / "profiles.toon").write_text(toon, encoding="utf-8", newline="\n")
                 write_json(stage / "summary.json", summary(profiles))
                 (stage / "dashboard.html").write_text(
@@ -290,15 +290,30 @@ def prepare_workflow(output: Path) -> dict[str, object]:
     }
 
 
-def rehearse(output: Path) -> dict[str, object]:
+def rehearse(output: Path, *, reviewed_briefing: Path | None = None) -> dict[str, object]:
     root = output_root(output)
     profile_sources = prepare(root / "reviewed_profiles")
+    baseline_profiles = transform(read_source(read_bytes(profile_sources["baseline"])), AS_OF)
+    refreshed_profiles = transform(read_source(read_bytes(profile_sources["refreshed"])), AS_OF)
+    facts = briefing_facts(baseline_profiles, refreshed_profiles)
+    briefing = read_reviewed_briefing(reviewed_briefing, facts) if reviewed_briefing else None
+    briefing_html = "<p><strong>Briefing:</strong> Verified snapshot changes only (no AI copy).</p>"
+    briefing_metadata: dict[str, object] = {"mode": "deterministic"}
+    if briefing is not None:
+        payload = briefing.model_dump(mode="json")
+        briefing_metadata = {
+            "mode": "reviewed_ai_copy", "payload": payload, "sha256": fingerprint(payload),
+        }
+        points = "".join(f"<li>{escape(point)}</li>" for point in briefing.talking_points)
+        briefing_html = (
+            "<h2>AI-assisted management briefing</h2>"
+            "<p><strong>AI-drafted; human-reviewed.</strong> Invented aggregate counts only. "
+            "Not a referral recommendation.</p>"
+            f"<ul>{points}</ul><p>Compared with the verified snapshots linked above.</p>"
+        )
     native_sources = prepare_native_sources(root / "simulated_sharepoint")
     intake: dict[str, dict[str, object]] = {}
-    profile_counts = {
-        name: len(read_source(read_bytes(source)))
-        for name, source in profile_sources.items()
-    }
+    profile_counts = {"baseline": len(baseline_profiles), "refreshed": len(refreshed_profiles)}
     for name, inputs in native_sources.items():
         manifest = run_extraction(
             inputs["anti_join"], inputs["case_notes"],
@@ -325,8 +340,6 @@ def rehearse(output: Path) -> dict[str, object]:
     refreshed = run_pipeline(profile_sources["refreshed"], as_of=AS_OF, output=root)
     first = verify_batch(baseline)
     second = verify_batch(refreshed)
-    baseline_profiles = transform(read_source(read_bytes(profile_sources["baseline"])), AS_OF)
-    refreshed_profiles = transform(read_source(read_bytes(profile_sources["refreshed"])), AS_OF)
     old = {p.demo_id: p for p in baseline_profiles}
     new = {p.demo_id: p for p in refreshed_profiles}
     reviews_preserved = all(old[key].review == new[key].review for key in old)
@@ -343,6 +356,7 @@ def rehearse(output: Path) -> dict[str, object]:
         "added_demo_ids": sorted(new.keys() - old.keys()),
         "updated_demo_ids": sorted(key for key in old if old[key] != new[key]),
         "source_review_values_preserved": reviews_preserved,
+        "briefing": briefing_metadata,
         "verification": "All hashes, reconciliation and TOON round trips passed",
     }
     write_json(root / "rehearsal.json", result)
@@ -357,7 +371,7 @@ border-radius:8px;box-shadow:0 2px 8px #17324f16}}.notice{{padding:14px;backgrou
 border-left:5px solid #2e8b57}}code{{font-size:.9em}}</style><body>
 <h1>From paired report upload to reviewed dashboard</h1>
 <p class="notice"><strong>Synthetic-only rehearsal.</strong> All files are invented.
-SharePoint delivery is simulated locally; no cloud connection or model is used.</p>
+SharePoint delivery is simulated locally. This page makes no cloud or model calls.</p>
 <section><h2>1. Upload the raw report pair</h2>
 <p>These are the original synthetic-layout inputs in the simulated SharePoint folder.
 The anti-join establishes cohort membership; the paired case-notes report is matched
@@ -410,6 +424,7 @@ Each report also has its own file links at the top of the page.</p></section>
  - see the result after a new workbook arrives.</li>
 <li><a href="batches/{second.batch_id}/dashboard.xlsx">Open the updated Excel report</a>
  - the same information, with charts and a filterable list.</li></ol>
+{briefing_html}
 <h2>What changed in this example?</h2>
 <ul><li>Participant DEMO-0005 has a new recorded contact: 0 days since contact instead of 30.</li>
 <li>The same person's housing barrier is now partly addressed instead of critical.</li>

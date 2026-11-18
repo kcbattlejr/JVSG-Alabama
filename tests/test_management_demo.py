@@ -3,12 +3,14 @@
 import json
 from datetime import timedelta
 from pathlib import Path
+from xml.etree import ElementTree
 from zipfile import ZipFile
 
 import pytest
 from openpyxl import load_workbook
 
 from jvsg_triage.demo.__main__ import main
+from jvsg_triage.demo.briefing import MAX_BRIEFING_BYTES, fingerprint
 from jvsg_triage.demo.intake import (
     MAX_BYTES,
     fixture_records,
@@ -91,10 +93,12 @@ def test_closed_intake_rejects_bad_cells_without_echo(
 def test_intake_handles_native_excel_dates_and_rejects_time(tmp_path: Path) -> None:
     from datetime import datetime
 
-    content = modified_source(tmp_path, "D3", datetime(2026, 11, 20))
+    content = modified_source(tmp_path, "D3", datetime.combine(AS_OF, datetime.min.time()))
     assert read_source(content)[0].last_contact_date == AS_OF
     with pytest.raises(DemoError, match="date-only"):
-        read_source(modified_source(tmp_path, "D3", datetime(2026, 11, 20, 12)))
+        read_source(modified_source(tmp_path, "D3", datetime.combine(
+            AS_OF, datetime.min.time().replace(hour=12),
+        )))
 
 
 def test_intake_rejects_empty_other_sheets_and_corrupt_files(tmp_path: Path) -> None:
@@ -124,23 +128,30 @@ def test_all_profiles_round_trip_losslessly_including_nulls() -> None:
     values = profiles[0].model_dump()
     values.update(last_contact_date=None, idle_days=70, alert=Alert.RED)
     profiles.append(Profile.model_validate(values))
-    for profile in profiles:
-        assert decode(encode(profile)) == profile
+    text = encode(profiles)
+    assert text.startswith(
+        "[20]{demo_id,office,assessment_date,last_contact_date,TRN,HSG,MED,LEG,"
+        "review,as_of,idle_days,alert}:\n  DEMO-0001,"
+    )
+    assert ",null," in text
+    assert decode(text) == profiles
 
 
-@pytest.mark.parametrize("mutation", ["version", "extra", "order", "leading-zero", "inconsistent"])
+@pytest.mark.parametrize(
+    "mutation", ["row-count", "extra", "order", "leading-zero", "inconsistent"],
+)
 def test_toon_rejects_malformed_or_noncanonical_profiles(mutation: str) -> None:
-    text = encode(transform(fixture_records(), AS_OF)[0])
-    if mutation == "version":
-        text = text.replace("V:demo-1", "V:unapproved")
+    text = encode(transform(fixture_records(), AS_OF)[:1])
+    if mutation == "row-count":
+        text = text.replace("[1]", "[2]")
     elif mutation == "extra":
-        text += "|EXTRA:1"
+        text = text.rstrip("\n") + ",extra\n"
     elif mutation == "order":
-        text = text.replace("ID:DEMO-0001", "OFF:DEMO-0001")
+        text = text.replace("demo_id,office", "office,demo_id")
     elif mutation == "leading-zero":
-        text = text.replace("IDLE:0", "IDLE:00")
+        text = text.replace(",0,GREEN", ",00,GREEN")
     else:
-        text = text.replace("ALERT:GREEN", "ALERT:RED")
+        text = text.replace(",GREEN", ",RED")
     with pytest.raises(DemoError):
         decode(text)
 
@@ -184,6 +195,97 @@ def test_rehearsal_refresh_reconciliation_and_exact_reproducibility(tmp_path: Pa
     assert baseline_summary["alerts"] == {"GREEN": 6, "YELLOW": 6, "RED": 6}
     refreshed_summary = summary(transform(fixture_records(refreshed=True), AS_OF))
     assert refreshed_summary["alerts"] == {"GREEN": 8, "YELLOW": 6, "RED": 5}
+    assert first["briefing"] == {"mode": "deterministic"}
+    assert "Verified snapshot changes only (no AI copy)." in (first_root / "index.html").read_text()
+
+
+BRIEFING_DRAFT = (
+    Path(__file__).resolve().parents[1] / "data/synthetic/management_briefing.draft.json"
+)
+
+
+def test_offline_prompt_and_reviewed_briefing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    import sys
+
+    monkeypatch.setattr(sys, "argv", ["demo", "briefing-prompt"])
+    assert main() == 0
+    prompt = json.loads(capsys.readouterr().out)
+    assert prompt["facts"] == {
+        "synthetic_only": True, "as_of": "2026-11-19", "records_added": 1,
+        "existing_records_updated": 1,
+        "baseline": {"participants": 18, "awaiting_staff_review": 16,
+                     "contact_bands": {"GREEN": 6, "YELLOW": 6, "RED": 6}},
+        "refreshed": {"participants": 19, "awaiting_staff_review": 17,
+                      "contact_bands": {"GREEN": 8, "YELLOW": 6, "RED": 5}},
+        "contact_band_definitions": {
+            "GREEN": "0-14 days", "YELLOW": "15-29 days", "RED": "30 or more days",
+        },
+    }
+    payload = json.loads(BRIEFING_DRAFT.read_bytes())
+    assert payload["review_status"] == "draft"
+    assert payload["facts_sha256"] == prompt["response_shape"]["facts_sha256"]
+    payload["review_status"] = "reviewed"  # Exercise the operator gate with a test fixture.
+    payload["talking_points"][0] = "<em>Fictional only</em>"
+    reviewed = tmp_path / "reviewed.json"
+    reviewed.write_text(json.dumps(payload))
+    root = tmp_path / "demo"
+    original = rehearse(root)
+    monkeypatch.setattr(sys, "argv", [
+        "demo", "rehearse", "--output", str(root), "--reviewed-briefing", str(reviewed),
+    ])
+    assert main() == 0
+    result = json.loads(capsys.readouterr().out)
+    assert {k: v for k, v in result.items() if k != "briefing"} == {
+        k: v for k, v in original.items() if k != "briefing"
+    }
+    assert result["briefing"] == {
+        "mode": "reviewed_ai_copy", "payload": payload, "sha256": fingerprint(payload),
+    }
+    assert json.loads((root / "rehearsal.json").read_bytes()) == result
+    assert verify_batch(root / result["refreshed"]["path"]).records == 19
+    html = (root / "index.html").read_text()
+    assert "AI-drafted; human-reviewed." in html
+    assert "&lt;em&gt;Fictional only&lt;/em&gt;" in html
+    assert "<em>Fictional only</em>" not in html
+
+
+@pytest.mark.parametrize(
+    ("case", "error"),
+    [
+        ("draft", "draft must be reviewed"),
+        ("stale", "source facts changed"),
+        ("unknown", "cannot read or validate"),
+        ("too_long", "cannot read or validate"),
+        ("too_large", "cannot read or validate"),
+        ("duplicate", "cannot read or validate"),
+    ],
+)
+def test_invalid_opt_in_briefing_does_not_publish(
+    tmp_path: Path, case: str, error: str,
+) -> None:
+    payload = json.loads(BRIEFING_DRAFT.read_bytes())
+    if case != "draft":
+        payload["review_status"] = "reviewed"
+    if case == "stale":
+        payload["facts_sha256"] = "0" * 64
+    elif case == "unknown":
+        payload["unapproved_field"] = True
+    elif case == "too_long":
+        payload["talking_points"][0] = "x" * 241
+    data = json.dumps(payload)
+    if case == "too_large":
+        data += " " * MAX_BRIEFING_BYTES
+    elif case == "duplicate":
+        data = '{"review_status": "draft", ' + data[1:]
+    reviewed = tmp_path / "reviewed.json"
+    reviewed.write_text(data)
+    root = tmp_path / "demo"
+    with pytest.raises(DemoError, match=error):
+        rehearse(root, reviewed_briefing=reviewed)
+    for name in ("batches", "index.html", "rehearsal.json", "latest.json"):
+        assert not (root / name).exists()
 
 
 @pytest.mark.parametrize("artifact", sorted(ARTIFACTS))
@@ -245,7 +347,12 @@ def test_excel_and_html_are_real_snapshots_with_matching_data(tmp_path: Path) ->
     dashboard = workbook["Dashboard"]
     assert dashboard["A1"].value == "Veteran follow-up and support needs"
     assert dashboard["A5"].value == 18
-    assert [dashboard[cell].value for cell in ("D5", "G5", "J5")] == [6, 6, 6]
+    assert [dashboard[cell].value for cell in ("E5", "J5", "N5")] == [6, 6, 6]
+    assert dashboard.max_column == 17
+    assert dashboard.print_area == "'Dashboard'!$A$1:$Q$36"
+    assert {str(area) for area in dashboard.merged_cells.ranges} >= {
+        "A1:Q1", "A7:Q7", "A28:H28", "J28:Q28", "A29:Q29", "A30:D30", "E30:Q30",
+    }
     assert dashboard["A1"].font.size == 22
     assert dashboard["A1"].fill.fgColor.rgb.endswith("16324F")
     assert dashboard.row_dimensions[1].height == 42
@@ -261,16 +368,54 @@ def test_excel_and_html_are_real_snapshots_with_matching_data(tmp_path: Path) ->
     assert len(rows) == 18
     assert rows[4][10:12] == (30, "Extended gap in contact")
     assert rows[1][8] == "Staff review recorded"
-    assert workbook["TOON"]["B2"].value == encode(transform(fixture_records(), AS_OF)[0])
+    row_toon = workbook["TOON"]["B2"].value
+    assert isinstance(row_toon, str)
+    assert decode(row_toon + "\n") == transform(fixture_records(), AS_OF)[:1]
     workbook.close()
     with ZipFile(batch / "dashboard.xlsx") as archive:
         assert len([name for name in archive.namelist() if name.startswith("xl/charts/chart")]) == 2
         assert not any("externalLinks" in name for name in archive.namelist())
+        sheet_xml = ElementTree.fromstring(archive.read("xl/worksheets/sheet2.xml"))
+        table_xml = ElementTree.fromstring(archive.read("xl/tables/table1.xml"))
+        assert sheet_xml.find("{*}autoFilter") is None
+        assert table_xml.find("{*}autoFilter[@ref='A1:N19']") is not None
     html = (batch / "dashboard.html").read_text()
     assert 'id="count-RED">6' in html
     assert "No live connection" in html
     assert "<tr data-office=" in html
     assert "https://" not in html
+
+
+def test_refreshed_chart_columns_have_explicit_labels_and_counts(tmp_path: Path) -> None:
+    source = prepare(tmp_path / "intake")["refreshed"]
+    batch = run_pipeline(source, as_of=AS_OF, output=tmp_path / "out")
+    workbook = load_workbook(batch / "dashboard.xlsx", data_only=True)
+    with ZipFile(batch / "dashboard.xlsx") as archive:
+        contact = ElementTree.fromstring(archive.read("xl/charts/chart1.xml"))
+        support = ElementTree.fromstring(archive.read("xl/charts/chart2.xml"))
+        drawing = ElementTree.fromstring(archive.read("xl/drawings/drawing1.xml"))
+    assert [
+        tuple(anchor.findtext(f"{{*}}{marker}/{{*}}{coord}")
+              for marker in ("from", "to") for coord in ("col", "row"))
+        for anchor in drawing.findall("{*}twoCellAnchor")
+    ] == [("0", "8", "8", "26"), ("9", "8", "17", "26")]
+    assert [point.text for point in contact.findall(".//{*}strCache/{*}pt/{*}v")] == [
+        "0-14 days", "15-29 days", "30+ days",
+    ]
+    assert support.find(".//{*}barDir[@val='col']") is not None
+    assert len(support.findall(".//{*}ser")) == 1
+    assert support.find(".//{*}dLblPos[@val='outEnd']") is not None
+    assert support.find(".//{*}showVal[@val='1']") is not None
+    assert support.find(".//{*}catAx/{*}title") is None
+    assert support.find(".//{*}valAx/{*}title") is None
+    assert [point.text for point in support.findall(".//{*}strCache/{*}pt/{*}v")] == [
+        "Transportation", "Housing", "Health", "Legal",
+    ]
+    ref = support.findtext(".//{*}ser/{*}val/{*}numRef/{*}f")
+    assert ref == "'Watchlist'!$Q$7:$Q$10"
+    assert [row[0].value for row in workbook["Watchlist"]["Q7":"Q10"]] == [9, 7, 6, 7]
+    assert "more than one" in str(workbook["Dashboard"]["J28"].value)
+    workbook.close()
 
 
 def test_management_surfaces_use_plain_language_and_hide_technical_details(tmp_path: Path) -> None:
@@ -303,7 +448,7 @@ def test_management_surfaces_use_plain_language_and_hide_technical_details(tmp_p
         "Recent contact", "Follow-up due", "Extended gap in contact",
         "Transportation", "Housing", "Health", "Legal", "Critical barrier",
         "Needs support", "Partly addressed", "Resolved", "Not yet assessed",
-        "Awaiting staff review", "Nov 20, 2026",
+        "Awaiting staff review", "Nov 19, 2026",
     ):
         assert label in visible
     for abbreviation in (
