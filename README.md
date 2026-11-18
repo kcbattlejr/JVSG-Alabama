@@ -20,7 +20,9 @@ server, model, or cloud account is needed.
 
 For the state laptop and Teams call, use the
 [Codespaces quick start and troubleshooting table](docs/management_demo_runbook.md#codespaces-and-teams-quick-start).
-Download the verified presentation ZIP before the meeting so it also works offline.
+See [Start the HTML preview in VS Code](docs/management_demo_runbook.md#start-the-html-preview-in-vs-code)
+for the web server command. Download the verified presentation ZIP before the
+meeting so it also works offline.
 
 The demo matches and scrubs two invented reports using native MIS layouts.
 A separate invented staff-review workbook supplies the fields used for

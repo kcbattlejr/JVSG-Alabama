@@ -26,8 +26,32 @@ python -m jvsg_triage.demo rehearse
 Wait for `verification` to say **All hashes, reconciliation and TOON round
 trips passed**. Expect 18 fictional people in the baseline and 19 in the
 refresh. The default run is offline and has no AI copy; Copilot Chat is not
-needed. Prepare the laptop copy below before the call rather than relying
-on a browser port or a live rebuild.
+needed. Prepare the [presentation ZIP](#download-a-laptop-ready-copy) before
+the call. Use it for the VS Code preview or keep a copy on the laptop in case
+Codespaces is unavailable.
+
+### Start the HTML preview in VS Code
+
+After creating `temp/management-presentation.zip` below, run this from the
+repository root in the active Bash terminal:
+
+```bash
+preview_dir=$(mktemp -d) && \
+  python -m zipfile -e temp/management-presentation.zip "$preview_dir" && \
+  python -m http.server 8765 --bind 127.0.0.1 --directory "$preview_dir"
+```
+
+- **Codespaces:** In the terminal panel, open **Ports**. If port `8765` is
+  missing, choose **Forward a Port** and enter `8765`. Check that visibility
+  is **Private**. Use **Open in Preview** if offered, or **Open in Browser**
+  to open the forwarded address in a browser tab.
+- **Local VS Code:** Open `http://127.0.0.1:8765/` using **Simple Browser: Show**
+  in the Command Palette, or open the same address in your regular browser.
+
+Keep the terminal running while you present. Press **Ctrl+C** to stop the
+server. Serve only the extracted synthetic ZIP, never the workspace or full
+rehearsal folder. If port forwarding is blocked by policy, use the downloaded
+laptop copy instead.
 
 ### Download a laptop-ready copy
 
@@ -93,6 +117,7 @@ open a public port, or serve the workspace or full rehearsal folder.
 | Codespace is starting or `activate` is missing | Wait for container setup. If setup failed, run `bash .devcontainer/scripts/setup.sh` from the repository root, then activate again. Use the already downloaded copy if setup cannot finish before the meeting. |
 | `No module named jvsg_triage` or dependency errors | Activate the Codespaces environment, then run `python -m pip install -r requirements-demo.txt` and retry. If installation is blocked, use the downloaded copy. |
 | Rehearsal exits with an error or the counts are wrong | Read the terminal error and `temp/management-demo/status.json`. Do not present an older run as a fresh refresh. Rerun the default `rehearse` with no custom inputs; if it still fails, use the verified laptop copy and describe it as a saved rehearsal. |
+| Preview says `Address already in use` | Stop your old preview with Ctrl+C, or change `8765` to `8766` in the command and open the matching port. |
 | Browser opens raw HTML or linked files are missing | Extract the whole ZIP first, then open the extracted `index.html` in Edge, not in the VS Code editor or inside the ZIP. |
 | Excel prompts for repair or charts do not fit | Re-download the current workbook rather than opening a repaired copy. Lower Excel zoom until column Q is visible. If Excel is blocked or still fails, show the HTML dashboard. |
 | Codespaces or downloads are blocked | Use the verified copy prepared before the call. If no approved copy is available, present the stakeholder briefing and explain that the demo could not be opened; do not bypass device policy. |
