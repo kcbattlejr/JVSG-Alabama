@@ -10,6 +10,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 from openpyxl import Workbook
 from openpyxl.chart import BarChart, Reference
+from openpyxl.chart.data_source import AxDataSource, StrData, StrRef, StrVal
 from openpyxl.chart.label import DataLabelList
 from openpyxl.chart.marker import DataPoint
 from openpyxl.chart.shapes import GraphicalProperties
@@ -35,7 +36,7 @@ from jvsg_triage.demo.models import DOMAINS, Alert, Office, Profile, Review, Sta
 from jvsg_triage.toon.demo import encode
 
 FIXED_TIME = datetime(2026, 1, 1)
-PRESENTATION_VERSION = "paired-report-review-excel-4"
+PRESENTATION_VERSION = "paired-report-review-excel-6"
 PROFILE_FIELDS = (
     "demo_id", "office", "assessment_date", "last_contact_date",
     "TRN", "HSG", "MED", "LEG", "review", "as_of", "idle_days", "alert",
@@ -114,6 +115,15 @@ def add_source_validation(workbook: Workbook) -> None:
             validation.add(f"{column}3:{column}10002")
 
 
+def label_categories(chart: BarChart, source: Reference, labels: tuple[str, ...]) -> None:
+    chart.series[0].cat = AxDataSource(strRef=StrRef(
+        f=str(source),
+        strCache=StrData(ptCount=len(labels), pt=[
+            StrVal(idx=index, v=label) for index, label in enumerate(labels)
+        ]),
+    ))
+
+
 def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
     navy = "16324F"
     blue = "245B7A"
@@ -125,14 +135,6 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
     pale = "EAF1F6"
     line = "D7E1E8"
     white = "FFFFFF"
-    state_colors = {
-        State.CRT: red,
-        State.ACT: amber,
-        State.MIT: blue,
-        State.RES: green,
-        State.UNK: "8999A6",
-    }
-
     workbook = Workbook()
     dashboard = workbook.create_sheet("Dashboard", 0)
     workbook.remove(workbook["Sheet"])
@@ -214,64 +216,61 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
         ])
     watchlist["P1"] = "Contact status"
     watchlist["Q1"] = "Number of people"
-    for alert in Alert:
-        row = 2 + list(Alert).index(alert)
-        watchlist.cell(row, 16, ALERT_LABELS[alert])
+    contact_labels = ("0-14 days", "15-29 days", "30+ days")
+    for row, (alert, label) in enumerate(zip(Alert, contact_labels, strict=True), start=2):
+        watchlist.cell(row, 16, label)
         watchlist.cell(row, 17, counts[alert])
     watchlist["P6"] = "Area of support"
-    for column, state in enumerate(State, start=17):
-        watchlist.cell(6, column, STATE_LABELS[state])
+    watchlist["Q6"] = "People marked critical or needing support"
     for row, domain in enumerate(DOMAINS, start=7):
         watchlist.cell(row, 16, DOMAIN_LABELS[domain])
-        for column, state in enumerate(State, start=17):
-            watchlist.cell(
-                row, column,
-                sum(getattr(profile, domain) == state for profile in profiles),
-            )
-    for column in range(16, 22):
+        watchlist.cell(row, 17, sum(getattr(p, domain) in (State.CRT, State.ACT) for p in profiles))
+    for column in (16, 17):
         watchlist.column_dimensions[get_column_letter(column)].hidden = True
 
     chart = BarChart()
     chart.type = "bar"
     chart.style = 10
-    chart.title = "Time since last contact"
-    chart.y_axis.title = "Contact status"
-    chart.x_axis.title = "Number of people"
+    chart.title = "Days since last contact"
     chart.add_data(Reference(watchlist, min_col=17, min_row=1, max_row=4), titles_from_data=True)
-    chart.set_categories(Reference(watchlist, min_col=16, min_row=2, max_row=4))
+    label_categories(chart, Reference(watchlist, min_col=16, min_row=2, max_row=4), contact_labels)
     chart.series[0].data_points = [
         DataPoint(idx=index, spPr=GraphicalProperties(solidFill=color))
         for index, color in enumerate((green, amber, red))
     ]
-    chart.dataLabels = DataLabelList()
-    chart.dataLabels.showVal = True
-    chart.legend = None
-    chart.width = 14
-    chart.height = 8
-    chart.visible_cells_only = False
-    dashboard.add_chart(chart, "A9")
 
     barrier_chart = BarChart()
-    barrier_chart.type = "bar"
-    barrier_chart.grouping = "stacked"
-    barrier_chart.overlap = 100
+    barrier_chart.type = "col"
     barrier_chart.style = 10
-    barrier_chart.title = "Recorded support needs by area"
-    barrier_chart.x_axis.title = "Number of people"
-    barrier_chart.y_axis.title = "Area of support"
+    barrier_chart.title = "Critical or needs support"
     barrier_chart.add_data(
-        Reference(watchlist, min_col=17, max_col=21, min_row=6, max_row=10),
-        titles_from_data=True,
+        Reference(watchlist, min_col=17, min_row=6, max_row=10), titles_from_data=True,
     )
-    barrier_chart.set_categories(Reference(watchlist, min_col=16, min_row=7, max_row=10))
-    for series, state in zip(barrier_chart.series, State, strict=True):
-        series.graphicalProperties.solidFill = state_colors[state]
-        series.graphicalProperties.line.solidFill = state_colors[state]
-    barrier_chart.legend.position = "b"
-    barrier_chart.width = 16
-    barrier_chart.height = 8
-    barrier_chart.visible_cells_only = False
-    dashboard.add_chart(barrier_chart, "G9")
+    label_categories(
+        barrier_chart, Reference(watchlist, min_col=16, min_row=7, max_row=10),
+        tuple(DOMAIN_LABELS[domain] for domain in DOMAINS),
+    )
+    barrier_chart.x_axis.axPos = "b"
+    barrier_chart.y_axis.axPos = "l"
+    barrier_chart.series[0].graphicalProperties.solidFill = blue
+    barrier_chart.series[0].graphicalProperties.line.solidFill = blue
+    for figure, anchor in ((chart, "A9"), (barrier_chart, "G9")):
+        figure.dataLabels = DataLabelList(showVal=True, dLblPos="outEnd")
+        figure.legend = None
+        figure.width = 13
+        figure.height = 7.5
+        figure.visible_cells_only = False
+        dashboard.add_chart(figure, anchor)
+
+    dashboard.row_dimensions[24].height = 40
+    for start, end, caption in (
+        ("A24", "F24", "Counts show people in each day range. Each person is counted once."),
+        ("G24", "L24", "Each column counts people. A person can appear in more than one area."),
+    ):
+        dashboard.merge_cells(f"{start}:{end}")
+        dashboard[start] = caption
+        dashboard[start].font = Font(name="Aptos", size=10, color=ink)
+        dashboard[start].alignment = Alignment(vertical="center", wrap_text=True, indent=1)
 
     dashboard.merge_cells("A25:L25")
     dashboard["A25"] = "HOW TO READ THIS SNAPSHOT"
@@ -285,6 +284,10 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
         dashboard.cell(row, 1, ALERT_LABELS[alert])
         dashboard.cell(row, 2, ALERT_MEANINGS[alert])
     notes = (
+        (
+            "Support chart",
+            "Shows critical and needs-support records only. See Watchlist for all recorded states.",
+        ),
         (
             "When no contact is recorded",
             "Days are counted from assessment instead. These thresholds are demo assumptions.",

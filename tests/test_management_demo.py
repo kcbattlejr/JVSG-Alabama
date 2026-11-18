@@ -372,6 +372,32 @@ def test_excel_and_html_are_real_snapshots_with_matching_data(tmp_path: Path) ->
     assert "https://" not in html
 
 
+def test_refreshed_chart_columns_have_explicit_labels_and_counts(tmp_path: Path) -> None:
+    source = prepare(tmp_path / "intake")["refreshed"]
+    batch = run_pipeline(source, as_of=AS_OF, output=tmp_path / "out")
+    workbook = load_workbook(batch / "dashboard.xlsx", data_only=True)
+    with ZipFile(batch / "dashboard.xlsx") as archive:
+        contact = ElementTree.fromstring(archive.read("xl/charts/chart1.xml"))
+        support = ElementTree.fromstring(archive.read("xl/charts/chart2.xml"))
+    assert [point.text for point in contact.findall(".//{*}strCache/{*}pt/{*}v")] == [
+        "0-14 days", "15-29 days", "30+ days",
+    ]
+    assert support.find(".//{*}barDir[@val='col']") is not None
+    assert len(support.findall(".//{*}ser")) == 1
+    assert support.find(".//{*}dLblPos[@val='outEnd']") is not None
+    assert support.find(".//{*}showVal[@val='1']") is not None
+    assert support.find(".//{*}catAx/{*}title") is None
+    assert support.find(".//{*}valAx/{*}title") is None
+    assert [point.text for point in support.findall(".//{*}strCache/{*}pt/{*}v")] == [
+        "Transportation", "Housing", "Health", "Legal",
+    ]
+    ref = support.findtext(".//{*}ser/{*}val/{*}numRef/{*}f")
+    assert ref == "'Watchlist'!$Q$7:$Q$10"
+    assert [row[0].value for row in workbook["Watchlist"]["Q7":"Q10"]] == [9, 7, 6, 7]
+    assert "more than one" in str(workbook["Dashboard"]["G24"].value)
+    workbook.close()
+
+
 def test_management_surfaces_use_plain_language_and_hide_technical_details(tmp_path: Path) -> None:
     from html.parser import HTMLParser
 

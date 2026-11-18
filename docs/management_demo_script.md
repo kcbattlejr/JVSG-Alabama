@@ -94,9 +94,11 @@ and filterable rows.
 > agency policy.
 >
 > The support descriptions are independent. Recent contact does not mean a
-> barrier is resolved. “Most pressing recorded need” is an explanatory summary,
-> not an eligibility or referral score. Qualified staff remain responsible for
-> interpretation and next steps.
+> barrier is resolved. The right chart counts people marked critical or needing
+> support in each area. A person can appear in more than one column; the
+> Watchlist shows the full status for each person. “Most pressing recorded need”
+> is an explanatory summary, not an eligibility or referral score. Qualified
+> staff remain responsible for interpretation and next steps.
 
 ## 5:10-6:00 | Package and verify TOON
 
