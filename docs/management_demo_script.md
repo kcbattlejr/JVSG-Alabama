@@ -107,10 +107,10 @@ Leave hidden technical workbook sheets closed unless IT asks to see them.
 
 **Say:**
 
-> The same reviewed profiles produce a compact, lossless custom TOON demo file.
-> The verifier checks its round trip against the normalized profile records and
-> verifies the report artifacts. This `@TOON demo-1` format is illustrative; it
-> is not an approved federal or VOMA contract, and no data is transmitted.
+> The same reviewed profiles produce a standard TOON file, with column names
+> listed once and one row per profile. The verifier checks that decoding it
+> gives back the same records. The syntax is standard, but the demo's fields
+> are not an approved federal or VOMA contract. No data is transmitted.
 
 ## 6:00-6:50 | Simulate a refreshed report pair and explain the change
 

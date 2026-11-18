@@ -14,7 +14,7 @@ Simulated SharePoint raw report-pair upload (anti-join CSV + case-notes XLSX)
   -> native layout/footer validation, cohort matching, HMAC tokenization and scrubbing
   -> separate synthetic human-review profile input (not derived from case notes)
   -> deterministic aging and closed-vocabulary profile validation
-  -> generated Excel/HTML dashboards and lossless @TOON demo-1 package
+  -> generated Excel/HTML dashboards and lossless standard TOON export
   -> verified immutable batch
 ```
 
@@ -193,13 +193,19 @@ not in a generated dashboard.
 
 ## TOON and reproducibility
 
-`profiles.toon` uses the reference-inspired **custom @TOON demo-1 dialect**,
-not the general Token-Oriented Object Notation standard or an approved federal
-VOMA contract. Its fixed fields preserve every normalized profile attribute:
-identity, office, assessment/contact/as-of dates, four independent domain states,
-review status, idle days and alert. `~` encodes a missing contact date. The parser
-rejects unknown versions, reordered/extra fields and noncanonical values.
-Round-trip equality is verified for every record before publication.
+`profiles.toon` is a [standard TOON tabular array](https://toonformat.dev/guide/format-overview#arrays-of-objects-tabular-form)
+with one header and one row per profile. Its columns match `profiles.json`;
+a missing contact date stays `null` and days since contact stays a number.
+The offline verifier checks the row count, column order, canonical form and exact
+round-trip equality before publication. This is a demo profile, not an approved
+federal VOMA contract.
+
+Older batches are unchanged and may still contain the custom `@TOON|V:demo-1`
+format. Rerun `rehearse` and use the fresh landing-page link to get standard
+TOON. To check a new export independently, the
+[reference TOON CLI](https://toonformat.dev/cli/) can decode it to JSON for
+comparison with the accompanying `profiles.json`. The CLI is not a dependency
+of the offline demo.
 
 Each immutable `batches/<SHA-256>/` directory contains:
 

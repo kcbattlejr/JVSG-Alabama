@@ -128,23 +128,30 @@ def test_all_profiles_round_trip_losslessly_including_nulls() -> None:
     values = profiles[0].model_dump()
     values.update(last_contact_date=None, idle_days=70, alert=Alert.RED)
     profiles.append(Profile.model_validate(values))
-    for profile in profiles:
-        assert decode(encode(profile)) == profile
+    text = encode(profiles)
+    assert text.startswith(
+        "[20]{demo_id,office,assessment_date,last_contact_date,TRN,HSG,MED,LEG,"
+        "review,as_of,idle_days,alert}:\n  DEMO-0001,"
+    )
+    assert ",null," in text
+    assert decode(text) == profiles
 
 
-@pytest.mark.parametrize("mutation", ["version", "extra", "order", "leading-zero", "inconsistent"])
+@pytest.mark.parametrize(
+    "mutation", ["row-count", "extra", "order", "leading-zero", "inconsistent"],
+)
 def test_toon_rejects_malformed_or_noncanonical_profiles(mutation: str) -> None:
-    text = encode(transform(fixture_records(), AS_OF)[0])
-    if mutation == "version":
-        text = text.replace("V:demo-1", "V:unapproved")
+    text = encode(transform(fixture_records(), AS_OF)[:1])
+    if mutation == "row-count":
+        text = text.replace("[1]", "[2]")
     elif mutation == "extra":
-        text += "|EXTRA:1"
+        text = text.rstrip("\n") + ",extra\n"
     elif mutation == "order":
-        text = text.replace("ID:DEMO-0001", "OFF:DEMO-0001")
+        text = text.replace("demo_id,office", "office,demo_id")
     elif mutation == "leading-zero":
-        text = text.replace("IDLE:0", "IDLE:00")
+        text = text.replace(",0,GREEN", ",00,GREEN")
     else:
-        text = text.replace("ALERT:GREEN", "ALERT:RED")
+        text = text.replace(",GREEN", ",RED")
     with pytest.raises(DemoError):
         decode(text)
 
@@ -361,7 +368,9 @@ def test_excel_and_html_are_real_snapshots_with_matching_data(tmp_path: Path) ->
     assert len(rows) == 18
     assert rows[4][10:12] == (30, "Extended gap in contact")
     assert rows[1][8] == "Staff review recorded"
-    assert workbook["TOON"]["B2"].value == encode(transform(fixture_records(), AS_OF)[0])
+    row_toon = workbook["TOON"]["B2"].value
+    assert isinstance(row_toon, str)
+    assert decode(row_toon + "\n") == transform(fixture_records(), AS_OF)[:1]
     workbook.close()
     with ZipFile(batch / "dashboard.xlsx") as archive:
         assert len([name for name in archive.namelist() if name.startswith("xl/charts/chart")]) == 2

@@ -374,9 +374,9 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
 
     toon = workbook.create_sheet("TOON")
     toon.sheet_state = "hidden"
-    toon.append(["Demonstration participant", "Technical encoding (custom TOON demo format)"])
+    toon.append(["Demonstration participant", "Standard TOON (one record per cell)"])
     for profile in profiles:
-        toon.append([profile.demo_id, encode(profile)])
+        toon.append([profile.demo_id, encode([profile]).rstrip("\n")])
     definitions = workbook.create_sheet("Definitions")
     for row in (
         ("Label", "What it means"),
@@ -439,7 +439,7 @@ def html_dashboard(profiles: list[Profile], source_hash: str) -> str:
             ALERT_LABELS[profile.alert], barrier_summary(profile), REVIEW_LABELS[profile.review],
         )
         td = "".join(f"<td>{escape(value)}</td>" for value in cells)
-        inspector = escape(encode(profile))
+        inspector = escape(encode([profile]).rstrip("\n"))
         support = "".join(
             f"<dt>{label}</dt><dd>{STATE_LABELS[getattr(profile, field)]}</dd>"
             for field, label in DOMAIN_LABELS.items()
@@ -449,7 +449,7 @@ def html_dashboard(profiles: list[Profile], source_hash: str) -> str:
             f'{td}<td><details><summary>View support needs</summary><dl>{support}</dl>'
             '<p>Qualified staff decide next steps. No automatic referral.</p>'
             '<details class="technical"><summary>Technical data (for IT review)</summary>'
-            f'<p>Custom TOON demo format; not an approved interface.</p><pre>{inspector}</pre>'
+            f'<p>Standard TOON syntax; not an approved federal interface.</p><pre>{inspector}</pre>'
             '</details></details></td></tr>'
         )
     options = "".join(
@@ -579,7 +579,7 @@ it is not a referral or eligibility score.</li>
 <li>Qualified staff interpret needs and approve referrals. This report does not make decisions.</li>
 <li>All support descriptions are invented input, not AI findings.</li></ul>
 <details class="technical"><summary>Technical processing and verification (for IT review)</summary>
-<p>Custom TOON demo-1 serialization, not standard TOON or an approved federal interface.
+<p>Standard TOON serialization; the demo profile is not an approved federal interface.
 The synthetic review-profile workbook and calculated records are checked before this
 report is created.
 The profile fields are not extracted or classified from native case notes.</p>

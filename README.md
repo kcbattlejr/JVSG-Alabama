@@ -42,8 +42,8 @@ The [stakeholder briefing](docs/management_presentation_briefing.md) explains th
 proposal and the path to the December 4 NASWA nomination deadline.
 **Delivery is locally simulated, not a live Microsoft 365 integration.** The
 native report pair does not supply the dashboard profile fields; those are
-separate synthetic human-review inputs. The custom `@TOON demo-1` dialect and
-aging thresholds are demo assumptions, not approved contracts or policy.
+separate synthetic human-review inputs. The export uses standard TOON syntax,
+but the profile fields and aging thresholds are not approved contracts or policy.
 
 ## Development environments
 

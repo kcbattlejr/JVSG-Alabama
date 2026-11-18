@@ -50,7 +50,7 @@ DEMO_HMAC_SECRET = SecretStr("synthetic-only-demonstration-key-0001")
 class Manifest(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, hide_input_in_errors=True)
 
-    version: Literal["demo-1"] = VERSION
+    version: Literal["demo-2"] = VERSION
     synthetic_only: Literal[True] = True
     sharepoint_delivery: Literal["simulated-file-drop"] = "simulated-file-drop"
     as_of: date
@@ -130,10 +130,8 @@ def verify_batch(path: Path) -> Manifest:
         if (path / "profiles.json").read_text(encoding="utf-8") != expected_json:
             raise DemoError("verify: normalized profiles differ from source")
         toon = (path / "profiles.toon").read_text(encoding="utf-8")
-        if [decode(line) for line in toon.splitlines()] != profiles:
+        if decode(toon) != profiles:
             raise DemoError("verify: TOON round trip differs from source")
-        if toon != "".join(encode(p) + "\n" for p in profiles):
-            raise DemoError("verify: noncanonical TOON stream")
         if (path / "summary.json").read_text(encoding="utf-8") != json_text(summary(profiles)):
             raise DemoError("verify: aggregate reconciliation failed")
         if (path / "dashboard.html").read_text(encoding="utf-8") != html_dashboard(
@@ -171,7 +169,7 @@ def run_pipeline(source: Path, *, as_of: date, output: Path) -> Path:
                 stage = Path(temporary)
                 (stage / "reviewed_profiles.xlsx").write_bytes(content)
                 write_json(stage / "profiles.json", [p.model_dump(mode="json") for p in profiles])
-                toon = "".join(encode(profile) + "\n" for profile in profiles)
+                toon = encode(profiles)
                 (stage / "profiles.toon").write_text(toon, encoding="utf-8", newline="\n")
                 write_json(stage / "summary.json", summary(profiles))
                 (stage / "dashboard.html").write_text(
