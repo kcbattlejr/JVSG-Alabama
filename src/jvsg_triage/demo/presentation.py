@@ -10,9 +10,17 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 from openpyxl import Workbook
 from openpyxl.chart import BarChart, Reference
+<<<<<<< HEAD
 from openpyxl.chart.label import DataLabelList
 from openpyxl.chart.marker import DataPoint
 from openpyxl.chart.shapes import GraphicalProperties
+=======
+from openpyxl.chart.data_source import AxDataSource, StrData, StrRef, StrVal
+from openpyxl.chart.label import DataLabelList
+from openpyxl.chart.marker import DataPoint
+from openpyxl.chart.shapes import GraphicalProperties
+from openpyxl.drawing.spreadsheet_drawing import AnchorMarker, TwoCellAnchor
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
@@ -35,7 +43,11 @@ from jvsg_triage.demo.models import DOMAINS, Alert, Office, Profile, Review, Sta
 from jvsg_triage.toon.demo import encode
 
 FIXED_TIME = datetime(2026, 1, 1)
+<<<<<<< HEAD
 PRESENTATION_VERSION = "paired-report-review-excel-4"
+=======
+PRESENTATION_VERSION = "paired-report-review-excel-7"
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
 PROFILE_FIELDS = (
     "demo_id", "office", "assessment_date", "last_contact_date",
     "TRN", "HSG", "MED", "LEG", "review", "as_of", "idle_days", "alert",
@@ -114,6 +126,18 @@ def add_source_validation(workbook: Workbook) -> None:
             validation.add(f"{column}3:{column}10002")
 
 
+<<<<<<< HEAD
+=======
+def label_categories(chart: BarChart, source: Reference, labels: tuple[str, ...]) -> None:
+    chart.series[0].cat = AxDataSource(strRef=StrRef(
+        f=str(source),
+        strCache=StrData(ptCount=len(labels), pt=[
+            StrVal(idx=index, v=label) for index, label in enumerate(labels)
+        ]),
+    ))
+
+
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
 def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
     navy = "16324F"
     blue = "245B7A"
@@ -125,6 +149,7 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
     pale = "EAF1F6"
     line = "D7E1E8"
     white = "FFFFFF"
+<<<<<<< HEAD
     state_colors = {
         State.CRT: red,
         State.ACT: amber,
@@ -133,22 +158,35 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
         State.UNK: "8999A6",
     }
 
+=======
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
     workbook = Workbook()
     dashboard = workbook.create_sheet("Dashboard", 0)
     workbook.remove(workbook["Sheet"])
     dashboard.sheet_view.showGridLines = False
     dashboard.sheet_view.zoomScale = 85
+<<<<<<< HEAD
     for column in range(1, 13):
         dashboard.column_dimensions[get_column_letter(column)].width = 13
 
     dashboard.merge_cells("A1:L1")
+=======
+    for column in range(1, 18):
+        dashboard.column_dimensions[get_column_letter(column)].width = 4 if column == 9 else 13
+
+    dashboard.merge_cells("A1:Q1")
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
     dashboard["A1"] = "Veteran follow-up and support needs"
     dashboard["A1"].font = Font(name="Aptos Display", size=22, bold=True, color=white)
     dashboard["A1"].fill = PatternFill("solid", fgColor=navy)
     dashboard["A1"].alignment = Alignment(vertical="center", indent=1)
     dashboard.row_dimensions[1].height = 42
 
+<<<<<<< HEAD
     dashboard.merge_cells("A2:L2")
+=======
+    dashboard.merge_cells("A2:Q2")
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
     dashboard["A2"] = (
         "SYNTHETIC DEMONSTRATION  |  Offline snapshot  |  No live SharePoint connection"
     )
@@ -159,10 +197,17 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
 
     counts = Counter(profile.alert for profile in profiles)
     cards = (
+<<<<<<< HEAD
         ("A4:C4", "A5:C6", "PEOPLE IN SNAPSHOT", len(profiles), navy),
         ("D4:F4", "D5:F6", ALERT_LABELS[Alert.GREEN].upper(), counts[Alert.GREEN], green),
         ("G4:I4", "G5:I6", ALERT_LABELS[Alert.YELLOW].upper(), counts[Alert.YELLOW], amber),
         ("J4:L4", "J5:L6", ALERT_LABELS[Alert.RED].upper(), counts[Alert.RED], red),
+=======
+        ("A4:D4", "A5:D6", "PEOPLE IN SNAPSHOT", len(profiles), navy),
+        ("E4:H4", "E5:H6", ALERT_LABELS[Alert.GREEN].upper(), counts[Alert.GREEN], green),
+        ("J4:M4", "J5:M6", ALERT_LABELS[Alert.YELLOW].upper(), counts[Alert.YELLOW], amber),
+        ("N4:Q4", "N5:Q6", ALERT_LABELS[Alert.RED].upper(), counts[Alert.RED], red),
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
     )
     card_border = Border(
         left=Side(style="thin", color=line),
@@ -192,7 +237,11 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
 
     pending = sum(profile.review == Review.PENDING for profile in profiles)
     reviewed = len(profiles) - pending
+<<<<<<< HEAD
     dashboard.merge_cells("A7:L7")
+=======
+    dashboard.merge_cells("A7:Q7")
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
     dashboard["A7"] = (
         f"Staff review status: {pending} awaiting review  |  {reviewed} reviewed"
     )
@@ -214,6 +263,7 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
         ])
     watchlist["P1"] = "Contact status"
     watchlist["Q1"] = "Number of people"
+<<<<<<< HEAD
     for alert in Alert:
         row = 2 + list(Alert).index(alert)
         watchlist.cell(row, 16, ALERT_LABELS[alert])
@@ -229,20 +279,39 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
                 sum(getattr(profile, domain) == state for profile in profiles),
             )
     for column in range(16, 22):
+=======
+    contact_labels = ("0-14 days", "15-29 days", "30+ days")
+    for row, (alert, label) in enumerate(zip(Alert, contact_labels, strict=True), start=2):
+        watchlist.cell(row, 16, label)
+        watchlist.cell(row, 17, counts[alert])
+    watchlist["P6"] = "Area of support"
+    watchlist["Q6"] = "People marked critical or needing support"
+    for row, domain in enumerate(DOMAINS, start=7):
+        watchlist.cell(row, 16, DOMAIN_LABELS[domain])
+        watchlist.cell(row, 17, sum(getattr(p, domain) in (State.CRT, State.ACT) for p in profiles))
+    for column in (16, 17):
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
         watchlist.column_dimensions[get_column_letter(column)].hidden = True
 
     chart = BarChart()
     chart.type = "bar"
     chart.style = 10
+<<<<<<< HEAD
     chart.title = "Time since last contact"
     chart.y_axis.title = "Contact status"
     chart.x_axis.title = "Number of people"
     chart.add_data(Reference(watchlist, min_col=17, min_row=1, max_row=4), titles_from_data=True)
     chart.set_categories(Reference(watchlist, min_col=16, min_row=2, max_row=4))
+=======
+    chart.title = "Days since last contact"
+    chart.add_data(Reference(watchlist, min_col=17, min_row=1, max_row=4), titles_from_data=True)
+    label_categories(chart, Reference(watchlist, min_col=16, min_row=2, max_row=4), contact_labels)
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
     chart.series[0].data_points = [
         DataPoint(idx=index, spPr=GraphicalProperties(solidFill=color))
         for index, color in enumerate((green, amber, red))
     ]
+<<<<<<< HEAD
     chart.dataLabels = DataLabelList()
     chart.dataLabels.showVal = True
     chart.legend = None
@@ -285,6 +354,59 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
         dashboard.cell(row, 1, ALERT_LABELS[alert])
         dashboard.cell(row, 2, ALERT_MEANINGS[alert])
     notes = (
+=======
+
+    barrier_chart = BarChart()
+    barrier_chart.type = "col"
+    barrier_chart.style = 10
+    barrier_chart.title = "Critical or needs support"
+    barrier_chart.add_data(
+        Reference(watchlist, min_col=17, min_row=6, max_row=10), titles_from_data=True,
+    )
+    label_categories(
+        barrier_chart, Reference(watchlist, min_col=16, min_row=7, max_row=10),
+        tuple(DOMAIN_LABELS[domain] for domain in DOMAINS),
+    )
+    barrier_chart.x_axis.axPos = "b"
+    barrier_chart.y_axis.axPos = "l"
+    barrier_chart.series[0].graphicalProperties.solidFill = blue
+    barrier_chart.series[0].graphicalProperties.line.solidFill = blue
+    for figure, first_col, end_col in ((chart, 0, 8), (barrier_chart, 9, 17)):
+        figure.dataLabels = DataLabelList(showVal=True, dLblPos="outEnd")
+        figure.legend = None
+        figure.visible_cells_only = False
+        anchor = TwoCellAnchor(
+            editAs="twoCell",
+            _from=AnchorMarker(col=first_col, row=8),
+            to=AnchorMarker(col=end_col, row=26),
+        )
+        # openpyxl accepts drawing anchors; the installed stub only declares str.
+        figure.anchor = anchor  # type: ignore[assignment]
+        dashboard.add_chart(figure)
+
+    dashboard.row_dimensions[28].height = 36
+    for start, end, caption in (
+        ("A28", "H28", "Counts show people in each day range. Each person is counted once."),
+        ("J28", "Q28", "Each column counts people. A person can appear in more than one area."),
+    ):
+        dashboard.merge_cells(f"{start}:{end}")
+        dashboard[start] = caption
+        dashboard[start].font = Font(name="Aptos", size=10, color=ink)
+        dashboard[start].alignment = Alignment(vertical="center", wrap_text=True, indent=1)
+
+    dashboard.merge_cells("A29:Q29")
+    dashboard["A29"] = "HOW TO READ THIS SNAPSHOT"
+    dashboard["A29"].font = Font(name="Aptos", size=11, bold=True, color=white)
+    dashboard["A29"].fill = PatternFill("solid", fgColor=navy)
+    dashboard["A29"].alignment = Alignment(vertical="center", indent=1)
+    dashboard.row_dimensions[29].height = 24
+    notes = (
+        *((ALERT_LABELS[alert], ALERT_MEANINGS[alert]) for alert in Alert),
+        (
+            "Support chart",
+            "Shows critical and needs-support records only. See Watchlist for all recorded states.",
+        ),
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
         (
             "When no contact is recorded",
             "Days are counted from assessment instead. These thresholds are demo assumptions.",
@@ -298,6 +420,7 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
             "Qualified staff interpret needs and approve referrals. Nothing is sent automatically.",
         ),
     )
+<<<<<<< HEAD
     for label, meaning in notes:
         row = dashboard.max_row + 1
         dashboard.merge_cells(start_row=row, start_column=2, end_row=row, end_column=12)
@@ -314,6 +437,23 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
             cell.border = Border(bottom=Side(style="hair", color=line))
     dashboard.freeze_panes = "A4"
     dashboard.print_area = f"A1:L{dashboard.max_row}"
+=======
+    for row, (label, meaning) in enumerate(notes, start=30):
+        dashboard.merge_cells(f"A{row}:D{row}")
+        dashboard.merge_cells(f"E{row}:Q{row}")
+        dashboard.cell(row, 1, label)
+        dashboard.cell(row, 5, meaning)
+        dashboard.cell(row, 1).font = Font(name="Aptos", size=10, bold=True, color=blue)
+        dashboard.cell(row, 5).font = Font(name="Aptos", size=10, color=ink)
+        dashboard.cell(row, 1).alignment = Alignment(vertical="center", wrap_text=True, indent=1)
+        dashboard.cell(row, 5).alignment = Alignment(vertical="center", wrap_text=True, indent=1)
+        dashboard.row_dimensions[row].height = 30
+        for cell in dashboard[row]:
+            cell.fill = PatternFill("solid", fgColor="F4F7F9" if row % 2 == 0 else white)
+            cell.border = Border(bottom=Side(style="hair", color=line))
+    dashboard.freeze_panes = "A4"
+    dashboard.print_area = f"A1:Q{dashboard.max_row}"
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
     dashboard.page_setup.orientation = "landscape"
     dashboard.page_setup.fitToWidth = 1
     dashboard.page_setup.fitToHeight = 1
@@ -370,9 +510,15 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
 
     toon = workbook.create_sheet("TOON")
     toon.sheet_state = "hidden"
+<<<<<<< HEAD
     toon.append(["Demonstration participant", "Technical encoding (custom TOON demo format)"])
     for profile in profiles:
         toon.append([profile.demo_id, encode(profile)])
+=======
+    toon.append(["Demonstration participant", "Standard TOON (one record per cell)"])
+    for profile in profiles:
+        toon.append([profile.demo_id, encode([profile]).rstrip("\n")])
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
     definitions = workbook.create_sheet("Definitions")
     for row in (
         ("Label", "What it means"),
@@ -435,7 +581,11 @@ def html_dashboard(profiles: list[Profile], source_hash: str) -> str:
             ALERT_LABELS[profile.alert], barrier_summary(profile), REVIEW_LABELS[profile.review],
         )
         td = "".join(f"<td>{escape(value)}</td>" for value in cells)
+<<<<<<< HEAD
         inspector = escape(encode(profile))
+=======
+        inspector = escape(encode([profile]).rstrip("\n"))
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
         support = "".join(
             f"<dt>{label}</dt><dd>{STATE_LABELS[getattr(profile, field)]}</dd>"
             for field, label in DOMAIN_LABELS.items()
@@ -445,7 +595,11 @@ def html_dashboard(profiles: list[Profile], source_hash: str) -> str:
             f'{td}<td><details><summary>View support needs</summary><dl>{support}</dl>'
             '<p>Qualified staff decide next steps. No automatic referral.</p>'
             '<details class="technical"><summary>Technical data (for IT review)</summary>'
+<<<<<<< HEAD
             f'<p>Custom TOON demo format; not an approved interface.</p><pre>{inspector}</pre>'
+=======
+            f'<p>Standard TOON syntax; not an approved federal interface.</p><pre>{inspector}</pre>'
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
             '</details></details></td></tr>'
         )
     options = "".join(
@@ -575,7 +729,11 @@ it is not a referral or eligibility score.</li>
 <li>Qualified staff interpret needs and approve referrals. This report does not make decisions.</li>
 <li>All support descriptions are invented input, not AI findings.</li></ul>
 <details class="technical"><summary>Technical processing and verification (for IT review)</summary>
+<<<<<<< HEAD
 <p>Custom TOON demo-1 serialization, not standard TOON or an approved federal interface.
+=======
+<p>Standard TOON serialization; the demo profile is not an approved federal interface.
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
 The synthetic review-profile workbook and calculated records are checked before this
 report is created.
 The profile fields are not extracted or classified from native case notes.</p>

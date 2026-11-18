@@ -6,8 +6,13 @@ from typing import Final
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+<<<<<<< HEAD
 VERSION: Final = "demo-1"
 AS_OF = date(2026, 11, 20)
+=======
+VERSION: Final = "demo-2"
+AS_OF = date(2026, 11, 19)
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
 MARKER = "JVSG_SYNTHETIC_DEMO_V1"
 HEADERS = (
     "demo_id", "office", "assessment_date", "last_contact_date",

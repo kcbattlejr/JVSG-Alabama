@@ -1,10 +1,10 @@
 # JVSG-Alabama
 
-Python project scaffold for the Alabama JVSG Non-Case Managed (Non-CM) veteran
-triage and VOMA stability-constraints initiative. The intended system includes
-synthetic GeoSol data workflows, privacy-preserving processing, operational
-digests, and local or Azure-hosted services.
+A synthetic prototype for helping Alabama Jobs for Veterans State Grant (JVSG)
+staff see who may need follow-up and what support needs are already recorded.
+It is **not approved for live data, production use, or external release**.
 
+<<<<<<< HEAD
 > **Current status:** This is a prototype, not an approved production system.
 > Native MIS intake validates the anti-join CSV and
 > case-notes XLSX (headers, title rows and the `Total Rows` footer). It matches
@@ -42,68 +42,67 @@ exact expected counts, manual refresh commands and production boundaries.
 native report pair does not supply the dashboard profile fields; those are
 separate synthetic human-review inputs. The custom `@TOON demo-1` dialect and
 aging thresholds are demo assumptions, not approved contracts or policy.
+=======
+## Open the management demo
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
 
-## Development environments
-
-The Python 3.11 development container can be used in GitHub Codespaces or
-locally with VS Code and Docker. Use synthetic data for development and demos.
-
-### GitHub Codespaces
-
-1. Open the repository on GitHub and choose **Code → Codespaces → Create
-   codespace**.
-2. Wait for the dev container to finish creating and installing dependencies.
-3. Open a terminal and activate the container environment:
-
-   ```bash
-   source /home/vscode/.venvs/jvsg/bin/activate
-   ```
-
-The container installs development and data extras. Azure CLI is not installed
-automatically: no Azure deployment is currently implemented. Install it only
-when an authorized Azure workflow requires it.
-The container environment is `/home/vscode/.venvs/jvsg`; the native WSL
-environment remains `.venv`. Keeping them separate prevents a mounted Python
-3.12 environment from breaking TLS/package installation in the Python 3.11
-container. In the container use `/home/vscode/.venvs/jvsg/bin/python -m pytest`.
-
-### Local development
-
-Prerequisites: Git, Python 3.11 or newer, and either:
-
-- `uv` (recommended), or
-- `venv` and `pip`.
+From the repository root in an activated Python 3.11+ environment:
 
 ```bash
-git clone https://github.com/kcbattlejr/JVSG-Alabama.git
-cd JVSG-Alabama
-uv sync --extra dev
-uv run pytest
-uv run ruff check .
+python -m pip install -r requirements-demo.txt
+python -m jvsg_triage.demo rehearse
 ```
 
-Equivalent standard-library virtual environment setup:
+Open `temp/management-demo/index.html` locally in a browser. Use this folder
+for the current rehearsal; open the refreshed HTML dashboard or download the
+Excel dashboard and standard `profiles.toon` from the landing page. No web
+server, model, or cloud account is needed.
+
+For the state laptop and Teams call, use the
+[Codespaces quick start and troubleshooting table](docs/management_demo_runbook.md#codespaces-and-teams-quick-start).
+See [Start the HTML preview in VS Code](docs/management_demo_runbook.md#start-the-html-preview-in-vs-code)
+for the web server command. Download the verified presentation ZIP before the
+meeting so it also works offline.
+
+The demo matches and scrubs two invented reports using native MIS layouts.
+A separate invented staff-review workbook supplies the fields used for
+follow-up bands, Excel/HTML dashboards, and the lossless standard TOON
+export. The optional AI-assisted wording uses invented totals only and
+requires human review before display. The project does not independently
+compute the 203/205 anti-join, infer profile fields from notes, connect to
+SharePoint, send notifications, or transmit data to a federal system.
+
+## Documentation
+
+| Start here | Use it for |
+|---|---|
+| [Stakeholder briefing](docs/management_presentation_briefing.md) | November 19 presentation, value and limits, and the December 4 NASWA deadline |
+| [Demo runbook](docs/management_demo_runbook.md) and [recording script](docs/management_demo_script.md) | Rehearse, verify, present, or recover from a failed refresh |
+| [MVP scope and approval checklist](docs/deliverables_and_required_inputs.md) | Agree on pilot scope, ownership, access, and evidence |
+| [MIS intake contract](docs/mis_intake_contract.md) and [PII protocol](docs/pii_protocol.md) | Review report parsing, data tiers, scrubbing, and known limitations |
+| [Security and publication requirements](SECURITY.md) | Handle sensitive material, repository governance, and external release |
+
+## Development
+
+Use the provided VS Code dev container or a local Python 3.11+ virtual
+environment. In the container, activate with
+`source /home/vscode/.venvs/jvsg/bin/activate`.
 
 ```bash
-git clone https://github.com/kcbattlejr/JVSG-Alabama.git
-cd JVSG-Alabama
-python -m venv .venv
-```
-
-Activate the environment (`source .venv/bin/activate` on macOS/Linux, or
-`.venv\Scripts\Activate.ps1` in PowerShell), then run:
-
-```bash
-python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
-pytest
-ruff check .
+python -m pytest
+python -m ruff check .
+python -m mypy src
 ```
 
-To open the project in a local VS Code dev container instead, install Docker
-Desktop or Docker Engine and the VS Code Dev Containers extension, then use
-**Dev Containers: Reopen in Container**.
+The code for the rehearsal is under `src/jvsg_triage/demo/`. The underlying
+intake and scrubber are under `etl/` and `privacy/`; generated test data and
+evaluation tools are documented under [data/synthetic/](data/synthetic/README.md).
+Azure, Microsoft 365 synchronization, case-note inference, and VOMA remain
+unimplemented integration paths. The optional settings in `.env.example` do
+not grant access or authorization.
 
+<<<<<<< HEAD
 ## Configuration
 
 Copy `.env.example` to `.env` for local overrides. The default configuration
@@ -255,3 +254,9 @@ planned functionality has already been implemented.
 Human specialists retain decision authority over case interpretation and
 referrals. AI-generated classifications or filters must remain reviewable and
 must not be treated as final case decisions.
+=======
+Use only generated fixtures in development, demos, prompts, and CI. Do not copy
+live reports into the workspace or use Git ignore rules as a privacy control.
+Package metadata remains proprietary pending agency ownership and licensing
+approval; repository visibility is not a license.
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88

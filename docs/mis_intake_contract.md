@@ -122,17 +122,21 @@ documented operational and security decisions.
 From the repository root in PowerShell after installing `.[dev]`:
 
 ```powershell
+$env:SID_HMAC_SECRET = 'synthetic-only-demonstration-key-0001'
 .\.venv\Scripts\python.exe -m jvsg_triage.etl schema
 .\.venv\Scripts\python.exe -m jvsg_triage.etl inspect `
-  --anti-join 'temp\anti_join.csv' --case-notes 'temp\case_notes.xlsx'
+  --anti-join data\synthetic\fy2026_203_205_anti_join.synthetic.csv `
+  --case-notes data\synthetic\fy2026_case_notes.synthetic.xlsx
 .\.venv\Scripts\python.exe -m jvsg_triage.etl extract `
-  --anti-join 'temp\anti_join.csv' --case-notes 'temp\case_notes.xlsx' `
-  --output temp\private
+  --anti-join data\synthetic\fy2026_203_205_anti_join.synthetic.csv `
+  --case-notes data\synthetic\fy2026_case_notes.synthetic.xlsx `
+  --output data\private\mis-practice
 .\.venv\Scripts\python.exe -m jvsg_triage.etl synthesize --output data\synthetic --seed 42
 .\.venv\Scripts\python.exe -m jvsg_triage.etl evaluate `
   --anti-join data\synthetic\fy2026_203_205_anti_join.synthetic.csv `
   --case-notes data\synthetic\fy2026_case_notes.synthetic.xlsx `
   --labels data\synthetic\fy2026_case_notes.pii_labels.jsonl
+Remove-Item Env:SID_HMAC_SECRET
 ```
 
 `inspect` stops at the header and emits only layout coordinates. `extract`
@@ -165,4 +169,5 @@ cohort verification is wanted, stable note identity/version semantics if
 cross-refresh persistence is wanted, and authorized intake, retention and
 production data handling. Other MIS fields are not needed for SID-to-note
 matching and are not prerequisites for this streamlined foundation. Header discovery
-is complete; the broader S1/S2 and privacy/inference release gates remain open.
+is complete; the broader [pilot approval gates](./deliverables_and_required_inputs.md)
+remain open.

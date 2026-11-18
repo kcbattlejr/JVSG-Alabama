@@ -29,6 +29,10 @@ data/processed/
 data/private/
 # Unreviewed presentation references are local inspiration, not public deliverables.
 demo-temp/
+<<<<<<< HEAD
+=======
+/Daily Engineering Digest - *.gdoc
+>>>>>>> 1ecb868d1248580299d68dfc5a605be8e2059a88
 *.xlsx
 # Seeded synthetic practice data is fictional and intentionally versioned.
 !data/synthetic/*.xlsx
