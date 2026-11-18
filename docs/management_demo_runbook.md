@@ -7,6 +7,97 @@ to process real records in this repository.
 For the value proposition, decisions and NASWA schedule, see the
 [stakeholder briefing](./management_presentation_briefing.md).
 
+## Codespaces and Teams: quick start
+
+**Before the call:** Open the repository on GitHub, select
+`presentation/2026-11-19`, then choose **Code > Codespaces**. Create a codespace
+on that branch or open a clean existing one. In **Terminal > New Terminal**,
+run `git status --short --branch` to confirm the branch and
+`git pull --ff-only` to get the final commit. If the branch is wrong or there
+are changes you need to keep, use a fresh codespace instead of resetting it.
+
+From the repository root in the Codespaces Bash terminal:
+
+```bash
+source "$HOME/.venvs/jvsg/bin/activate"
+python -m jvsg_triage.demo rehearse
+```
+
+Wait for `verification` to say **All hashes, reconciliation and TOON round
+trips passed**. Expect 18 fictional people in the baseline and 19 in the
+refresh. The default run is offline and has no AI copy; Copilot Chat is not
+needed. Prepare the laptop copy below before the call rather than relying
+on a browser port or a live rebuild.
+
+### Download a laptop-ready copy
+
+After a successful run, use this Bash block from the repository root. It
+packs only the named presentation files, not the full rehearsal directory:
+
+```bash
+(
+  set -eu
+  cd temp/management-demo
+  python - <<'PY'
+import hashlib
+import json
+from pathlib import Path
+from zipfile import ZIP_DEFLATED, ZipFile
+from jvsg_triage.demo.pipeline import verify_batch
+
+status = json.loads(Path("status.json").read_text())
+rehearsal = json.loads(Path("rehearsal.json").read_text())
+if status["state"] != "success" or status["batch_id"] != Path(rehearsal["refreshed"]["path"]).name:
+    raise SystemExit("Rehearsal is not current. Rerun it before packaging.")
+files = [Path("index.html"), Path("rehearsal.json")]
+for name in ("baseline", "refreshed"):
+    batch = Path(rehearsal[name]["path"])
+    verify_batch(batch)
+    files.extend(batch / filename for filename in (
+        "dashboard.html", "dashboard.xlsx", "reviewed_profiles.xlsx", "profiles.json", "profiles.toon",
+    ))
+    for kind, suffix in (("anti_join", "203_205_anti_join.synthetic.csv"),
+                         ("case_notes", "case_notes.synthetic.xlsx")):
+        source = Path(f"simulated_sharepoint/{name}_{suffix}")
+        expected = rehearsal["native_intake"][name]["source_sha256"][kind]
+        if hashlib.sha256(source.read_bytes()).hexdigest() != expected:
+            raise SystemExit("Synthetic source file changed. Rerun rehearsal before packaging.")
+        files.append(source)
+
+with ZipFile("../management-presentation.zip", "w", ZIP_DEFLATED) as archive:
+    for path in files:
+        archive.write(path)
+print("Ready to download: temp/management-presentation.zip")
+PY
+)
+```
+
+In the Codespaces **Explorer**, right-click
+`temp/management-presentation.zip` and choose **Download**, if allowed by
+laptop policy. On the laptop, right-click the ZIP and choose **Extract All**.
+Open the extracted `index.html` in Edge or another approved browser. Click
+**Updated report: 19 fictional people** for HTML or **Download the updated
+Excel report** for Excel. Keep the extracted folder structure intact. Have the
+Excel Dashboard and the HTML page open before the call. In Teams, share only
+the presentation window, switch to Excel when needed, and avoid showing the
+raw note text, restricted outputs, or account and terminal information.
+
+Treat the ZIP as **synthetic meeting material**, not an external-release
+package. Review it before showing or sharing it. Do not copy `restricted/`,
+open a public port, or serve the workspace or full rehearsal folder.
+
+### If something goes wrong
+
+| What you see | What to do |
+|---|---|
+| Codespace is starting or `activate` is missing | Wait for container setup. If setup failed, run `bash .devcontainer/scripts/setup.sh` from the repository root, then activate again. Use the already downloaded copy if setup cannot finish before the meeting. |
+| `No module named jvsg_triage` or dependency errors | Activate the Codespaces environment, then run `python -m pip install -r requirements-demo.txt` and retry. If installation is blocked, use the downloaded copy. |
+| Rehearsal exits with an error or the counts are wrong | Read the terminal error and `temp/management-demo/status.json`. Do not present an older run as a fresh refresh. Rerun the default `rehearse` with no custom inputs; if it still fails, use the verified laptop copy and describe it as a saved rehearsal. |
+| Browser opens raw HTML or linked files are missing | Extract the whole ZIP first, then open the extracted `index.html` in Edge, not in the VS Code editor or inside the ZIP. |
+| Excel prompts for repair or charts do not fit | Re-download the current workbook rather than opening a repaired copy. Lower Excel zoom until column Q is visible. If Excel is blocked or still fails, show the HTML dashboard. |
+| Codespaces or downloads are blocked | Use the verified copy prepared before the call. If no approved copy is available, present the stakeholder briefing and explain that the demo could not be opened; do not bypass device policy. |
+| Copilot Chat is blank or returns `null` | Continue with this runbook. No step requires chat or a model. |
+
 ## What actually works
 
 ```text
