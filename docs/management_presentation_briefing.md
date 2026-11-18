@@ -71,6 +71,10 @@ communications approval, retain the cleared synthetic demo for a future
 nomination or peer-learning opportunity. Neither a nomination nor an award is
 assumed.
 
+For the CI and unit-test process, the Codespaces setup, the SharePoint/Azure
+scalability path and the engineering sprint to MVP, see
+[Engineering process, scalability path and MVP sprint](./engineering_process_and_mvp_sprint.md).
+
 ## Next step for the project, even if the award is deferred
 
 JVSG confirms who supplies the profile fields and which follow-up rules staff
