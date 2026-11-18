@@ -79,11 +79,15 @@ a defect. Zero hits is not proof of safety.
 
 ## 5. Running an extraction
 
+Use the following key and files for synthetic practice only.
+
 ```powershell
-$env:SID_HMAC_SECRET = '<32+ byte key from the approved secret store>'
+$env:SID_HMAC_SECRET = 'synthetic-only-demonstration-key-0001'
 .\.venv\Scripts\python.exe -m jvsg_triage.etl extract `
-  --anti-join temp\<anti-join>.csv --case-notes temp\<case-notes>.xlsx `
-  --output temp\private
+  --anti-join data\synthetic\fy2026_203_205_anti_join.synthetic.csv `
+  --case-notes data\synthetic\fy2026_case_notes.synthetic.xlsx `
+  --output data\private\mis-practice
+Remove-Item Env:SID_HMAC_SECRET
 ```
 
 Output goes to `redacted_notes.jsonl` (T2) and `manifest.json` (T3); only the

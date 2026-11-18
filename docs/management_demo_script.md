@@ -19,8 +19,8 @@ the decision request and nomination schedule.
 - Keep the restricted scrubbed-note outputs closed. Do not display their contents.
 - Enlarge the browser to 125% or a readable recording resolution. Collapse
   unrelated windows, notifications, account menus and file explorers.
-- Keep only generated synthetic files on screen. Do not open the Gemini
-  references: they contain statements and figures not used in this demo.
+- Keep only generated synthetic files on screen. Do not open reference
+  workbooks or older demo folders.
 - Do not display `.env`, private data, native live reports, tenant addresses,
   personal messages or infrastructure/account assignments.
 - Rehearse once without recording. This is not a live tenant connectivity demo.

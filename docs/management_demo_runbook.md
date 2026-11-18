@@ -32,9 +32,8 @@ case notes. The demo makes this boundary visible. Production would need approved
 source/profile contracts, a qualified review process, and an approved TOON
 contract before those steps could be joined.
 
-The Gemini references are visual inspiration only. No reference workbook data,
-embedded logos, baseline figures, infrastructure details or claimed validation
-results are redistributed in the implementation. All distributions are invented.
+Do not use third-party visual references, old workbooks, or unreviewed local
+copies as presentation inputs. All distributions in this rehearsal are invented.
 
 ## Install and run
 
@@ -64,16 +63,11 @@ If an older download prompts Excel to repair the Watchlist table, rerun
 Check that Excel opens it without a repair prompt and that the Watchlist
 column filters are visible before recording.
 
-If a remote VS Code browser cannot open the local file, either download the
-generated folder to your recording computer or serve **only this synthetic
-output directory**, on loopback, while rehearsing:
-
-```bash
-python -m http.server 8765 --bind 127.0.0.1 --directory temp/management-demo
-```
-
-Open `http://127.0.0.1:8765/`; stop the server with Ctrl+C afterward. Do not serve
-the repository root or expose a development port publicly.
+If a remote browser cannot open the local file, download only the dashboard or
+prepare a reviewed synthetic presentation copy on the recording computer.
+Preserve relative paths for the files you intend to open from the landing page.
+Do not include `restricted/`; do not serve the workspace or rehearsal folder
+over HTTP. Hiding a link is not access control.
 
 For code validation, install the development extra and run:
 
@@ -200,9 +194,9 @@ The offline verifier checks the row count, column order, canonical form and exac
 round-trip equality before publication. This is a demo profile, not an approved
 federal VOMA contract.
 
-Older batches are unchanged and may still contain the custom `@TOON|V:demo-1`
-format. Rerun `rehearse` and use the fresh landing-page link to get standard
-TOON. To check a new export independently, the
+Use the current batch linked from `temp/management-demo/index.html`; older
+downloads may still contain the custom `@TOON|V:demo-1` format. To check an
+export independently, the
 [reference TOON CLI](https://toonformat.dev/cli/) can decode it to JSON for
 comparison with the accompanying `profiles.json`. The CLI is not a dependency
 of the offline demo.
@@ -273,6 +267,6 @@ work. SharePoint does not execute this Python by storing it in a document librar
 HTML hosting/embedding also requires tenant-specific review.
 
 See [SECURITY.md](../SECURITY.md), the
-[SharePoint proposal](./sharepoint_data_visualization_proposal.md) and
+[MVP scope and approval checklist](./deliverables_and_required_inputs.md) and
 [recording script](./management_demo_script.md). Public review is not licensing,
 deployment, security-settings or live-data approval.
