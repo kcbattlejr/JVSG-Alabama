@@ -52,7 +52,7 @@ DEMO_HMAC_SECRET = SecretStr("synthetic-only-demonstration-key-0001")
 class Manifest(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, hide_input_in_errors=True)
 
-    version: Literal["demo-2"] = VERSION
+    version: Literal["demo-3"] = VERSION
     synthetic_only: Literal[True] = True
     sharepoint_delivery: Literal["simulated-file-drop"] = "simulated-file-drop"
     as_of: date

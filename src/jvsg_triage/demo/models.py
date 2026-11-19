@@ -6,7 +6,7 @@ from typing import Final
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-VERSION: Final = "demo-2"
+VERSION: Final = "demo-3"
 AS_OF = date(2026, 11, 19)
 MARKER = "JVSG_SYNTHETIC_DEMO_V1"
 HEADERS = (
