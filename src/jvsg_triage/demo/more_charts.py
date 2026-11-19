@@ -67,6 +67,7 @@ def make_readable(chart: BarChart) -> None:
 def stacked_chart(
     ws: Worksheet, title: str, header_row: int, last_row: int, last_col: int,
     series: Sequence[str], colors: Sequence[str], labels: Sequence[str],
+    first_header: str,
 ) -> BarChart:
     chart = BarChart()
     chart.type = "bar"
@@ -75,6 +76,7 @@ def stacked_chart(
     chart.gapWidth = 60
     chart.style = 10
     chart.title = title
+    chart.x_axis.title = first_header
     chart.add_data(
         Reference(ws, min_col=2, max_col=last_col, min_row=header_row, max_row=last_row),
         titles_from_data=True,
@@ -140,7 +142,7 @@ def add_block(
     last_row = header_row + len(rows)
     chart = stacked_chart(
         ws, title, header_row, last_row, len(series) + 1, series, colors,
-        [label for label, _ in rows],
+        [label for label, _ in rows], first_header,
     )
     chart.anchor = TwoCellAnchor(  # type: ignore[assignment]
         editAs="twoCell",

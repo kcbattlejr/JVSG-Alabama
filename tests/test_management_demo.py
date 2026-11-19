@@ -516,8 +516,13 @@ def test_refreshed_chart_columns_have_explicit_labels_and_counts(tmp_path: Path)
     assert len(support.findall(".//{*}ser")) == 1
     assert support.find(".//{*}dLblPos[@val='outEnd']") is not None
     assert support.find(".//{*}showVal[@val='1']") is not None
-    assert support.find(".//{*}catAx/{*}title") is None
-    assert support.find(".//{*}valAx/{*}title") is None
+    assert "".join(t.text or "" for t in support.findall(".//{*}catAx/{*}title//{*}t")) == (
+        "Area of support"
+    )
+    assert "".join(t.text or "" for t in support.findall(".//{*}valAx/{*}title//{*}t")) == (
+        "Number of people"
+    )
+    assert support.find(".//{*}catAx/{*}delete[@val='0']") is not None
     assert [point.text for point in support.findall(".//{*}strCache/{*}pt/{*}v")] == [
         "Transportation", "Housing", "Health", "Legal",
     ]

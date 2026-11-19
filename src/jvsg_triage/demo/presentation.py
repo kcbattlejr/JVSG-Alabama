@@ -257,7 +257,7 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
     barrier_chart = BarChart()
     barrier_chart.type = "col"
     barrier_chart.style = 10
-    barrier_chart.title = "Critical or needs support"
+    barrier_chart.title = "People with a critical barrier or needing support, by area"
     barrier_chart.add_data(
         Reference(watchlist, min_col=17, min_row=6, max_row=10), titles_from_data=True,
     )
@@ -269,7 +269,14 @@ def excel_dashboard(profiles: list[Profile], source_hash: str) -> Workbook:
     barrier_chart.y_axis.axPos = "l"
     barrier_chart.series[0].graphicalProperties.solidFill = blue
     barrier_chart.series[0].graphicalProperties.line.solidFill = blue
-    for figure, first_col, end_col in ((chart, 0, 8), (barrier_chart, 9, 17)):
+    for figure, first_col, end_col, category_title, value_title in (
+        (chart, 0, 8, "Contact status", "Number of people"),
+        (barrier_chart, 9, 17, "Area of support", "Number of people"),
+    ):
+        figure.x_axis.title = category_title
+        figure.y_axis.title = value_title
+        figure.x_axis.delete = False
+        figure.y_axis.delete = False
         figure.dataLabels = DataLabelList(
             showVal=True, showSerName=False, showCatName=False, showLegendKey=False,
             showPercent=False, dLblPos="outEnd",
