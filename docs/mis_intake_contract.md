@@ -10,7 +10,9 @@ The supported report contract uses a 203/205 **anti-join in CSV** and
 **case notes in XLSX**. Public fixtures demonstrate headers and layout
 coordinates using invented records. Private source-discovery and validation
 evidence must remain in approved private storage. This contract does not
-validate FY filters or underlying MIS logic.
+validate FY filters or underlying MIS logic. The FY filter definition and its MIS
+test status are maintained in restricted private documentation outside this
+repository.
 
 | Download | Observed header | Width | Structural details |
 |---|---|---|---|
@@ -147,6 +149,8 @@ if required recall falls below 100%. Errors are sanitized and exit nonzero.
 `temp/`, private/raw/processed data and XLSX files are ignored by Git. This is
 only an accidental-commit safeguard: Git ignore rules are not privacy controls,
 and cannot remove previously tracked files or prevent OneDrive synchronization.
+The commands above are for synthetic files only; neither an ignored path nor the
+extractor's destination check authorizes live data in this workspace.
 Keep native downloads in an approved secure intake location outside development
 and cloud-sync locations under the agency's access/retention policy.
 Do not copy, rename or convert the source files for this implementation.
@@ -164,8 +168,8 @@ end-to-end recall. A further test checks that the committed synthetic dataset
 matches the generator output.
 The checked-in contract is compared to its code model to prevent schema drift.
 
-Remaining inputs for later stages: 203/205 filters and FY rules if independent
-cohort verification is wanted, stable note identity/version semantics if
+Remaining inputs for later stages: independent verification of the MIS source
+population if required, stable note identity/version semantics if
 cross-refresh persistence is wanted, and authorized intake, retention and
 production data handling. Other MIS fields are not needed for SID-to-note
 matching and are not prerequisites for this streamlined foundation. Header discovery

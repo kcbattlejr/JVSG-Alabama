@@ -37,3 +37,9 @@ demo-temp/
 
 # Azure Functions local state
 local.settings.json
+
+# Restricted MIS SQL, operations docs, and vendor schema (see docs/sql_publication_strategy.md)
+sql/
+tests/test_sql_window_rules.py
+docs/sql_*.md
+docs/AW_table_schema.txt

@@ -24,20 +24,25 @@ See [Start the HTML preview in VS Code](docs/management_demo_runbook.md#start-th
 for the web server command. Download the verified presentation ZIP before the
 meeting so it also works offline.
 
-The demo matches and scrubs two invented reports using native MIS layouts.
+The Python demo matches and scrubs two invented reports using native MIS layouts.
 A separate invented staff-review workbook supplies the fields used for
 follow-up bands, Excel/HTML dashboards, and the lossless standard TOON
 export. The optional AI-assisted wording uses invented totals only and
-requires human review before display. The project does not independently
+requires human review before display. The Python demo does not independently
 compute the 203/205 anti-join, infer profile fields from notes, connect to
 SharePoint, send notifications, or transmit data to a federal system.
+Separate MIS SQL reports are maintained outside this repository in restricted
+private storage. They are not an approved production service or automated
+delivery.
 
 ## Documentation
 
 | Start here | Use it for |
 |---|---|
 | [Stakeholder briefing](docs/management_presentation_briefing.md) | November 19 presentation, value and limits, and the December 4 NASWA deadline |
-| [Demo runbook](docs/management_demo_runbook.md) and [recording script](docs/management_demo_script.md) | Rehearse, verify, present, or recover from a failed refresh |
+| [Demo runbook](docs/management_demo_runbook.md) and [historical recording script](docs/archive/management_demo_2026-11-19_script.md) | Rehearse the synthetic demo or review the dated presentation |
+| [Documentation archive](docs/archive/README.md) | Find superseded scripts and drafts retained for history |
+| MIS SQL reporting documents | Kept in restricted private storage, not in this repository |
 | [MVP scope and approval checklist](docs/deliverables_and_required_inputs.md) | Agree on pilot scope, ownership, access, and evidence |
 | [MIS intake contract](docs/mis_intake_contract.md) and [PII protocol](docs/pii_protocol.md) | Review report parsing, data tiers, scrubbing, and known limitations |
 | [Security and publication requirements](SECURITY.md) | Handle sensitive material, repository governance, and external release |
