@@ -24,6 +24,10 @@ Thumbs.db
 
 # Local data and generated outputs
 temp/
+/batches/
+/simulated_sharepoint/
+/index.html
+/rehearsal.json
 data/raw/
 data/processed/
 data/private/

@@ -2,7 +2,8 @@
 
 **Status: November 18, 2026.** Supporting material for the November 19
 presentation. Everything described here runs on invented data. No live
-records, SharePoint access or Azure resources are involved.
+records, SharePoint access or Azure resources are involved. The sprint and test
+counts below are a dated proposal and snapshot, not evidence of current completion.
 
 ## 1. Continuous integration (CI)
 
@@ -63,9 +64,9 @@ One definition of the environment is used everywhere:
 Result: open the repository in Codespaces or a local dev container, wait for
 setup, and run the same lint, type check and test commands that CI runs. "Works
 on my machine" differences are limited to the container image. The
-[runbook](./management_demo_runbook.md) covers previewing the demo in a
+[runbook](../operations/management_demo_runbook.md) covers previewing the demo in a
 browser from Codespaces. Codespaces must never hold live records; see
-[SECURITY.md](../SECURITY.md).
+[SECURITY.md](../../SECURITY.md).
 
 ## 4. Scalability to SharePoint and Azure
 

@@ -15,7 +15,7 @@ private documentation outside this repository.
 | Excel/HTML and standard TOON | Two reproducible snapshots with reconciliation and exact TOON round trips. The TOON grammar is standard; the profile schema is not an approved federal interface. |
 | Optional AI wording | A draft may describe invented aggregate changes only; a person reviews it before it can be displayed. No case notes, row data, referrals, or live inference are involved. |
 
-See the [runbook](./management_demo_runbook.md) for reproduction and the
+See the [runbook](../operations/management_demo_runbook.md) for reproduction and the
 [stakeholder briefing](./management_presentation_briefing.md) for the value
 proposition, November 19 decisions, and December 4 NASWA submission gates.
 
@@ -43,7 +43,7 @@ sheets, filters, and audience targeting are not access controls.
 | MIS/report owner | Confirm report period, freshness, join key, note scope, duplicates, amended/deleted notes and receipt requirements. The SQL 203/205 filter definition is settled; confirm any future changes through the SQL status/runbook. The Python intake consumes, but does not independently validate, that prefiltered population. Use synthetic examples in this workspace. |
 | IT/security and site owner | Approve the tenant, site/libraries, runtime, assigned identities, least-privilege processor/staff/reader groups, secrets, access auditing, incident handling, and safe recovery. No broad tenant-admin or Graph access is required for a manual design. |
 | Privacy, records and legal | Approve the data flow, retention/deletion for originals, redacted outputs, backups and logs, disclosure and accessibility review, and any material shared outside the team. Scrubbing and pseudonyms are not anonymization. |
-| Agency source-control owner | Confirm approved repository ownership, visibility, individually attributable access, offboarding, branch/CI controls, and audit-log retention. Agency ownership does not permit putting live records in GitHub or Codespaces. Licensing and historical-disclosure gates remain in [SECURITY.md](../SECURITY.md). |
+| Agency source-control owner | Confirm approved repository ownership, visibility, individually attributable access, offboarding, branch/CI controls, and audit-log retention. Agency ownership does not permit putting live records in GitHub or Codespaces. Licensing and historical-disclosure gates remain in [SECURITY.md](../../SECURITY.md). |
 | Sponsor and pilot operator | Approve cohort/scope, exception owner, rollback and training. Rehearse on generated data, then measure preparation time, data corrections, and timely follow-up against the current process only in an authorized pilot. |
 
 Record each decision, approving role, date and supporting evidence in the

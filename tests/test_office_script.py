@@ -1,4 +1,4 @@
-"""Office Script (m365/office-scripts/BarrierFindings.ts) behavior on synthetic notes.
+"""Microsoft 365 Office Script behavior on synthetic notes.
 
 The script runs under Node against an in-memory fake of the Office Scripts API.
 """
@@ -13,7 +13,7 @@ import pytest
 from openpyxl import load_workbook
 
 REPO = Path(__file__).resolve().parents[1]
-HARNESS = REPO / "m365" / "tests" / "harness.mjs"
+HARNESS = REPO / "src" / "jvsg_triage" / "m365" / "tests" / "harness.mjs"
 NOTES = REPO / "data" / "synthetic" / "fy2026_case_notes.synthetic.xlsx"
 LABELS = REPO / "data" / "synthetic" / "fy2026_case_notes.pii_labels.jsonl"
 SHEET = "Barrier Findings (Draft)"
@@ -22,7 +22,8 @@ LEAK_LABELS = {
     "NAME", "STAFF", "HONORIFIC_NAME", "THIRD_PARTY", "EMAIL", "PHONE", "ID", "ADDRESS", "URL",
 }
 
-pytestmark = pytest.mark.skipif(shutil.which("node") is None, reason="Node.js not installed")
+pytestmark = pytest.mark.skipif(shutil.which(
+    "node") is None, reason="Node.js not installed")
 
 
 def _rows() -> list[list[str]]:
@@ -61,7 +62,8 @@ def test_extract_writes_only_unverified_findings_with_closed_vocabulary() -> Non
 def test_findings_contain_no_injected_identifiers() -> None:
     out = _extract_all()
     values = {
-        row: [s["value"] for s in spans if s["label"] in LEAK_LABELS and len(s["value"]) >= 4]
+        row: [s["value"] for s in spans if s["label"]
+              in LEAK_LABELS and len(s["value"]) >= 4]
         for line in LABELS.read_text().splitlines()
         for row, spans in [(json.loads(line)["row"], json.loads(line)["spans"])]
     }
@@ -101,7 +103,8 @@ def test_scrub_mode_returns_scrubbed_text_only() -> None:
 
 def test_append_rejects_findings_that_break_the_contract() -> None:
     scrubbed = json.loads(
-        _run([{"mode": "scrub", "startRow": 1, "maxRows": 5}])["results"][0]["notesJson"]
+        _run([{"mode": "scrub", "startRow": 1, "maxRows": 5}])[
+            "results"][0]["notesJson"]
     )[0]
     quote = scrubbed["text"].split(".")[0] + "."
     good = {"note_row": scrubbed["note_row"], "domain": "TRN", "state": "ACT",
@@ -124,7 +127,8 @@ def test_append_rejects_findings_that_break_the_contract() -> None:
 
 
 def test_missing_header_or_bad_mode_fails_closed() -> None:
-    out = _run([{"mode": "extract", "startRow": 1, "maxRows": 5}], rows=[["x"], ["y"]])
+    out = _run([{"mode": "extract", "startRow": 1, "maxRows": 5}],
+               rows=[["x"], ["y"]])
     assert out["results"][0]["status"] == "error"
     assert out["findings"] is None
     out = _run([{"mode": "delete", "startRow": 1, "maxRows": 5}])

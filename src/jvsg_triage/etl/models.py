@@ -1,6 +1,6 @@
 """Protected in-memory intake records and value-free reconciliation models.
 
-Data tiers (docs/pii_protocol.md): T1 records here hold raw note text and are never
+Data tiers (docs/data/pii_protocol.md): T1 records here hold raw note text and are never
 serialized; T2 RedactedNote holds scrubbed text for private local use only; T3
 manifests hold aggregate counts only.
 """
@@ -13,7 +13,8 @@ from jvsg_triage.etl.contracts import CONTRACT_VERSION, ReportKind
 class IntakeModel(BaseModel):
     """Forbid silent extra fields and hide input values in validation messages."""
 
-    model_config = ConfigDict(extra="forbid", frozen=True, hide_input_in_errors=True)
+    model_config = ConfigDict(
+        extra="forbid", frozen=True, hide_input_in_errors=True)
 
 
 class SourceLayout(IntakeModel):
@@ -47,15 +48,19 @@ class CaseNoteRecord(IntakeModel):
     source: Provenance
     participant_token: str = Field(repr=False, exclude=True)
     text: SecretStr = Field(repr=False, exclude=True)
-    context_names: tuple[SecretStr, ...] = Field(default=(), repr=False, exclude=True)
+    context_names: tuple[SecretStr, ...] = Field(
+        default=(), repr=False, exclude=True)
 
 
 class RedactionLexicon(IntakeModel):
     """T1: identities read transiently from lexicon columns; memory only."""
 
-    person_names: frozenset[str] = Field(default=frozenset(), repr=False, exclude=True)
-    staff_names: frozenset[str] = Field(default=frozenset(), repr=False, exclude=True)
-    identifiers: frozenset[str] = Field(default=frozenset(), repr=False, exclude=True)
+    person_names: frozenset[str] = Field(
+        default=frozenset(), repr=False, exclude=True)
+    staff_names: frozenset[str] = Field(
+        default=frozenset(), repr=False, exclude=True)
+    identifiers: frozenset[str] = Field(
+        default=frozenset(), repr=False, exclude=True)
 
 
 class Reconciliation(IntakeModel):

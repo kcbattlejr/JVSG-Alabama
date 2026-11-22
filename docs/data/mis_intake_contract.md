@@ -20,8 +20,8 @@ repository.
 | Case-notes XLSX | Row 4 | 12 columns | One worksheet; three preceding title rows; column B has no header; footer of blank row, repeated header, `Total Rows: N` |
 
 The full ordered headers and field handling are in
-[mis_reports.v1.json](../data/schemas/mis_reports.v1.json), generated from
-[contracts.py](../src/jvsg_triage/etl/contracts.py).
+[mis_reports.v1.json](../../data/schemas/mis_reports.v1.json), generated from
+[contracts.py](../../src/jvsg_triage/etl/contracts.py).
 Header discovery scans at most 50 logical CSV records or XLSX rows. Header row
 positions are discovered, not hardcoded. Case, whitespace and line wrapping
 are normalized; missing, reordered, duplicate, added or renamed fields fail.
@@ -38,7 +38,7 @@ footer. Malformed records and corrupt files fail.
 ## Structured model and explicit limits
 
 The protected in-memory models are in
-[models.py](../src/jvsg_triage/etl/models.py):
+[models.py](../../src/jvsg_triage/etl/models.py):
 
 - **AntiJoinRecord:** source coordinates and HMAC participant token only.
 - **CaseNoteRecord:** source coordinates, HMAC participant token, the
@@ -84,7 +84,7 @@ line breaks. No timezone, contact verification, latest-touch or FY policy is inf
 
 ## Pipeline behavior
 
-[ingest_reports](../src/jvsg_triage/etl/ingest.py) provides the offline API:
+[ingest_reports](../../src/jvsg_triage/etl/ingest.py) provides the offline API:
 
 ```python
 from pathlib import Path
@@ -157,12 +157,12 @@ Do not copy, rename or convert the source files for this implementation.
 
 ## Verification and remaining inputs
 
-[test_mis_intake.py](../tests/test_mis_intake.py) constructs synthetic CSV/XLSX
+[test_mis_intake.py](../../tests/test_mis_intake.py) constructs synthetic CSV/XLSX
 fixtures for layouts, header drift, title rows, footer validation, malformed rows,
 leading zeros, multiple notes, ignored metadata, exact note preservation, HMAC
 determinism and output/error privacy.
-[test_privacy_scrubber.py](../tests/test_privacy_scrubber.py) covers each
-detector, and [test_synthetic_pipeline.py](../tests/test_synthetic_pipeline.py)
+[test_privacy_scrubber.py](../../tests/test_privacy_scrubber.py) covers each
+detector, and [test_synthetic_pipeline.py](../../tests/test_synthetic_pipeline.py)
 covers generator determinism, label alignment, extraction destinations and
 end-to-end recall. A further test checks that the committed synthetic dataset
 matches the generator output.
@@ -173,5 +173,5 @@ population if required, stable note identity/version semantics if
 cross-refresh persistence is wanted, and authorized intake, retention and
 production data handling. Other MIS fields are not needed for SID-to-note
 matching and are not prerequisites for this streamlined foundation. Header discovery
-is complete; the broader [pilot approval gates](./deliverables_and_required_inputs.md)
+is complete; the broader [pilot approval gates](../planning/deliverables_and_required_inputs.md)
 remain open.

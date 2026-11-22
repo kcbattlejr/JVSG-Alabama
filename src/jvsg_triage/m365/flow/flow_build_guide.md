@@ -10,7 +10,7 @@ history, screenshots or outputs into the repository, chat or e-mail.
 
 ## Before you build
 
-1. Upload `m365/office-scripts/BarrierFindings.ts` as an Office Script
+1. Upload `src/jvsg_triage/m365/office-scripts/BarrierFindings.ts` as an Office Script
    (Excel on the web > Automate > New script > paste > Save as
    `BarrierFindings`). The script has no model dependency.
 2. Make a **working copy** of the FY2026 case-notes report as `.xlsx` in a

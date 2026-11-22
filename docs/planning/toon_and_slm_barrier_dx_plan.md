@@ -3,7 +3,7 @@
 **Status: draft, November 21, 2026; demo November 30.** Builds on the live SharePoint Excel
 dashboard and the existing synthetic Python package. Repository work uses
 synthetic data only; veteran data stays in the JVSG SharePoint site (see
-[PII protocol](./pii_protocol.md) and [SECURITY.md](../SECURITY.md)).
+[PII protocol](../data/pii_protocol.md) and [SECURITY.md](../../SECURITY.md)).
 Model output is a draft for qualified staff review, never a decision.
 
 ## Where we are
@@ -183,7 +183,7 @@ approved for case notes. Get written approval from the privacy/IT owners
 before the demo; the scope checklist still lists case-note AI as unapproved.
 
 Implementation: the Office Script, offline tests and flow build guide are in
-[`m365/`](../m365/README.md).
+[`m365/`](../../src/jvsg_triage/m365/README.md).
 
 ## Risks
 

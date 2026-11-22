@@ -17,7 +17,7 @@ ET**; internal plan is submission Dec 3 after administrator approval Dec 2 (see 
    outcome, or award claims are made. The Mobile team's FY 2026 recognition is a
    separate matter and is not cited.
 4. **Public posting.** Question 8 allows NASWA to publish the nomination. Clear all text and
-   attachments with communications, privacy and legal review first ([SECURITY.md](../SECURITY.md)).
+   attachments with communications, privacy and legal review first ([SECURITY.md](../../SECURITY.md)).
    Use only synthetic material: no veteran names, SIDs, SSNs, case notes, GeoSol exports,
    or internal infrastructure details.
 
@@ -84,12 +84,12 @@ All files must be synthetic, reviewed and exported as PDF, MP4, PNG or XLSX.
 |---|---|---|---|
 | 1 | One-page initiative summary (PDF) | Condense the [stakeholder briefing](./management_presentation_briefing.md) | Overview |
 | 2 | Plain-language data-flow diagram (PNG/PDF) | New; paired reports → local scrub → staff review → Excel/HTML; mark GeoSol as system of record | Shows design and privacy boundary |
-| 3 | Demo video, 2–3 min (MP4) | Follow the [recording script](./management_demo_script.md); synthetic data only | Shows the workflow |
+| 3 | Demo video, 2–3 min (MP4) | Adapt the [historical recording script](../archive/management_demo_2026-11-19_script.md); synthetic data only | Shows the workflow |
 | 4 | Dashboard screenshots (PNG or PDF) | `python -m jvsg_triage.demo rehearse` → `temp/management-demo/` | Charts by office, review status and support area |
 | 5 | Sample Excel watchlist (XLSX) | Same output, synthetic only | Shows the staff-facing product |
 | 6 | Before/after refresh comparison (PDF) | 18 → 19 participants; 30+ day band 6 → 5 | Shows change tracking and preserved statuses |
 | 7 | Limitations and governance note (PDF) | [Deliverables checklist](./deliverables_and_required_inputs.md) | Shows responsible scoping and human review |
-| 8 | Privacy design summary (PDF) | Excerpt from the [PII protocol](./pii_protocol.md) with internal details removed | Shows data protection |
+| 8 | Privacy design summary (PDF) | Excerpt from the [PII protocol](../data/pii_protocol.md) with internal details removed | Shows data protection |
 | 9 | Engineering process summary (PDF) | [Engineering process](./engineering_process_and_mvp_sprint.md): CI gates, tests, environment | Shows quality and repeatability |
 | 10 | Pilot plan (PDF) | One-page plan from the briefing's "Next step" | Shows the path to measured results |
 

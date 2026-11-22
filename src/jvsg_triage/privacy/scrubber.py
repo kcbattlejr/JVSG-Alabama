@@ -2,7 +2,7 @@
 
 Every detector runs on the original text and reports character spans; the union of
 all spans is replaced once. Span output lets the synthetic ground truth measure
-recall exactly. Design limits are documented in docs/pii_protocol.md: names are
+recall exactly. Design limits are documented in docs/data/pii_protocol.md: names are
 removed when they appear in the reports' own identity columns or follow an
 honorific, so third-party names outside both can survive. Output is pseudonymous
 (tier T2), never anonymous.
@@ -101,7 +101,8 @@ def _name_tokens(names: Iterable[str], *, minimum: int) -> set[str]:
 
 
 def _alternation(tokens: Iterable[str]) -> re.Pattern[str] | None:
-    ordered = sorted({token.casefold() for token in tokens}, key=lambda t: (-len(t), t))
+    ordered = sorted({token.casefold()
+                     for token in tokens}, key=lambda t: (-len(t), t))
     if not ordered:
         return None
     body = "|".join(re.escape(token) for token in ordered)
@@ -127,14 +128,18 @@ class Redactor:
     def __init__(self, lexicon: RedactionLexicon) -> None:
         persons = _name_tokens(lexicon.person_names, minimum=3)
         staff = _name_tokens(lexicon.staff_names, minimum=3) - persons
-        self._persons = _alternation(t for t in persons if t.casefold() not in NAME_STOPWORDS)
-        self._staff = _alternation(t for t in staff if t.casefold() not in NAME_STOPWORDS)
+        self._persons = _alternation(
+            t for t in persons if t.casefold() not in NAME_STOPWORDS)
+        self._staff = _alternation(
+            t for t in staff if t.casefold() not in NAME_STOPWORDS)
         self._known_names = _alternation(
             t for t in persons | staff if t.casefold() not in NAME_STOPWORDS
         )
-        ids = sorted(lexicon.identifiers, key=lambda value: (-len(value), value))
+        ids = sorted(lexicon.identifiers,
+                     key=lambda value: (-len(value), value))
         self._ids = (
-            re.compile(rf"(?<!\w)(?:{'|'.join(re.escape(v) for v in ids)})(?!\w)")
+            re.compile(
+                rf"(?<!\w)(?:{'|'.join(re.escape(v) for v in ids)})(?!\w)")
             if ids else None
         )
 
@@ -179,11 +184,13 @@ class Redactor:
     def residual(self, redacted: str) -> Counter[str]:
         """Re-scan scrubbed text. Hits are defects to review; zero hits is not proof
         of safety because unknown third-party names are invisible to this scan."""
-        masked = _PLACEHOLDER.sub(lambda match: " " * len(match.group(0)), redacted)
+        masked = _PLACEHOLDER.sub(
+            lambda match: " " * len(match.group(0)), redacted)
         findings: Counter[str] = Counter()
         for label, pattern in _PATTERNS:
             findings[label] += sum(1 for _ in pattern.finditer(masked))
-        findings["HONORIFIC_NAME"] += sum(1 for _ in _HONORIFIC_NAME.finditer(masked))
+        findings["HONORIFIC_NAME"] += sum(
+            1 for _ in _HONORIFIC_NAME.finditer(masked))
         if self._known_names is not None:
             findings["LEXICON_NAME"] += sum(
                 1 for match in self._known_names.finditer(masked) if match.group(0)[0].isupper()
@@ -194,7 +201,8 @@ class Redactor:
 def redact_note(note: CaseNoteRecord, redactor: Redactor) -> RedactedNote:
     """Scrub one T1 note into a T2 record."""
     text, counts = redactor.redact(
-        note.text.get_secret_value(), (name.get_secret_value() for name in note.context_names),
+        note.text.get_secret_value(), (name.get_secret_value()
+                                       for name in note.context_names),
     )
     return RedactedNote(
         participant_token=note.participant_token,

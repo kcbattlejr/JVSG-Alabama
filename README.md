@@ -19,8 +19,8 @@ Excel dashboard and standard `profiles.toon` from the landing page. The dashboar
 server, model, or cloud account is needed.
 
 For the state laptop and Teams call, use the
-[Codespaces quick start and troubleshooting table](docs/management_demo_runbook.md#codespaces-and-teams-quick-start).
-See [Start the HTML preview in VS Code](docs/management_demo_runbook.md#start-the-html-preview-in-vs-code)
+[Codespaces quick start and troubleshooting table](docs/operations/management_demo_runbook.md#codespaces-and-teams-quick-start).
+See [Start the HTML preview in VS Code](docs/operations/management_demo_runbook.md#start-the-html-preview-in-vs-code)
 for the web server command. Download the verified presentation ZIP before the
 meeting so it also works offline.
 
@@ -37,17 +37,22 @@ delivery.
 
 ## Documentation
 
-| Start here | Use it for |
-|---|---|
-| [Stakeholder briefing](docs/management_presentation_briefing.md) | November 19 presentation, value and limits, and the December 4 NASWA deadline |
-| [Demo runbook](docs/management_demo_runbook.md) and [historical recording script](docs/archive/management_demo_2026-11-19_script.md) | Rehearse the synthetic demo or review the dated presentation |
-| [Documentation archive](docs/archive/README.md) | Find superseded scripts and drafts retained for history |
-| MIS SQL reporting documents | Kept in restricted private storage, not in this repository |
-| [MVP scope and approval checklist](docs/deliverables_and_required_inputs.md) | Agree on pilot scope, ownership, access, and evidence |
-| [MIS intake contract](docs/mis_intake_contract.md) and [PII protocol](docs/pii_protocol.md) | Review report parsing, data tiers, scrubbing, and known limitations |
-| [Security and publication requirements](SECURITY.md) | Handle sensitive material, repository governance, and external release |
+See the [documentation guide](docs/README.md) for runbooks, privacy rules, plans,
+briefings, and the historical archive.
 
 ## Development
+
+Repository layout:
+
+- `src/jvsg_triage/`: Python modules and Microsoft 365 integration assets.
+- `tests/`: Python tests; integration-specific synthetic harnesses live with their assets.
+- `data/synthetic/`: invented fixtures; `config/`: project configuration.
+- `docs/`: runbooks and project documentation; `docs/archive/`: historical material.
+- `azure_functions/`: optional Azure integration notes.
+
+The Microsoft 365 assets, including the SharePoint dashboard, are under
+`src/jvsg_triage/m365/`. Generated files under `temp/` stay local and ignored;
+restricted SQL and live data must remain in approved private storage.
 
 Use the provided VS Code dev container or a local Python 3.11+ virtual
 environment. In the container, activate with

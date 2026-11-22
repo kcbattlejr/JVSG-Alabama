@@ -2,31 +2,33 @@
 
 This protocol governs how the FY2026 203/205 anti-join CSV and the case-notes XLSX
 move from native MIS downloads into data this project can use. It is implemented by
-[contracts.py](../src/jvsg_triage/etl/contracts.py) (column classification),
-[ingest.py](../src/jvsg_triage/etl/ingest.py) (protected intake),
-[scrubber.py](../src/jvsg_triage/privacy/scrubber.py) (redaction) and
-[pipeline.py](../src/jvsg_triage/etl/pipeline.py) (private extraction).
+[contracts.py](../../src/jvsg_triage/etl/contracts.py) (column classification),
+[ingest.py](../../src/jvsg_triage/etl/ingest.py) (protected intake),
+[scrubber.py](../../src/jvsg_triage/privacy/scrubber.py) (redaction) and
+[pipeline.py](../../src/jvsg_triage/etl/pipeline.py) (private extraction).
 
-Scrubbed output is **pseudonymous, not anonymous**. Read the known limits in
-section 6 before using T2 data anywhere other than a private local folder.
+Scrubbed output is **pseudonymous, not anonymous**. This workspace and its
+development commands use synthetic data only. Real-data processing requires
+separate authorization and an approved agency environment; see section 6.
 
 ## 1. Data tiers
 
 | Tier | Contents | Where it may live | May leave the workstation? |
 |---|---|---|---|
-| T0 | Native downloads, unmodified | Approved intake location; `temp/` (Git-ignored) for development | No |
+| T0 | Native downloads, unmodified | Approved intake location; only synthetic files in this workspace | Only under agency authorization |
 | T1 | In-memory records: HMAC participant token, raw note (`SecretStr`), row-local names, transient lexicon | Process memory only; never serialized | No |
-| T2 | `RedactedNote`: HMAC token, source row, scrubbed text, redaction counts | `temp/` or `data/private/` (Git-ignored) or outside the repo | No, unless separately approved |
-| T3 | `ExtractionManifest`: contract/protocol versions, reconciliation and redaction counts | Console and local logs | Yes (counts only) |
+| T2 | `RedactedNote`: HMAC token, source row, scrubbed text, redaction counts | Synthetic outputs in this workspace; real outputs only in an approved environment | Only under separate approval |
+| T3 | `ExtractionManifest`: contract/protocol versions, reconciliation and redaction counts | Synthetic manifests in this workspace; real manifests in approved private storage | Real-data metrics require publication approval |
 | T4 | Seeded synthetic data with PII labels | `data/synthetic/` (versioned) | Yes |
 
 Git-ignore rules prevent accidental commits; they are not access control.
-OneDrive still syncs ignored folders, so keep T0 and T2 in an agency-approved location.
+Do not put live input, scrubbed output or real-data manifests in workspace paths,
+including Git-ignored folders. Keep real material in approved storage only.
 
 ## 2. Column classification
 
 Every source column in both downloads has a `PiiClass` and a handling rule in the
-contract. The checked-in [schema](../data/schemas/mis_reports.v1.json) is generated
+contract. The checked-in [schema](../../data/schemas/mis_reports.v1.json) is generated
 from it.
 
 | Handling | Meaning | Columns |

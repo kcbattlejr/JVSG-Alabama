@@ -1,20 +1,18 @@
 # SharePoint-first management demonstration runbook
 
-Target presentation: Thursday, November 19, 2026. Synthetic-only discussion prototype
+Originally prepared for a November 19, 2026 presentation. Synthetic-only discussion prototype
 for management, IT and legal; not a production deployment or approval request
 to process real records in this repository.
 
 For the value proposition, decisions and NASWA schedule, see the
-[stakeholder briefing](./management_presentation_briefing.md).
+[stakeholder briefing](../planning/management_presentation_briefing.md).
 
 ## Codespaces and Teams: quick start
 
-**Before the call:** Open the repository on GitHub, select
-`presentation/2026-11-19`, then choose **Code > Codespaces**. Create a codespace
-on that branch or open a clean existing one. In **Terminal > New Terminal**,
-run `git status --short --branch` to confirm the branch and
-`git pull --ff-only` to get the final commit. If the branch is wrong or there
-are changes you need to keep, use a fresh codespace instead of resetting it.
+**Before a presentation:** Open the intended reviewed repository branch in a
+clean Codespace. In **Terminal > New Terminal**, run `git status --short --branch`
+to check the branch and local changes. Preserve existing work; use a fresh
+Codespace if the existing one is not suitable.
 
 From the repository root in the Codespaces Bash terminal:
 
@@ -229,7 +227,7 @@ records. No model download, network service or cloud account is needed.
 ### Optional: show the AI-assisted management briefing
 
 The standard run displays **Verified snapshot changes only (no AI copy)**.
-The [starter AI draft](../data/synthetic/management_briefing.draft.json) is based
+The [starter AI draft](../../data/synthetic/management_briefing.draft.json) is based
 only on the invented aggregate comparison. To see the exact facts, or prepare a
 fresh prompt for an approved model, run `python -m jvsg_triage.demo briefing-prompt`.
 Do not supply the full `rehearsal.json`, workbooks, identifiers or notes to a model.
@@ -396,7 +394,7 @@ automated triggers, notifications, inference and VOMA integration remain future
 work. SharePoint does not execute this Python by storing it in a document library;
 HTML hosting/embedding also requires tenant-specific review.
 
-See [SECURITY.md](../SECURITY.md), the
-[MVP scope and approval checklist](./deliverables_and_required_inputs.md) and
-[recording script](./management_demo_script.md). Public review is not licensing,
+See [SECURITY.md](../../SECURITY.md), the
+[MVP scope and approval checklist](../planning/deliverables_and_required_inputs.md) and
+[historical recording script](../archive/management_demo_2026-11-19_script.md). Public review is not licensing,
 deployment, security-settings or live-data approval.

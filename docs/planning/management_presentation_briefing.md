@@ -2,6 +2,9 @@
 
 **Management, IT and legal briefing | Thursday, November 19, 2026**
 
+This is a dated presentation brief; its meeting target has passed. The proposed
+nomination milestones below remain planning items, not evidence of decisions or approvals.
+
 **Decision requested:** Name an executive sponsor, a nomination lead and a JVSG
 review lead. Authorize them to prepare a NASWA nomination for review and define
 a limited pilot. This is not approval to process live records, deploy the tool,
@@ -32,7 +35,7 @@ benefits, not measured outcomes.
 refreshed dashboard and point to the changed counts; show the briefing only if it
 has been reviewed; close with the decisions and dates below. If the draft has not
 been reviewed, use the standard snapshot comparison and say that no AI copy is
-being displayed. See the [recording script](./management_demo_script.md).
+being displayed. See the [historical recording script](../archive/management_demo_2026-11-19_script.md).
 
 ## Why consider the NASWA IT innovation award?
 

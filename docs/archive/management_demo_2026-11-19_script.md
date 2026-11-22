@@ -1,9 +1,13 @@
-# Management / IT / legal recording script
+# Historical management / IT / legal recording script
+
+**Archived:** Prepared for a November 19, 2026 presentation. This is a historical
+synthetic-demo script, not current SQL reporting or evidence that the meeting occurred.
+Review and update it before reuse.
 
 **Target:** Thursday, November 19, 2026. **Length:** approximately 8 minutes.
 **Format:** recorded screen demonstration for a Teams meeting.
-Use the [runbook](./management_demo_runbook.md) for commands and definitions.
-Use the [stakeholder briefing](./management_presentation_briefing.md) for
+Use the [runbook](../operations/management_demo_runbook.md) for commands and definitions.
+Use the [stakeholder briefing](../planning/management_presentation_briefing.md) for
 the decision request and nomination schedule.
 
 ## Before recording
