@@ -1,6 +1,7 @@
 # SharePoint demo site: Excel dashboard connected to MIS CSV dumps
 
-**Status: November 22, 2026.** The owner reports that the consolidated
+**Status: November 26, 2026. The live workbook was deleted; see
+"Rebuild from scratch".** As of November 22, 2026, The owner reports that the consolidated
 SharePoint workbook and its detail filters are working. The saved workbook
 contains the four query tables and repaired detail formulas; independent Excel
 recalculation, refresh, permissions, and MIS record validation have not been
@@ -40,17 +41,129 @@ Demo/
   restricted/                  separate permissions: named reviewers only
       JVSG_Dashboard_Overview.xlsx  overview and identifier-bearing detail
     csv/worklist/              dump step 17 CSVs here
+    csv/profile/               dump step 29 CSVs here (referral profile)
 ```
 
 The manager query reads only `csv/manager/`; the worklist query reads only
-`restricted/csv/worklist/`. The consolidated workbook contains identifiers
+`restricted/csv/worklist/`; the profile query reads only
+`restricted/csv/profile/`. The consolidated workbook contains identifiers
 and unsuppressed counts and must remain restricted in its entirety. Showing
 only `Overview` on a page or hiding other sheets does not restrict access to
 the underlying workbook. A separately built aggregate-only workbook is needed
 for any broader audience, subject to privacy approval: releasing step 17
 counts alongside suppressed step 21 counts can reveal groups by subtraction.
 
-## Build or recover the workbook (desktop Excel)
+## Rebuild from scratch (live demo workbook was deleted)
+
+Use this when the workbook is gone. Do it first with the synthetic files, then
+swap in real CSVs. Total time is about an hour. Check the SharePoint recycle bin
+first: a deleted workbook can usually be restored, which is faster than
+rebuilding (site contents > Recycle bin).
+
+**What is in git and what is not.** In git: the Power Query files, Office
+Scripts, Python cells and synthetic CSVs. Not in git (never commit): real CSVs,
+the workbook, the site URL, the restricted SQL. **Detail tabs** (`Offices and
+Age`, `Watchlist`, `Drilldown`, `Definitions`) have no builder in the repo; only
+the column K repair formulas exist (see below). Rebuild them by hand, or ask for
+a script to be written.
+
+### 1. Folders and CSVs
+
+1. In the JVSG SharePoint site library, create the layout from "Restricted folder
+   layout" above: `Demo/csv/manager/`, `Demo/restricted/csv/worklist/`,
+   `Demo/restricted/csv/profile/`. Give `restricted/` its own permissions
+   (named reviewers only; break inheritance).
+2. **Rehearsal:** upload the synthetic files from
+   [data/synthetic/sharepoint_dashboard](../../data/synthetic/sharepoint_dashboard/README.md):
+   `csv/manager/synthetic_manager_report.csv` to `csv/manager/`,
+   `restricted/csv/worklist/synthetic_worklist_report.csv` to `restricted/csv/worklist/`,
+   `restricted/csv/profile/synthetic_profile_report.csv` to `restricted/csv/profile/`.
+3. **Real data:** run steps 21 (manager), 17 (worklist) and 29 (profile) in MIS,
+   export CSV, and upload to the same three folders. Delete the synthetic files
+   first, because the newest file in each folder wins. Run steps 17, 21 and 29
+   from the same day so the as-of dates agree.
+
+### 2. New workbook
+
+1. In `Demo/restricted/`, create a new Excel workbook named
+   `JVSG_Dashboard_Overview.xlsx`. Open it in **desktop Excel** (Power Query
+   editing needs it).
+2. Rename Sheet1 to `Overview`. Add sheets named `Python`, `Data`, and later the
+   detail tabs.
+
+### 3. Connect the Power Query queries
+
+1. **Data > Get Data > Launch Power Query Editor > Manage Parameters > New**:
+   `SharePointSiteUrl`, type Text, current value = site root only
+   (`https://<tenant>.sharepoint.com/sites/<SiteName>`). No `/_layouts/` or
+   `/onedrive`.
+2. For each file below: **New Source > Other Sources > Blank Query > Advanced
+   Editor**, replace everything with the file's contents, click Done, rename the
+   query to the name shown, and sign in with your organizational account when
+   asked (choose **Organizational account** and apply to the site root).
+
+   | Order | File in `src/jvsg_triage/m365/sharepoint_demo/power-query/` | Query name |
+   |---|---|---|
+   | 1 | `Manager.pq` | `Manager` |
+   | 2 | `ManagerMatrix.pq` | `ManagerMatrix` |
+   | 3 | `Worklist.pq` | `Worklist` |
+   | 4 | `WorklistByOffice.pq` | `WorklistByOffice` |
+   | 5 | `Profile.pq` | `Profile` |
+   | 6 | `Classification.pq` | `Classification` (reads `Profile`; add after it) |
+
+3. **Close & Load To... > Table**, existing worksheet `Data`, placed in separate
+   areas, or one sheet per table. Table names must equal the query names. Keep
+   them off `Overview`.
+4. For each query, **Properties**: untick "Enable background refresh".
+5. **Check:** the synthetic set gives `Worklist` 160 rows, `Profile` 160 rows and
+   `Classification` 640 rows. If a query says "expected columns are missing", the
+   wrong CSV is in that folder. If it says "No CSV found", the path or folder
+   name is wrong.
+
+### 4. Overview sheet
+
+1. With `Manager` and `ManagerMatrix` loaded and refreshed, open **Automate >
+   New Script**, paste
+   [BuildOverview.ts](../../src/jvsg_triage/m365/sharepoint_demo/office-scripts/BuildOverview.ts)
+   and **Run**. It creates the banner, four tiles, two charts and the "how to
+   read" block. On a brand new workbook there is nothing to lose; it deletes and
+   replaces any existing `Overview`, so do not run it on a workbook you have
+   edited. If the Automate tab is missing, build the tiles and charts by hand
+   over the two tables.
+2. Chart ranges are fixed to the current `ManagerMatrix` rows; extend them if more
+   LWIAs appear.
+
+### 5. Detail tabs (restricted)
+
+Build over the `Worklist` and `WorklistByOffice` tables (see "Detail tabs"
+below for what each does): `Offices and Age` (office by band, charts),
+`Watchlist` (top 50 overdue, longest wait first, formulas in column K rows
+5 to 54), `Drilldown` (filter by office, band and minimum days; up to 100 rows,
+column K rows 10 to 109) and `Definitions`. After building Watchlist and
+Drilldown, if the counts update but rows do not appear, run
+[RepairDetailFormulas.ts](../../src/jvsg_triage/m365/sharepoint_demo/office-scripts/RepairDetailFormulas.ts)
+(**Automate > New Script**). It rewrites only those two K ranges.
+
+### 6. Referral profile and TOON
+
+Follow "Referral profile, classification and TOON" below. The `Profile` and
+`Classification` queries are already loaded from step 3, so go straight to the
+Python sheet: paste `cell3_toon.py` into A1, `cell4_profile_toon.py` into A2, and
+the A3 to A5 formulas given there. The older `cell1` and `cell2` cells are only
+for case-note scrubbing and are not needed. Python cells run in order, so keep the
+`Python` sheet before the data sheets.
+
+### 7. Save, check, publish
+
+1. **Data > Refresh All**, wait for it to finish, then save to SharePoint.
+2. Close and reopen the workbook, refresh again, and confirm the numbers match.
+3. Add the Excel web part to a restricted page (see "SharePoint page").
+4. For the real run: delete the synthetic CSVs, upload the real ones, refresh,
+   save. This makes the whole workbook identifier-bearing, so keep it restricted.
+5. Keep a copy of the finished workbook in approved storage and use SharePoint
+   version history; do not delete the live copy again without a backup.
+
+## Reference: build or recover the workbook (desktop Excel)
 
 1. Open the restricted workbook. **Data > Get Data > Launch Power Query Editor.**
 2. **Manage Parameters > New**: name `SharePointSiteUrl`, type Text, current
