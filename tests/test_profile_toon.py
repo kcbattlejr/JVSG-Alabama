@@ -182,3 +182,18 @@ def test_excel_python_cell_matches_committed_toon() -> None:
     summary, classes = toon_tables(profiles)
     assert got == decode_table(classes, CLASSIFICATION_TOON_FIELDS)
     assert got_summary == decode_table(summary, PROFILE_TOON_FIELDS)
+
+
+@pytest.mark.skipif(
+    not (Path(__file__).resolve().parents[1] / "sql").is_dir(),
+    reason="restricted SQL not present",
+)
+def test_profile_sql_aliases_match_profile_columns() -> None:
+    import re
+
+    text = (
+        Path(__file__).resolve().parents[1] / "sql" / "29_fy2026_referral_profile.sql"
+    ).read_text(encoding="utf-8")
+    final = text[text.rindex("SELECT c.username") :]
+    aliases = tuple(a.upper() for a in re.findall(r"AS \[(\w+)\]", final))
+    assert aliases == PROFILE_COLUMNS

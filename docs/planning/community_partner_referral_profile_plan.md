@@ -113,7 +113,9 @@ fields only (`profile-rules-v1`, in `src/jvsg_triage/dashboard_demo/profile.py`)
   (`cell4_profile_toon.py`); steps are in the
   [SharePoint runbook](../operations/sharepoint_demo_site.md#referral-profile-classification-and-toon-add-to-the-workbook).
 - Synthetic examples are in `data/synthetic/sharepoint_dashboard/toon/`. The live
-  rule thresholds and flag-to-field mapping need staff confirmation before use.
+  rule thresholds and flag-to-field mapping need staff confirmation before use;
+  the mapping, SQL steps and open questions are tracked in
+  [referral_profile_setup.md](../operations/referral_profile_setup.md).
 
 ## 4. Demo scope
 

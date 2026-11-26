@@ -10,6 +10,8 @@ restricted information and is not approved for general release.
   troubleshoot the synthetic rehearsal.
 - [SharePoint Excel runbook](operations/sharepoint_demo_site.md): restricted
   workbook, refresh, formulas, and access boundaries.
+- [Referral profile setup](operations/referral_profile_setup.md): living
+  checklist for SQL steps 28/29, field mapping, open questions, and workbook setup.
 
 ## Data And Privacy
 
