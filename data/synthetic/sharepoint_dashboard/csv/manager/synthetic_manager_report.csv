@@ -1,0 +1,6 @@
+REPORT_ID,RESULT_STATUS,FY_START,FY_END,AS_OF_DATE,INDIVIDUAL_RECORD_LWIA,LWIA_NAME,FOLLOW_UP_BAND,INDIVIDUALS
+DEMO_Notes_Candidate_Manager,ready,10/01/2025,09/30/2026,11/20/2026,A1,Demo Area North,Overdue,40
+DEMO_Notes_Candidate_Manager,ready,10/01/2025,09/30/2026,11/20/2026,B2,Demo Area South,Current,13
+DEMO_Notes_Candidate_Manager,ready,10/01/2025,09/30/2026,11/20/2026,B2,Demo Area South,Due soon,13
+DEMO_Notes_Candidate_Manager,ready,10/01/2025,09/30/2026,11/20/2026,B2,Demo Area South,Overdue,37
+DEMO_Notes_Candidate_Manager,ready,10/01/2025,09/30/2026,11/20/2026,C3,"Demo Area East, Central",Overdue,27

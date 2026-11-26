@@ -147,7 +147,10 @@ Scripts runtime or replace testing in Excel.
    `restricted/csv/worklist/`. File names do not matter; the newest file wins,
    so delete or move old CSVs per retention policy.
 3. Open the restricted workbook in desktop Excel, **Refresh All**, save.
-4. Rehearse first with the synthetic files in
+4. Rehearse first with the 160-row synthetic set in
+   [data/synthetic/sharepoint_dashboard](../../data/synthetic/sharepoint_dashboard/README.md)
+   (or `python -m jvsg_triage.dashboard_demo` for a local workbook with no
+   SharePoint), or the tiny files in
    [sharepoint_demo/sample_csv](../../src/jvsg_triage/m365/sharepoint_demo/sample_csv/) (copy them into
    the folders, then remove them before real data).
 

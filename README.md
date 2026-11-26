@@ -15,7 +15,7 @@ in [`src/jvsg_triage/m365/sharepoint_demo/`](src/jvsg_triage/m365/sharepoint_dem
 |---|---|
 | `power-query/` | Four queries that read the newest MIS CSV from SharePoint folders (manager summary, office matrix, worklist, worklist by office); Refresh All updates the dashboard. |
 | `office-scripts/` | `BuildOverview.ts` (overview tiles and charts), `ImportJvsgCsv.ts` and `RepairDetailFormulas.ts` (detail-tab repair). Small groups show "Suppressed", not 0. |
-| `sample_csv/` | Invented MIS-style CSVs for rehearsal. |
+| `sample_csv/` | Tiny invented CSVs used by the Node tests. A fuller 160-row set is in `data/synthetic/sharepoint_dashboard/`. |
 | `tests/` | Offline Node tests with a simulated workbook API. |
 
 The dashboard shows the follow-up cohort by office and age, a top-50 overdue
@@ -24,6 +24,22 @@ site address are identifier-bearing: they stay in the restricted JVSG
 SharePoint site and never enter this repository. Setup, refresh and access
 rules are in the
 [SharePoint Excel runbook](docs/operations/sharepoint_demo_site.md).
+
+### Run the dashboard on synthetic data
+
+```bash
+python -m pip install -r requirements-demo.txt
+python -m jvsg_triage.dashboard_demo --output temp/dashboard-demo
+```
+
+This writes synthetic step 17 and step 21 style CSVs into the same folder layout
+SharePoint uses, plus `temp/dashboard-demo/JVSG_Dashboard_Demo.xlsx` (Overview
+tiles and chart with the "Suppressed" rule, a top-50 Watchlist, and the `Manager`
+and `Worklist` tables). Open it in Excel. To rehearse the real Power Query
+workbook, copy the CSVs from
+[`data/synthetic/sharepoint_dashboard/`](data/synthetic/sharepoint_dashboard/README.md)
+into the SharePoint test folders. The columns match the restricted MIS SQL
+(steps 17 and 21) and the Power Query files; tests enforce this.
 
 Also in the repo:
 
@@ -80,6 +96,7 @@ Repository layout:
 
 - `src/jvsg_triage/`: Python modules and Microsoft 365 integration assets.
 - `tests/`: Python tests; integration-specific synthetic harnesses live with their assets.
+- `src/jvsg_triage/dashboard_demo/`: generator and local workbook for the dashboard demo.
 - `data/synthetic/`: invented fixtures; `config/`: project configuration.
 - `docs/`: runbooks and project documentation; `docs/archive/`: historical material.
 - `azure_functions/`: optional Azure integration notes.
