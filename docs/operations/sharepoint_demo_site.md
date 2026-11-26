@@ -63,9 +63,8 @@ rebuilding (site contents > Recycle bin).
 **What is in git and what is not.** In git: the Power Query files, Office
 Scripts, Python cells and synthetic CSVs. Not in git (never commit): real CSVs,
 the workbook, the site URL, the restricted SQL. **Detail tabs** (`Offices and
-Age`, `Watchlist`, `Drilldown`, `Definitions`) have no builder in the repo; only
-the column K repair formulas exist (see below). Rebuild them by hand, or ask for
-a script to be written.
+Age`, `Watchlist`, `Drilldown`, `Definitions`) are built by `BuildDetailTabs.ts`
+(step 5), which has been syntax-checked but not yet run in Excel.
 
 ### 1. Folders and CSVs
 
@@ -135,14 +134,24 @@ a script to be written.
 
 ### 5. Detail tabs (restricted)
 
-Build over the `Worklist` and `WorklistByOffice` tables (see "Detail tabs"
-below for what each does): `Offices and Age` (office by band, charts),
-`Watchlist` (top 50 overdue, longest wait first, formulas in column K rows
-5 to 54), `Drilldown` (filter by office, band and minimum days; up to 100 rows,
-column K rows 10 to 109) and `Definitions`. After building Watchlist and
-Drilldown, if the counts update but rows do not appear, run
-[RepairDetailFormulas.ts](../../src/jvsg_triage/m365/sharepoint_demo/office-scripts/RepairDetailFormulas.ts)
-(**Automate > New Script**). It rewrites only those two K ranges.
+1. With `Worklist` and `WorklistByOffice` loaded and refreshed, open **Automate >
+   New Script**, paste
+   [BuildDetailTabs.ts](../../src/jvsg_triage/m365/sharepoint_demo/office-scripts/BuildDetailTabs.ts)
+   and **Run**. It creates `Offices and Age` (office-by-band chart, days-since-contact
+   and note-count charts), `Watchlist` (top 50 overdue), `Drilldown` (office, band
+   and minimum-days filters in B4:B6, up to 100 rows) and `Definitions`, all as live
+   formulas over the two tables. It deletes and recreates only those four sheets.
+2. Test: on Drilldown pick an office, a band, then a minimum of 0, then a minimum
+   larger than any value (no matches), and compare the count in B7 with the rows
+   shown. Watchlist should be in descending days and show at most 50 rows.
+3. If a count updates but rows do not appear, run
+   [RepairDetailFormulas.ts](../../src/jvsg_triage/m365/sharepoint_demo/office-scripts/RepairDetailFormulas.ts);
+   it rewrites only `Watchlist!K5:K54` and `Drilldown!K10:K109`.
+4. The office chart reads the whole `WorklistByOffice` table, so it grows with the
+   table. The script was only syntax-checked outside Excel: if the Automate tab
+   reports an error on a line, send me the message and I will adjust it. If the
+   Automate tab is unavailable, build the sheets by hand from the formulas in the
+   script.
 
 ### 6. Referral profile and TOON
 
