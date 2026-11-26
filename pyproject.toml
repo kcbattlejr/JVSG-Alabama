@@ -80,6 +80,7 @@ select = ["E", "F", "I", "UP", "B"]
 [tool.ruff.lint.per-file-ignores]
 # Pasted one per Excel cell and run in a shared namespace, so names cross files.
 "src/jvsg_triage/m365/excel_python/*.py" = ["F821"]
+"demo/naswa_demo/python-in-excel/*.py" = ["F821"]
 
 [tool.mypy]
 python_version = "3.11"

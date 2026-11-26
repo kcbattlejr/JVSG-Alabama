@@ -45,7 +45,7 @@ restricted and excluded from this repository.
    into the single combined group, and that unmatched nonblank codes stay
    separate.
 4. **Log completion.** Write pass/fail only in the private location. Add a
-   non-sensitive status line to `docs/sql_reporting_status.md` if it passes.
+   non-sensitive status line to `docs/sql/sql_reporting_status.md` if it passes.
 5. **Demo readiness.** Decide which output you will show: step 20 aggregates
    are the safest. Show step 16 only to authorized viewers, because it
    carries identifiers. Keep the synthetic demo (`python -m jvsg_triage.demo

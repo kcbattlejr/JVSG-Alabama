@@ -13,12 +13,12 @@ involving it. The award form also asks for one primary criterion.
   Employment Services Division
 - **Initiative or partnership, if applicable:** Alabama Jobs for Veterans State
   Grant (JVSG)
-- **Project leads:** Kevin Kidd, Director, Employment Security; Henry "Hank"
+- **Project leads:** Kevin Kidd, Director, Employment Services Division; Henry "Hank"
   Lahti, JVSG Coordinator, Alabama JVSG; Keith Battle, Workforce Specialist -
   Veteran Services, Mobile Veterans Employment Team (JVSG)
 - **Nomination contact:** `[Name and title — to be added]`
 - **Email / phone:** `[Agency contact info — to be added]`
-- **State agency administrator:** Kevin Kidd, Director, Employment Security.
+- **State agency administrator:** Kevin Kidd, Director, Employment Services Division.
   `[Placeholder, unconfirmed: Greg Reed, Secretary, Alabama Department of
   Workforce, may be the required approver. Confirm who must sign.]`
 
@@ -53,6 +53,35 @@ outcomes; do not imply otherwise.
 
 ## 5. Implementation timeline and accomplishments
 
+> **2026 (first year of service to the state):** The Mobile Veterans team,
+> Keith Battle and Robert Stratton (LVER), received the JVSG Team Incentive Award
+> in October 2026. `[Confirm exact award name, date and presenter.]` The team's
+> frontline work, including intake triage of veterans not in case management,
+> motivated this initiative. In October 2026 the approach was presented at
+> statewide JVSG training in Montgomery (best practices for intake triage,
+> tracking and the planned path to AI). `[Confirm date and audience.]` A
+> September 2026 agency newsletter submission describes the team's partnership
+> work. These are recognition and context, not measured outcomes of the dashboard.
+>
+> **Team results context (self-reported, not attributable to the dashboard):**
+> Annualized wages for veterans entering employment, from the Mobile JVSG team's
+> Entered Employment data reported in MIS (hourly, weekly and yearly wages
+> converted to an annual amount in Excel):
+>
+> | Period (2026) | Veterans placed | Combined annualized wages |
+> |---|---|---|
+> | Q1 (Jan–Mar) | 21 | $988,794.80 |
+> | Q2 (Apr–Jun) | `[confirm]` | about $474K `[exact figure]` |
+> | Q3 (Jul–Sep) | 13 | about $777K `[exact figure]` |
+> | Q4 (Oct–Dec) | not yet reported | not yet reported |
+> | Q1–Q3 total | `[confirm]` | about $2.24M |
+>
+> `[Confirm quarter definitions (calendar vs. fiscal), Q2 placement count, and exact
+> Q2/Q3 figures. Same MIS Entered Employment method for all quarters.]` The
+> September newsletter's "over $700,000" was a pre-close estimate for Q3;
+> use the final figure. These totals contain no veteran identifiers and predate this
+> initiative, so they must not be presented as its outcome.
+>
 > **November 2026:** Built the report-import and validation workflow, deterministic
 > transformations, and Excel dashboard views for management summaries and staff
 > follow-up. Added synthetic fixtures and documentation for reproducing the
@@ -95,7 +124,10 @@ examples; confirm NASWA's current file-count, size, and format limits.
 |---|---|
 | Dashboard overview screenshot | `[Insert approved screenshot and caption]` |
 | Staff follow-up / drill-down screenshot | `[Insert approved screenshot and caption]` |
-| Demo video | Script and shot list: [naswa_video_script_and_screenshots.md](naswa_video_script_and_screenshots.md). `[Insert approved 2–3 minute synthetic-data video and transcript]` |
+| Demo video | Script and shot list: [video_script_and_screenshots.md](video_script_and_screenshots.md). `[Insert approved 2–3 minute synthetic-data video and transcript]` |
+| Technical paper | Draft: [technical_paper.md](technical_paper.md) (sanitized; export to PDF after review). |
+| Stakeholder bios | Draft: [bios.md](bios.md). |
+| Demo kit | Synthetic data and scripts for recording: [demo/naswa_demo](../../demo/naswa_demo/README.md). |
 | Data-flow diagram | `[Insert approved diagram showing report export → ETL → dashboard → staff review]` |
 | Sample dashboard or workbook export | `[Insert a separately prepared synthetic PDF/XLSX]` |
 
@@ -113,4 +145,4 @@ approval of this nomination, identifying the award category and initiative.]`
 `[Confirm consent only after the nominee, narrative, names, and every attachment
 have been reviewed and approved for public posting on NASWA's nominations site.]`
 
-**Source:** [NASWA 2027 nomination information](../../docs/2027%20Merrill%20Baumgardner%20Innovation%20in%20Information%20Technology%20Award%20Nomination%20_%20National%20Association%20of%20State%20Workforce%20Agencies.pdf).
+**Source:** [NASWA 2027 nomination information](../source_pdfs/2027%20Merrill%20Baumgardner%20Innovation%20in%20Information%20Technology%20Award%20Nomination%20_%20National%20Association%20of%20State%20Workforce%20Agencies.pdf).

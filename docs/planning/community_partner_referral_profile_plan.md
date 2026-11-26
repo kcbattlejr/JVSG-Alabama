@@ -66,7 +66,7 @@ procedures are not an option. Use read-only SELECTs like steps 17 and 21: one pe
 source area, long format `(stateid, field, value, as_of_date, source)`, pivoted in
 Power Query. State ID is `dbo.indstaff.stateid` (bigint); keep it text in Excel.
 Keep SQL in restricted storage per
-[sql_publication_strategy.md](../sql_publication_strategy.md).
+[sql_publication_strategy.md](../sql/sql_publication_strategy.md).
 
 **Brief sheet, formulas first.** Office Scripts depend on the Automate tab, which
 may be unavailable, so the brief is built from worksheet formulas (`INDEX/MATCH`,

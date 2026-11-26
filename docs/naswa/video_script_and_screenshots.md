@@ -1,7 +1,7 @@
 # NASWA nomination: video script and suggested screenshots
 
 **Draft | ~2:30 runtime | Companion to
-[naswa_innovation_award_nomination_draft.md](naswa_innovation_award_nomination_draft.md)**
+[nomination_draft.md](nomination_draft.md)**
 
 ## Capture rules (public posting)
 
@@ -16,7 +16,7 @@
 
 | Time | On screen | Narration |
 |---|---|---|
-| 0:00–0:15 | Title card: "JVSG Follow-Up Visibility: No Veteran Left Behind", Alabama Department of Workforce, Employment Services Division | "Alabama's Jobs for Veterans State Grant team, led by Kevin Kidd, Director of Employment Security, Henry 'Hank' Lahti, JVSG Coordinator, and Keith Battle of the Mobile Veterans Employment Team, has built a practical way to make follow-up work easier to see." |
+| 0:00–0:15 | Title card: "JVSG Follow-Up Visibility: No Veteran Left Behind", Alabama Department of Workforce, Employment Services Division | "Alabama's Jobs for Veterans State Grant team, led by Kevin Kidd, Director of the Employment Services Division, Henry 'Hank' Lahti, JVSG Coordinator, and Keith Battle of the Mobile Veterans Employment Team, has built a practical way to make follow-up work easier to see." |
 | 0:15–0:40 | Slide: the problem (recurring report exports, manual prep) | "JVSG staff rely on recurring report exports. Preparing them for follow-up has been manual and inconsistent from one refresh to the next." |
 | 0:40–1:05 | Data-flow diagram: report export → validation → deterministic ETL → Excel dashboard → staff review | "Our goal: no veteran left behind. Our workflow loads each export, validates it, applies transparent, repeatable rules, and presents the results in Excel, a tool staff already know. GeoSol remains the system of record." |
 | 1:05–1:35 | Dashboard overview (synthetic) | "Managers see cohort and office summaries at a glance. This demonstration uses synthetic data only." |
