@@ -136,34 +136,20 @@ function buildOffices(workbook: ExcelScript.Workbook, byOffice: ExcelScript.Tabl
   placeSection(sheet, "I", "P", 52, "3. How much contact have they had?",
     "Each column counts veterans by how many JVSG staff notes they have this fiscal year. A tall column at 1 means most veterans have had only one touch, so they may be the easiest to lose.");
 
-  // Data tables sit under the charts so the numbers are visible.
-  sheet.getRange("A74:D74").merge(false);
-  sheet.getRange("A74").setValue("Days since contact");
-  sheet.getRange("E74:H74").merge(false);
-  sheet.getRange("E74").setValue("Veterans");
-  header(sheet.getRange("A74:H74"));
+  // Visible data tables under the charts; the charts read these (hidden cells are not plotted).
   const days = "Worklist[DAYS_SINCE_CONTACT]";
-  const dayRows: [string, string][] = [
+  const dayRows: string[][] = [
     ["0-90", "=COUNTIFS(" + days + ',">=0",' + days + ',"<=90")'],
     ["91-180", "=COUNTIFS(" + days + ',">=91",' + days + ',"<=180")'],
     ["181-270", "=COUNTIFS(" + days + ',">=181",' + days + ',"<=270")'],
     ["271-365", "=COUNTIFS(" + days + ',">=271",' + days + ',"<=365")'],
     ["Over 365", "=COUNTIFS(" + days + ',">365")'],
   ];
-  dayRows.forEach(([label, formula], i) => {
-    const r = 75 + i;
-    sheet.getRange("A" + r + ":D" + r).merge(false);
-    sheet.getRange("A" + r).setNumberFormat("@");
-    sheet.getRange("A" + r).setValue(label);
-    sheet.getRange("E" + r + ":H" + r).merge(false);
-    sheet.getRange("E" + r).setFormula(formula);
-  });
-  // Chart source: use two contiguous helper columns (label and count).
-  sheet.getRange("R74:S74").setValues([["Days since contact", "Veterans"]]);
-  sheet.getRange("R75:S79").setFormulas(dayRows.map(([label, formula]) => [label, formula]));
-  sheet.getRange("R75:R79").setNumberFormat("@");
-  sheet.getRange("R:S").setColumnHidden(true);
-  const daysChart = sheet.addChart(ExcelScript.ChartType.columnClustered, sheet.getRange("R74:S79"), ExcelScript.ChartSeriesBy.columns);
+  sheet.getRange("A74:B74").setValues([["Days since contact", "Veterans"]]);
+  header(sheet.getRange("A74:B74"));
+  sheet.getRange("A75:A79").setNumberFormat("@");
+  sheet.getRange("A75:B79").setFormulas(dayRows);
+  const daysChart = sheet.addChart(ExcelScript.ChartType.columnClustered, sheet.getRange("A74:B79"), ExcelScript.ChartSeriesBy.columns);
   daysChart.setPosition("A55", "H72");
   daysChart.getLegend().setVisible(false);
   styleChart(daysChart, "Veterans by days since last contact", "Days since last contact", "Number of veterans");
@@ -172,32 +158,19 @@ function buildOffices(workbook: ExcelScript.Workbook, byOffice: ExcelScript.Tabl
     series.setHasDataLabels(true);
   });
 
-  sheet.getRange("I74:L74").merge(false);
-  sheet.getRange("I74").setValue("JVSG notes this FY");
-  sheet.getRange("M74:P74").merge(false);
-  sheet.getRange("M74").setValue("Veterans");
-  header(sheet.getRange("I74:P74"));
   const notes = "Worklist[JVSG_NOTE_COUNT]";
-  const noteRows: [string, string][] = [
+  const noteRows: string[][] = [
     ["1", "=COUNTIFS(" + notes + ",1)"],
     ["2", "=COUNTIFS(" + notes + ",2)"],
     ["3", "=COUNTIFS(" + notes + ",3)"],
     ["4", "=COUNTIFS(" + notes + ",4)"],
     ["5 or more", "=COUNTIFS(" + notes + ',">=5")'],
   ];
-  noteRows.forEach(([label, formula], i) => {
-    const r = 75 + i;
-    sheet.getRange("I" + r + ":L" + r).merge(false);
-    sheet.getRange("I" + r).setNumberFormat("@");
-    sheet.getRange("I" + r).setValue(label);
-    sheet.getRange("M" + r + ":P" + r).merge(false);
-    sheet.getRange("M" + r).setFormula(formula);
-  });
-  sheet.getRange("T74:U74").setValues([["JVSG notes this FY", "Veterans"]]);
-  sheet.getRange("T75:U79").setFormulas(noteRows.map(([label, formula]) => [label, formula]));
-  sheet.getRange("T75:T79").setNumberFormat("@");
-  sheet.getRange("T:U").setColumnHidden(true);
-  const notesChart = sheet.addChart(ExcelScript.ChartType.columnClustered, sheet.getRange("T74:U79"), ExcelScript.ChartSeriesBy.columns);
+  sheet.getRange("I74:J74").setValues([["JVSG notes this FY", "Veterans"]]);
+  header(sheet.getRange("I74:J74"));
+  sheet.getRange("I75:I79").setNumberFormat("@");
+  sheet.getRange("I75:J79").setFormulas(noteRows);
+  const notesChart = sheet.addChart(ExcelScript.ChartType.columnClustered, sheet.getRange("I74:J79"), ExcelScript.ChartSeriesBy.columns);
   notesChart.setPosition("I55", "P72");
   notesChart.getLegend().setVisible(false);
   styleChart(notesChart, "Veterans by number of JVSG notes", "JVSG notes this fiscal year", "Number of veterans");
