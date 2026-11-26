@@ -249,7 +249,7 @@ function addReferralProfile(sheet: ExcelScript.Worksheet): void {
     ['=IF(' + hasId + ',TEXT(INDEX(Profile[AS_OF_DATE],' + row + '),"mm/dd/yyyy"),"")'],
     ['=IF($M$4="","Select a State ID in M4",IF(' + hasId + ',"Unverified draft - staff must confirm","State ID not found in the Profile table"))'],
   ]);
-  sheet.getRange("M5:M10").setHorizontalAlignment(ExcelScript.HorizontalAlignment.left);
+  sheet.getRange("M5:M10").getFormat().setHorizontalAlignment(ExcelScript.HorizontalAlignment.left);
 
   sheet.getRange("L12:P12").setValues([[
     "Barrier area", "Suggested level", "Why (last known data)", "Data freshness", "Suggested partner category",
