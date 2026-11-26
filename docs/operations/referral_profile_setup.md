@@ -14,7 +14,7 @@ Workbook steps: [sharepoint_demo_site.md](sharepoint_demo_site.md), section
 | Step | What | State |
 |---|---|---|
 | 1 | Re-run steps 17 and 21, refresh the dashboard | Per batch |
-| 2 | Run `sql/28` and choose service codes | Not run |
+| 2 | Run `sql/28` (service codes) and `sql/30` (housing and employment history columns) | Not run |
 | 3 | Put codes in `svc_map` in `sql/29`, run it, save the CSV | Not run |
 | 4 | Add `Profile` and `Classification` queries to the workbook | Not done |
 | 5 | Check counts and spot-check veterans with staff | Not done |
@@ -29,14 +29,18 @@ Workbook steps: [sharepoint_demo_site.md](sharepoint_demo_site.md), section
    (`csv/manager/`, `restricted/csv/worklist/`).
 2. **Step 28** (`28_referral_profile_service_inventory.sql`): counts of service
    codes the candidates used in the last 365 days. No identifiers.
-3. Choose, with the program owner, the codes that mean:
+3. Run **step 30** (`30_referral_profile_column_discovery.sql`): table and column
+   names only, to find the housing stability column on the Wagner-Peyser
+   application (`tbl_case`, program 3) and the employment history table. Then
+   fill the two `SLOT` comments in step 29 (housing and employment end date).
+4. Choose, with the program owner, the codes that mean:
    `medical` (medical referral or service), `training_enrolled`, `credential`,
    `training_completion`. Leave `'N/A'` for any you cannot identify; that field
    stays unknown (NULL), which the rules treat as "no data", not "no barrier".
-4. Edit the `svc_map` block at the top of **step 29**
+5. Edit the `svc_map` block at the top of **step 29**
    (`29_fy2026_referral_profile.sql`). A category can list several codes by
    adding rows with the same category name.
-5. Run **step 29** and export the CSV to `restricted/csv/profile/`. The
+6. Run **step 29** and export the CSV to `restricted/csv/profile/`. The
    header must match the synthetic CSV exactly (the repo test checks it).
 
 ## 2. Field mapping used by step 29
@@ -48,19 +52,24 @@ Workbook steps: [sharepoint_demo_site.md](sharepoint_demo_site.md), section
 | LAST_CONTACT_DATE, DAYS_SINCE_CONTACT | Latest valid case note, any staff | Same as step 17. |
 | CONTACT_INFO_UPDATED_DATE | `ind.col_edit_date` | Proxy: last edit of the whole record, not proof the phone or address is current. |
 | HOMELESS_FLAG | `indveteran.col_vethomeless` = 1 or `col_homelessreintegration` = 1 | 0 only when `col_vethomeless` = 0; otherwise NULL. |
-| HOUSING_UNSTABLE_FLAG | None known | Always NULL. Open question 1. |
+| HOUSING_UNSTABLE_FLAG | Housing stability on the veteran's most recent Wagner-Peyser application (`tbl_case`, `col_programid` = 3, latest `col_appdate`, not a partial save), documented at registration | Column not yet identified (step 30). NULL until the slot is filled. The application date shows how old the answer is. |
 | DISABILITY_FLAG | `indveteran.vetdisability` 1 or 2 (0 = no) | |
 | JUSTICE_FLAG | `indveteran.col_incarceration` | Meaning: released from incarceration in the past 12 months. |
 | LAST_MEDICAL_SERVICE_DATE | `serviceplan.actualdate` for the `medical` codes | Needs `svc_map`. |
 | TRAINING_ENROLLED_FLAG | `serviceplan` rows for `training_enrolled` codes in the last 365 days | Needs `svc_map`; NULL until set. |
 | LAST_OUTCOME_TYPE, LAST_OUTCOME_DATE | Latest `credential` or `training_completion` service | Needs `svc_map`. |
-| LAST_EMPLOYMENT_END_DATE | None known | Always NULL. Open question 2. |
+| LAST_EMPLOYMENT_END_DATE | Employment history table | Table not in the schema document; find it with step 30. NULL until the slot is filled. |
 
 ## 3. Open questions to settle before relying on the output
 
-1. **Housing instability** has no known field. Options: leave unknown, or
-   derive it from a service code or note convention staff agree on.
-2. **Employment end date** has no known source. With it empty, rule TRN-3
+1. **Housing instability**: identify the column on the Wagner-Peyser application and
+   which values mean unstable versus stable. The answer is a point-in-time
+   registration answer, so the rules should treat an old application as stale
+   (the 180-day freshness rule needs the application date; add a column to the
+   profile contract if you want that, updating the CSV, Power Query, Python,
+   and tests together).
+2. **Employment end date**: find the history table and decide how a row with no
+   end date (current job) is handled. Until filled, rule TRN-3
    ("no recent employment") fires for every veteran without a recent outcome or
    enrolment, so the training and employment domain over-flags. Options: find a
    source, or change TRN-3 to require a known date (then update
@@ -90,5 +99,5 @@ expected counts, once real data is loaded.
   staff review; it is not a referral or eligibility decision.
 - Keep the profile CSV, workbook and TOON files in the restricted SharePoint
   library only.
-- Validate the SQL against MIS records before any wider use. Steps 28 and 29
+- Validate the SQL against MIS records before any wider use. Steps 28, 29 and 30
   have not been run.
