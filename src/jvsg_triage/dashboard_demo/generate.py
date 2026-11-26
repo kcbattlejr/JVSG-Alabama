@@ -185,6 +185,10 @@ def _write_csv(path: Path, columns: Sequence[str], rows: Sequence[dict[str, str]
         writer.writerows(rows)
 
 
+def write_csv(path: Path, columns: Sequence[str], rows: Sequence[dict[str, str]]) -> None:
+    _write_csv(path, columns, rows)
+
+
 def write_sharepoint_tree(output: Path, candidates: Sequence[Candidate]) -> tuple[Path, Path]:
     """Write CSVs into the folder layout the Power Query files read."""
     manager = output / "csv" / "manager" / "synthetic_manager_report.csv"

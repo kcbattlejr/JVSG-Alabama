@@ -32,7 +32,9 @@ python -m pip install -r requirements-demo.txt
 python -m jvsg_triage.dashboard_demo --output temp/dashboard-demo
 ```
 
-This writes synthetic step 17 and step 21 style CSVs into the same folder layout
+This also writes a synthetic profile CSV, rule-based barrier classification and
+`toon/profiles.toon` plus `toon/barrier_classifications.toon` (no identifiers).
+It writes synthetic step 17 and step 21 style CSVs into the same folder layout
 SharePoint uses, plus `temp/dashboard-demo/JVSG_Dashboard_Demo.xlsx` (Overview
 tiles and chart with the "Suppressed" rule, a top-50 Watchlist, and the `Manager`
 and `Worklist` tables). Open it in Excel. To rehearse the real Power Query

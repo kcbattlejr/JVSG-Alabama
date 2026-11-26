@@ -1,0 +1,641 @@
+[640]{profile_id,domain,state,rule_id,evidence_field,evidence_value,evidence_as_of,freshness,partner_category,rules_version,verification_status,reviewer_action,reviewer_role,reviewed_on}:
+  P0001,TRN,ACT,TRN-3,last_employment_end_date,2025-02-18,2025-02-18,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0001,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0001,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0001,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0002,TRN,ACT,TRN-3,last_employment_end_date,2026-03-05,2026-03-05,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0002,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0002,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0002,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0003,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0003,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0003,MED,MIT,MED-2,last_medical_service_date,2026-01-02,2026-01-02,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0003,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0004,TRN,MIT,TRN-2,training_enrolled_flag,"1",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0004,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0004,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0004,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0005,TRN,ACT,TRN-3,last_employment_end_date,2026-04-12,2026-04-12,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0005,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0005,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0005,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0006,TRN,UNK,TRN-0,last_employment_end_date,2026-10-22,2026-10-22,current,null,profile-rules-v1,Unverified,null,null,null
+  P0006,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0006,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0006,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0007,TRN,ACT,TRN-3,last_employment_end_date,2025-07-16,2025-07-16,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0007,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0007,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0007,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0008,TRN,ACT,TRN-3,last_employment_end_date,2025-09-08,2025-09-08,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0008,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0008,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0008,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0009,TRN,ACT,TRN-3,last_employment_end_date,2025-04-12,2025-04-12,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0009,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0009,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0009,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0010,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0010,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0010,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0010,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0011,TRN,MIT,TRN-2,training_enrolled_flag,"1",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0011,HSG,CRT,HSG-1,homeless_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0011,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0011,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0012,TRN,ACT,TRN-3,last_employment_end_date,2025-04-15,2025-04-15,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0012,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0012,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0012,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0013,TRN,ACT,TRN-3,last_employment_end_date,2025-02-28,2025-02-28,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0013,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0013,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0013,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0014,TRN,RES,TRN-1,last_outcome_type,credential,2026-04-30,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0014,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0014,MED,MIT,MED-2,last_medical_service_date,2026-05-09,2026-05-09,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0014,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0015,TRN,UNK,TRN-0,last_employment_end_date,2026-09-02,2026-09-02,current,null,profile-rules-v1,Unverified,null,null,null
+  P0015,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0015,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0015,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0016,TRN,UNK,TRN-0,last_employment_end_date,2026-08-17,2026-08-17,current,null,profile-rules-v1,Unverified,null,null,null
+  P0016,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0016,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0016,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0017,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0017,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0017,MED,MIT,MED-2,last_medical_service_date,2026-09-30,2026-09-30,current,null,profile-rules-v1,Unverified,null,null,null
+  P0017,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0018,TRN,ACT,TRN-3,last_employment_end_date,2025-09-06,2025-09-06,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0018,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0018,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0018,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0019,TRN,ACT,TRN-3,last_employment_end_date,2024-06-27,2024-06-27,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0019,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0019,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0019,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0020,TRN,ACT,TRN-3,last_employment_end_date,2025-02-01,2025-02-01,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0020,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0020,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0020,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0021,TRN,ACT,TRN-3,last_employment_end_date,2025-08-08,2025-08-08,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0021,HSG,CRT,HSG-1,homeless_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0021,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0021,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0022,TRN,ACT,TRN-3,last_employment_end_date,2026-02-12,2026-02-12,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0022,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0022,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0022,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0023,TRN,ACT,TRN-3,last_employment_end_date,2026-04-28,2026-04-28,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0023,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0023,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0023,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0024,TRN,ACT,TRN-3,last_employment_end_date,2024-08-23,2024-08-23,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0024,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0024,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0024,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0025,TRN,UNK,TRN-0,last_employment_end_date,2026-10-04,2026-10-04,current,null,profile-rules-v1,Unverified,null,null,null
+  P0025,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0025,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0025,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0026,TRN,RES,TRN-1,last_outcome_type,training_completion,2026-08-11,current,null,profile-rules-v1,Unverified,null,null,null
+  P0026,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0026,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0026,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0027,TRN,ACT,TRN-3,last_employment_end_date,2024-11-25,2024-11-25,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0027,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0027,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0027,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0028,TRN,UNK,TRN-0,last_employment_end_date,2026-05-27,2026-05-27,current,null,profile-rules-v1,Unverified,null,null,null
+  P0028,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0028,MED,MIT,MED-2,last_medical_service_date,2026-07-28,2026-07-28,current,null,profile-rules-v1,Unverified,null,null,null
+  P0028,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0029,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0029,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0029,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0029,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0030,TRN,UNK,TRN-0,last_employment_end_date,2026-06-12,2026-06-12,current,null,profile-rules-v1,Unverified,null,null,null
+  P0030,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0030,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0030,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0031,TRN,ACT,TRN-3,last_employment_end_date,2025-07-07,2025-07-07,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0031,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0031,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0031,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0032,TRN,ACT,TRN-3,last_employment_end_date,2025-10-21,2025-10-21,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0032,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0032,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0032,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0033,TRN,RES,TRN-1,last_outcome_type,training_completion,2026-09-02,current,null,profile-rules-v1,Unverified,null,null,null
+  P0033,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0033,MED,MIT,MED-2,last_medical_service_date,2026-02-03,2026-02-03,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0033,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0034,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0034,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0034,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0034,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0035,TRN,ACT,TRN-3,last_employment_end_date,2024-11-04,2024-11-04,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0035,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0035,MED,MIT,MED-2,last_medical_service_date,2026-02-03,2026-02-03,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0035,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0036,TRN,UNK,TRN-0,last_employment_end_date,2026-06-29,2026-06-29,current,null,profile-rules-v1,Unverified,null,null,null
+  P0036,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0036,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0036,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0037,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0037,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0037,MED,MIT,MED-2,last_medical_service_date,2025-12-27,2025-12-27,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0037,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0038,TRN,ACT,TRN-3,last_employment_end_date,2025-07-21,2025-07-21,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0038,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0038,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0038,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0039,TRN,ACT,TRN-3,last_employment_end_date,2025-04-19,2025-04-19,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0039,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0039,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0039,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0040,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0040,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0040,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0040,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0041,TRN,ACT,TRN-3,last_employment_end_date,2026-05-14,2026-05-14,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0041,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0041,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0041,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0042,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0042,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0042,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0042,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0043,TRN,RES,TRN-1,last_outcome_type,training_completion,2026-01-14,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0043,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0043,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0043,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0044,TRN,ACT,TRN-3,last_employment_end_date,2024-08-16,2024-08-16,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0044,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0044,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0044,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0045,TRN,ACT,TRN-3,last_employment_end_date,2026-03-23,2026-03-23,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0045,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0045,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0045,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0046,TRN,ACT,TRN-3,last_employment_end_date,2025-10-27,2025-10-27,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0046,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0046,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0046,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0047,TRN,ACT,TRN-3,last_employment_end_date,2025-06-21,2025-06-21,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0047,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0047,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0047,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0048,TRN,RES,TRN-1,last_outcome_type,training_completion,2026-04-16,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0048,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0048,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0048,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0049,TRN,RES,TRN-1,last_outcome_type,credential,2026-03-25,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0049,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0049,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0049,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0050,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0050,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0050,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0050,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0051,TRN,ACT,TRN-3,last_employment_end_date,2025-10-20,2025-10-20,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0051,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0051,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0051,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0052,TRN,ACT,TRN-3,last_employment_end_date,2024-07-14,2024-07-14,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0052,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0052,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0052,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0053,TRN,RES,TRN-1,last_outcome_type,credential,2026-01-12,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0053,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0053,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0053,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0054,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0054,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0054,MED,MIT,MED-2,last_medical_service_date,2026-09-27,2026-09-27,current,null,profile-rules-v1,Unverified,null,null,null
+  P0054,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0055,TRN,RES,TRN-1,last_outcome_type,credential,2026-02-16,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0055,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0055,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0055,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0056,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0056,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0056,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0056,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0057,TRN,ACT,TRN-3,last_employment_end_date,2025-02-25,2025-02-25,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0057,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0057,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0057,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0058,TRN,ACT,TRN-3,last_employment_end_date,2024-07-15,2024-07-15,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0058,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0058,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0058,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0059,TRN,ACT,TRN-3,last_employment_end_date,2024-11-11,2024-11-11,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0059,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0059,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0059,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0060,TRN,ACT,TRN-3,last_employment_end_date,2024-11-23,2024-11-23,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0060,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0060,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0060,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0061,TRN,ACT,TRN-3,last_employment_end_date,2025-06-11,2025-06-11,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0061,HSG,CRT,HSG-1,homeless_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0061,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0061,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0062,TRN,ACT,TRN-3,last_employment_end_date,2024-06-11,2024-06-11,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0062,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0062,MED,MIT,MED-2,last_medical_service_date,2026-05-13,2026-05-13,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0062,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0063,TRN,UNK,TRN-0,last_employment_end_date,2026-10-22,2026-10-22,current,null,profile-rules-v1,Unverified,null,null,null
+  P0063,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0063,MED,MIT,MED-2,last_medical_service_date,2026-02-22,2026-02-22,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0063,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0064,TRN,RES,TRN-1,last_outcome_type,credential,2026-05-20,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0064,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0064,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0064,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0065,TRN,ACT,TRN-3,last_employment_end_date,2025-11-07,2025-11-07,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0065,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0065,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0065,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0066,TRN,UNK,TRN-0,last_employment_end_date,2026-09-08,2026-09-08,current,null,profile-rules-v1,Unverified,null,null,null
+  P0066,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0066,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0066,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0067,TRN,ACT,TRN-3,last_employment_end_date,2026-04-03,2026-04-03,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0067,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0067,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0067,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0068,TRN,UNK,TRN-0,last_employment_end_date,2026-09-19,2026-09-19,current,null,profile-rules-v1,Unverified,null,null,null
+  P0068,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0068,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0068,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0069,TRN,ACT,TRN-3,last_employment_end_date,2026-02-25,2026-02-25,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0069,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0069,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0069,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0070,TRN,UNK,TRN-0,last_employment_end_date,2026-10-02,2026-10-02,current,null,profile-rules-v1,Unverified,null,null,null
+  P0070,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0070,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0070,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0071,TRN,MIT,TRN-2,training_enrolled_flag,"1",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0071,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0071,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0071,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0072,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0072,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0072,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0072,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0073,TRN,ACT,TRN-3,last_employment_end_date,2024-11-05,2024-11-05,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0073,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0073,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0073,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0074,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0074,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0074,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0074,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0075,TRN,UNK,TRN-0,last_employment_end_date,2026-07-01,2026-07-01,current,null,profile-rules-v1,Unverified,null,null,null
+  P0075,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0075,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0075,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0076,TRN,UNK,TRN-0,last_employment_end_date,2026-09-24,2026-09-24,current,null,profile-rules-v1,Unverified,null,null,null
+  P0076,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0076,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0076,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0077,TRN,ACT,TRN-3,last_employment_end_date,2025-12-22,2025-12-22,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0077,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0077,MED,MIT,MED-2,last_medical_service_date,2026-11-17,2026-11-17,current,null,profile-rules-v1,Unverified,null,null,null
+  P0077,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0078,TRN,UNK,TRN-0,last_employment_end_date,2026-08-10,2026-08-10,current,null,profile-rules-v1,Unverified,null,null,null
+  P0078,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0078,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0078,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0079,TRN,RES,TRN-1,last_outcome_type,training_completion,2026-03-12,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0079,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0079,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0079,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0080,TRN,ACT,TRN-3,last_employment_end_date,2026-04-18,2026-04-18,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0080,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0080,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0080,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0081,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0081,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0081,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0081,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0082,TRN,ACT,TRN-3,last_employment_end_date,2025-11-26,2025-11-26,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0082,HSG,CRT,HSG-1,homeless_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0082,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0082,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0083,TRN,ACT,TRN-3,last_employment_end_date,2025-04-12,2025-04-12,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0083,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0083,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0083,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0084,TRN,RES,TRN-1,last_outcome_type,training_completion,2026-03-10,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0084,HSG,CRT,HSG-1,homeless_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0084,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0084,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0085,TRN,RES,TRN-1,last_outcome_type,training_completion,2026-02-14,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0085,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0085,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0085,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0086,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0086,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0086,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0086,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0087,TRN,ACT,TRN-3,last_employment_end_date,2024-10-11,2024-10-11,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0087,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0087,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0087,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0088,TRN,ACT,TRN-3,last_employment_end_date,2025-10-26,2025-10-26,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0088,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0088,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0088,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0089,TRN,ACT,TRN-3,last_employment_end_date,2024-12-31,2024-12-31,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0089,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0089,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0089,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0090,TRN,RES,TRN-1,last_outcome_type,credential,2026-10-31,current,null,profile-rules-v1,Unverified,null,null,null
+  P0090,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0090,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0090,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0091,TRN,ACT,TRN-3,last_employment_end_date,2025-09-14,2025-09-14,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0091,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0091,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0091,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0092,TRN,RES,TRN-1,last_outcome_type,training_completion,2026-05-04,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0092,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0092,MED,MIT,MED-2,last_medical_service_date,2026-03-01,2026-03-01,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0092,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0093,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0093,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0093,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0093,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0094,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0094,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0094,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0094,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0095,TRN,MIT,TRN-2,training_enrolled_flag,"1",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0095,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0095,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0095,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0096,TRN,MIT,TRN-2,training_enrolled_flag,"1",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0096,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0096,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0096,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0097,TRN,MIT,TRN-2,training_enrolled_flag,"1",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0097,HSG,CRT,HSG-1,homeless_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0097,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0097,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0098,TRN,ACT,TRN-3,last_employment_end_date,2025-10-29,2025-10-29,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0098,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0098,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0098,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0099,TRN,UNK,TRN-0,last_employment_end_date,2026-11-14,2026-11-14,current,null,profile-rules-v1,Unverified,null,null,null
+  P0099,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0099,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0099,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0100,TRN,MIT,TRN-2,training_enrolled_flag,"1",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0100,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0100,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0100,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0101,TRN,ACT,TRN-3,last_employment_end_date,2026-02-25,2026-02-25,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0101,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0101,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0101,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0102,TRN,MIT,TRN-2,training_enrolled_flag,"1",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0102,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0102,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0102,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0103,TRN,RES,TRN-1,last_outcome_type,training_completion,2026-06-21,current,null,profile-rules-v1,Unverified,null,null,null
+  P0103,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0103,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0103,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0104,TRN,ACT,TRN-3,last_employment_end_date,2025-11-11,2025-11-11,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0104,HSG,CRT,HSG-1,homeless_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0104,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0104,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0105,TRN,ACT,TRN-3,last_employment_end_date,2025-08-14,2025-08-14,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0105,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0105,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0105,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0106,TRN,ACT,TRN-3,last_employment_end_date,2024-07-23,2024-07-23,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0106,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0106,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0106,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0107,TRN,ACT,TRN-3,last_employment_end_date,2025-05-24,2025-05-24,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0107,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0107,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0107,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0108,TRN,ACT,TRN-3,last_employment_end_date,2025-06-10,2025-06-10,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0108,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0108,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0108,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0109,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0109,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0109,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0109,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0110,TRN,ACT,TRN-3,last_employment_end_date,2025-01-06,2025-01-06,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0110,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0110,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0110,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0111,TRN,RES,TRN-1,last_outcome_type,credential,2026-10-13,current,null,profile-rules-v1,Unverified,null,null,null
+  P0111,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0111,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0111,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0112,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0112,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0112,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0112,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0113,TRN,RES,TRN-1,last_outcome_type,training_completion,2026-02-19,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0113,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0113,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0113,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0114,TRN,ACT,TRN-3,last_employment_end_date,2025-04-13,2025-04-13,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0114,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0114,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0114,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0115,TRN,ACT,TRN-3,last_employment_end_date,2025-09-02,2025-09-02,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0115,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0115,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0115,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0116,TRN,ACT,TRN-3,last_employment_end_date,2025-04-05,2025-04-05,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0116,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0116,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0116,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0117,TRN,RES,TRN-1,last_outcome_type,credential,2026-04-19,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0117,HSG,CRT,HSG-1,homeless_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0117,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0117,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0118,TRN,ACT,TRN-3,last_employment_end_date,2025-07-29,2025-07-29,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0118,HSG,CRT,HSG-1,homeless_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0118,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0118,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0119,TRN,ACT,TRN-3,last_employment_end_date,2025-12-27,2025-12-27,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0119,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0119,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0119,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0120,TRN,ACT,TRN-3,last_employment_end_date,2024-09-11,2024-09-11,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0120,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0120,MED,MIT,MED-2,last_medical_service_date,2026-04-02,2026-04-02,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0120,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0121,TRN,UNK,TRN-0,last_employment_end_date,2026-11-11,2026-11-11,current,null,profile-rules-v1,Unverified,null,null,null
+  P0121,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0121,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0121,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0122,TRN,MIT,TRN-2,training_enrolled_flag,"1",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0122,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0122,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0122,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0123,TRN,RES,TRN-1,last_outcome_type,credential,2026-06-27,current,null,profile-rules-v1,Unverified,null,null,null
+  P0123,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0123,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0123,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0124,TRN,ACT,TRN-3,last_employment_end_date,2024-10-17,2024-10-17,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0124,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0124,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0124,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0125,TRN,RES,TRN-1,last_outcome_type,training_completion,2025-12-18,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0125,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0125,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0125,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0126,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0126,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0126,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0126,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0127,TRN,UNK,TRN-0,last_employment_end_date,2026-07-06,2026-07-06,current,null,profile-rules-v1,Unverified,null,null,null
+  P0127,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0127,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0127,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0128,TRN,MIT,TRN-2,training_enrolled_flag,"1",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0128,HSG,CRT,HSG-1,homeless_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0128,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0128,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0129,TRN,MIT,TRN-2,training_enrolled_flag,"1",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0129,HSG,CRT,HSG-1,homeless_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0129,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0129,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0130,TRN,ACT,TRN-3,last_employment_end_date,2026-02-23,2026-02-23,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0130,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0130,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0130,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0131,TRN,ACT,TRN-3,last_employment_end_date,2025-01-27,2025-01-27,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0131,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0131,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0131,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0132,TRN,RES,TRN-1,last_outcome_type,training_completion,2026-03-14,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0132,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0132,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0132,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0133,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0133,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0133,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0133,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0134,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0134,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0134,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0134,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0135,TRN,RES,TRN-1,last_outcome_type,credential,2026-06-05,current,null,profile-rules-v1,Unverified,null,null,null
+  P0135,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0135,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0135,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0136,TRN,UNK,TRN-0,last_employment_end_date,2026-09-27,2026-09-27,current,null,profile-rules-v1,Unverified,null,null,null
+  P0136,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0136,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0136,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0137,TRN,UNK,TRN-0,last_employment_end_date,2026-06-05,2026-06-05,current,null,profile-rules-v1,Unverified,null,null,null
+  P0137,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0137,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0137,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0138,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0138,HSG,CRT,HSG-1,homeless_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0138,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0138,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0139,TRN,RES,TRN-1,last_outcome_type,training_completion,2026-04-21,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0139,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0139,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0139,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0140,TRN,UNK,TRN-0,last_employment_end_date,2026-07-22,2026-07-22,current,null,profile-rules-v1,Unverified,null,null,null
+  P0140,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0140,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0140,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0141,TRN,RES,TRN-1,last_outcome_type,training_completion,2026-07-18,current,null,profile-rules-v1,Unverified,null,null,null
+  P0141,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0141,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0141,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0142,TRN,UNK,TRN-0,last_employment_end_date,2026-06-15,2026-06-15,current,null,profile-rules-v1,Unverified,null,null,null
+  P0142,HSG,CRT,HSG-1,homeless_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0142,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0142,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0143,TRN,ACT,TRN-3,last_employment_end_date,2024-09-09,2024-09-09,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0143,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0143,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0143,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0144,TRN,ACT,TRN-3,last_employment_end_date,2025-03-17,2025-03-17,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0144,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0144,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0144,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0145,TRN,ACT,TRN-3,last_employment_end_date,2024-11-30,2024-11-30,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0145,HSG,CRT,HSG-1,homeless_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0145,MED,MIT,MED-2,last_medical_service_date,2026-03-08,2026-03-08,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0145,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0146,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0146,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0146,MED,MIT,MED-2,last_medical_service_date,2026-02-11,2026-02-11,stale,null,profile-rules-v1,Unverified,null,null,null
+  P0146,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0147,TRN,ACT,TRN-3,last_employment_end_date,2025-04-18,2025-04-18,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0147,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0147,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0147,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0148,TRN,ACT,TRN-3,last_employment_end_date,2025-03-23,2025-03-23,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0148,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0148,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0148,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0149,TRN,ACT,TRN-3,last_employment_end_date,2025-03-26,2025-03-26,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0149,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0149,MED,ACT,MED-1,disability_flag,"1",null,unknown,Health and VA benefits navigation,profile-rules-v1,Unverified,null,null,null
+  P0149,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0150,TRN,UNK,TRN-0,last_employment_end_date,2026-06-26,2026-06-26,current,null,profile-rules-v1,Unverified,null,null,null
+  P0150,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0150,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0150,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0151,TRN,UNK,TRN-0,last_employment_end_date,2026-08-01,2026-08-01,current,null,profile-rules-v1,Unverified,null,null,null
+  P0151,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0151,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0151,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0152,TRN,RES,TRN-1,last_outcome_type,training_completion,2026-07-27,current,null,profile-rules-v1,Unverified,null,null,null
+  P0152,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0152,MED,MIT,MED-2,last_medical_service_date,2026-08-15,2026-08-15,current,null,profile-rules-v1,Unverified,null,null,null
+  P0152,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0153,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0153,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0153,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0153,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0154,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0154,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0154,MED,MIT,MED-2,last_medical_service_date,2026-06-10,2026-06-10,current,null,profile-rules-v1,Unverified,null,null,null
+  P0154,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0155,TRN,MIT,TRN-2,training_enrolled_flag,"1",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0155,HSG,CRT,HSG-1,homeless_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0155,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0155,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0156,TRN,UNK,TRN-0,last_employment_end_date,2026-05-29,2026-05-29,current,null,profile-rules-v1,Unverified,null,null,null
+  P0156,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0156,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0156,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0157,TRN,ACT,TRN-3,last_employment_end_date,2025-07-22,2025-07-22,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0157,HSG,CRT,HSG-1,homeless_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0157,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0157,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0158,TRN,ACT,TRN-3,last_employment_end_date,2025-10-04,2025-10-04,stale,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0158,HSG,ACT,HSG-2,housing_unstable_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0158,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0158,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null
+  P0159,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0159,HSG,UNK,HSG-0,housing_flags,none,null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0159,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0159,LEG,UNK,LEG-0,justice_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0160,TRN,ACT,TRN-3,last_employment_end_date,unknown,null,unknown,Training and employment support,profile-rules-v1,Unverified,null,null,null
+  P0160,HSG,CRT,HSG-1,homeless_flag,"1",null,unknown,Housing assistance,profile-rules-v1,Unverified,null,null,null
+  P0160,MED,UNK,MED-0,disability_flag,"0",null,unknown,null,profile-rules-v1,Unverified,null,null,null
+  P0160,LEG,ACT,LEG-1,justice_flag,"1",null,unknown,Legal aid,profile-rules-v1,Unverified,null,null,null

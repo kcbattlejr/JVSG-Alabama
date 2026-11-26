@@ -91,6 +91,27 @@ consent obtained, referred, accepted, declined), `CONSENT_DATE`, `PARTNER_CATEGO
 All never overwrites staff entries. The partner sheet area stays locked until
 status is at least "consent obtained".
 
+**TOON export and classification (decided Nov 26).** From the same profile we
+still generate TOON, and classify barriers by deterministic rules over structured
+fields only (`profile-rules-v1`, in `src/jvsg_triage/dashboard_demo/profile.py`):
+
+- Per profile and domain (TRN, HSG, MED, LEG): a state from the closed
+  vocabulary (CRT, ACT, MIT, RES, UNK), the rule id, the evidence field, value and
+  date, and freshness (`current`, `stale` after 180 days, `unknown` for undated
+  flags). A missing indicator is `UNK`, never "no barrier".
+- Examples: homeless flag gives HSG `CRT`; unstable housing gives HSG `ACT`;
+  disability without a medical service in 365 days gives MED `ACT`, with one gives
+  `MIT`; a credential or training completion in 365 days gives TRN `RES`; justice
+  flag gives LEG `ACT`.
+- Suggested partner category (from the fixed domain mapping) only for `CRT`/`ACT`.
+- Output tables `profiles.toon` and `barrier_classifications.toon` use the
+  schema-driven codec `jvsg_triage.toon.codec`; every row is `Unverified` with null
+  reviewer columns. TOON carries no names or State IDs, only a profile row key; the
+  crosswalk stays in the workbook. TOON is the audit and exchange artifact, and the
+  Brief sheet shows the same classification via formulas or an Office Script port.
+- Synthetic examples are in `data/synthetic/sharepoint_dashboard/toon/`. The live
+  rule thresholds and flag-to-field mapping need staff confirmation before use.
+
 ## 4. Demo scope
 
 In: staff brief from structured data, freshness flags, consent gate, referral
@@ -106,7 +127,7 @@ to the state system, the partner-facing sheet.
 | 1 | Confirm workflow, partner categories and partner-directory owner with Hank | Decision note | SharePoint |
 | 2 | Map profile fields to schema columns; note gaps and stale-data risk | Mapping table | Restricted storage |
 | 3 | Draft and validate profile SELECTs on known veterans (as done for query A) | SQL | Restricted storage |
-| 4 | Synthetic profile CSV from the generator, with invented freshness gaps | `data/synthetic/sharepoint_dashboard/restricted/csv/profile/` and tests | This repo |
+| 4 | Synthetic profile CSV, rule-based classification and TOON export (done) | `data/synthetic/sharepoint_dashboard/`, `dashboard_demo/profile.py`, tests | This repo |
 | 5 | `Profile.pq` query and Brief sheet formulas; domain-to-category mapping table | Power Query, layout notes | `sharepoint_demo/`, workbook in SharePoint |
 | 6 | `Referrals` table and Overview status counts | Workbook change | SharePoint |
 | 7 | Rehearse on synthetic data, then the live workbook; update the runbook and demo talking points | Script | `docs/operations/` |
@@ -122,7 +143,8 @@ synthetic data and say so.
 - No model, network call or external transmission anywhere in the flow.
 - Brief and `Referrals` exist only in the restricted workbook; the repo holds
   synthetic fixtures and code only.
-- Offline tests pass for the synthetic profile generator and column contracts.
+- Offline tests pass for the profile generator, classification rules and TOON round trip.
+- TOON output contains no names or State IDs and every row is `Unverified`.
 
 ## 7. Next steps (not part of the demo)
 
