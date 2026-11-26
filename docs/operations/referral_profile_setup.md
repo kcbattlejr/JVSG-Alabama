@@ -73,7 +73,11 @@ Workbook steps: [sharepoint_demo_site.md](sharepoint_demo_site.md), section
    with only an undated or "currently employed" entry is treated correctly,
    and that a veteran with no work history at all (NULL, so TRN-3 fires) is
    what staff expect.
-3. **Service codes** for medical, training, credential and completion (step 28).
+3. **Service codes** (step 28). Interim choice: `training_enrolled` uses the
+   referral codes 209, 210, 211 and 206, so a referral to training counts as
+   enrolled for now. **Question for the state coordinator (Hank):** should a
+   referral count as enrolment, or only a confirmed start? Medical, credential
+   and completion have no matching code and stay `'N/A'` (NULL, unknown).
 4. **Thresholds** (180 and 365 days) are invented defaults; confirm them.
 5. **Field values**: confirm what `vetdisability`, `col_vethomeless` and
    `col_incarceration` actually contain in MIS (step 02 style value counts)
