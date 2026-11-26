@@ -27,7 +27,7 @@ Keith Battle serves as a Workforce Specialist – Veteran Services with the Alab
 
 Battle brings a multidisciplinary background spanning IT operations and scientific computing, including prior roles in IT management on the Gulf Coast, as a Research Technologist at the Alabama Supercomputer Authority, and in graduate research at the University of South Alabama's Whiddon College of Medicine. He holds a B.A.S. from the University of South Alabama (2016), is completing an M.S. in Data Science at Western Governors University (expected December 2026) alongside WGU certificates in Data Analytics and Data Operations, and holds the ISC2 Certified in Cybersecurity (CC) credential. He also helped organize the 2026 Veterans Gulf Coast Job Fair.
 
-* `[Keith to confirm]` Exact credential nomenclature and graduation/award dates. Veterans Gulf Coast Job Fair mention confirmed for inclusion.
+* `[Keith to confirm]` Exact credential nomenclature and graduation/award dates.
 * `[Keith to confirm]` Append Q4 totals once closed.
 
 ---
