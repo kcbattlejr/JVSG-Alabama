@@ -63,13 +63,20 @@ Workbook steps: [sharepoint_demo_site.md](sharepoint_demo_site.md), section
 
 ## 3. Open questions to settle before relying on the output
 
-1. **Housing instability** now comes from the barrier history "needs housing
+1. **Housing instability** (decision 2026-11-26): `housingplan` is the
+   Transition Assistance Program (TAP) housing-plan assessment done by TAP
+   officers, not JVSG staff, so it is not used. **Housing instability** now comes from the barrier history "needs housing
    assistance" answer. Confirm with staff that this is the answer captured at
    registration and how current it is (step 31 shows the Wagner-Peyser
    application answers for comparison). A barrier answer has no date in the
    profile; adding one means changing the CSV, Power Query, Python, and tests
    together.
-2. **Employment end date** uses work history entries. Check that a veteran
+2. **Employment end date** (decision 2026-11-26) falls back to the
+   Wagner-Peyser application employment status (`col_empstatusid`) when there is
+   no work history or layoff date: status 1 (employed) or 2 (employed, notice
+   of termination) is treated as currently employed (end date = as-of date);
+   status 3 (not employed) or blank stays NULL. The status is as of the
+   application date, so it can be stale; confirm with staff. Uses work history entries. Check that a veteran
    with only an undated or "currently employed" entry is treated correctly,
    and that a veteran with no work history at all (NULL, so TRN-3 fires) is
    what staff expect.
