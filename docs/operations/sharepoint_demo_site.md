@@ -1,7 +1,7 @@
 # SharePoint demo site: Excel dashboard connected to MIS CSV dumps
 
 **Status: November 26, 2026. The live workbook was deleted; see
-"Rebuild from scratch".** As of November 22, 2026, The owner reports that the consolidated
+"Rebuild from scratch".** As of November 22, 2026, the owner reports that the consolidated
 SharePoint workbook and its detail filters are working. The saved workbook
 contains the four query tables and repaired detail formulas; independent Excel
 recalculation, refresh, permissions, and MIS record validation have not been
