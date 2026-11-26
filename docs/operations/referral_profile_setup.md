@@ -44,8 +44,9 @@ Workbook steps: [sharepoint_demo_site.md](sharepoint_demo_site.md), section
      counts, no identifiers, for the latest Wagner-Peyser application fields the
      schema document shows: `tbl_caseveteran.col_housingplan` (military
      post-transition housing plan), `col_vethomeless`, and
-     `tbl_case.col_empstatusid` (employment status at application, a
-     point-in-time answer, not an employment end date). Decide with staff which
+     `tbl_case.col_empstatusid` (decoded with `tbl_employstatus_lu`),
+     `tbl_wpapp.col_curemp`, `col_selfemp`, and whether `col_layoffdate` is
+     recorded (all point-in-time answers at registration). Decide with staff which
      housing plan values mean unstable.
    - Then test one guess at a time: `SELECT TOP 5 k.<column> AS [x] FROM
      dbo.tbl_case AS k` fails with "invalid column" if the name is wrong.
@@ -74,7 +75,7 @@ Workbook steps: [sharepoint_demo_site.md](sharepoint_demo_site.md), section
 | LAST_MEDICAL_SERVICE_DATE | `serviceplan.actualdate` for the `medical` codes | Needs `svc_map`. |
 | TRAINING_ENROLLED_FLAG | `serviceplan` rows for `training_enrolled` codes in the last 365 days | Needs `svc_map`; NULL until set. |
 | LAST_OUTCOME_TYPE, LAST_OUTCOME_DATE | Latest `credential` or `training_completion` service | Needs `svc_map`. |
-| LAST_EMPLOYMENT_END_DATE | Employment history table | Table not in the schema document; find it via the vendor dictionary or the MIS screen. NULL until the slot is filled. |
+| LAST_EMPLOYMENT_END_DATE | `tbl_wpapp.col_layoffdate` on the latest WP application | Proxy: layoff or separation date reported at registration. No employment history table exists in the schema document. NULL when not recorded, so TRN-3 still fires for those veterans. |
 
 ## 3. Open questions to settle before relying on the output
 
@@ -84,8 +85,9 @@ Workbook steps: [sharepoint_demo_site.md](sharepoint_demo_site.md), section
    (the 180-day freshness rule needs the application date; add a column to the
    profile contract if you want that, updating the CSV, Power Query, Python,
    and tests together).
-2. **Employment end date**: find the history table and decide how a row with no
-   end date (current job) is handled. Until filled, rule TRN-3
+2. **Employment end date**: accept the layoff-date proxy or find a history table.
+   Decide how a veteran with no layoff date is handled (step 31 shows how many).
+   Meanwhile rule TRN-3
    ("no recent employment") fires for every veteran without a recent outcome or
    enrolment, so the training and employment domain over-flags. Options: find a
    source, or change TRN-3 to require a known date (then update
