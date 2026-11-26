@@ -1,39 +1,73 @@
 # JVSG-Alabama
 
-A synthetic prototype for helping Alabama Jobs for Veterans State Grant (JVSG)
-staff see who may need follow-up and what support needs are already recorded.
-It is **not approved for live data, production use, or external release**.
+Tools for helping Alabama Jobs for Veterans State Grant (JVSG) staff find
+veterans who may be falling through the cracks, so none are left behind. This
+public repository contains **code, scripts, documentation and invented data
+only**. It is **not approved for production use or external release**, and
+live veteran data never belongs here.
 
-## Open the management demo
+## What exists today
 
-From the repository root in an activated Python 3.11+ environment:
+The working deliverable is the **SharePoint Excel dashboard**. Its code lives
+in [`src/jvsg_triage/m365/sharepoint_demo/`](src/jvsg_triage/m365/sharepoint_demo/):
+
+| Piece | What it does |
+|---|---|
+| `power-query/` | Four queries that read the newest MIS CSV from SharePoint folders (manager summary, office matrix, worklist, worklist by office); Refresh All updates the dashboard. |
+| `office-scripts/` | `BuildOverview.ts` (overview tiles and charts), `ImportJvsgCsv.ts` and `RepairDetailFormulas.ts` (detail-tab repair). Small groups show "Suppressed", not 0. |
+| `sample_csv/` | Invented MIS-style CSVs for rehearsal. |
+| `tests/` | Offline Node tests with a simulated workbook API. |
+
+The dashboard shows the follow-up cohort by office and age, a top-50 overdue
+watchlist and a drill-down by office, band and days. The workbook, CSVs and
+site address are identifier-bearing: they stay in the restricted JVSG
+SharePoint site and never enter this repository. Setup, refresh and access
+rules are in the
+[SharePoint Excel runbook](docs/operations/sharepoint_demo_site.md).
+
+Also in the repo:
+
+- [`m365/excel_python/`](src/jvsg_triage/m365/excel_python/README.md): Python
+  in Excel cells (scrub, rules baseline, contract check, TOON). Tested offline;
+  not yet run inside Excel.
+- [`m365/office-scripts/BarrierFindings.ts`](src/jvsg_triage/m365/README.md):
+  Office Script that proposes barrier findings, always `Unverified`.
+- Restricted MIS SQL, vendor schema and operational notes are kept in approved
+  private storage, not here.
+
+## Next: November 30 demo
+
+A staff-reviewed **community-partner referral brief** for each veteran in the
+cohort, built from structured data with visible data freshness. Templates only:
+**no model is used**, nothing is sent automatically, and referrals need
+consent and qualified staff review. See the
+[referral profile plan](docs/planning/community_partner_referral_profile_plan.md)
+for the decision tree and work breakdown.
+
+## Decisions in force
+
+- Veteran PII is allowed only in the JVSG SharePoint site; this repo stays synthetic.
+- Not available: Power Automate, Copilot Studio, `=COPILOT`. Python in Excel has no network access.
+- No third-party hosting (for example Modal) for identified data. A local SLM
+  or in-tenant Azure Function needs IT and governance approval and is deferred.
+- Model output is a draft; case interpretation and referral decisions stay with qualified staff.
+
+## Synthetic rehearsal (separate Python demo)
+
+A self-contained offline rehearsal, built on invented reports, predates the
+SharePoint dashboard and remains useful for practice and CI. It is not the
+current deliverable.
 
 ```bash
 python -m pip install -r requirements-demo.txt
 python -m jvsg_triage.demo rehearse
 ```
 
-Open `temp/management-demo/index.html` locally in a browser. Use this folder
-for the current rehearsal; open the refreshed HTML dashboard or download the
-Excel dashboard and standard `profiles.toon` from the landing page. The dashboards add plain-language charts by office, staff review status and support area. No web
-server, model, or cloud account is needed.
-
-For the state laptop and Teams call, use the
-[Codespaces quick start and troubleshooting table](docs/operations/management_demo_runbook.md#codespaces-and-teams-quick-start).
-See [Start the HTML preview in VS Code](docs/operations/management_demo_runbook.md#start-the-html-preview-in-vs-code)
-for the web server command. Download the verified presentation ZIP before the
-meeting so it also works offline.
-
-The Python demo matches and scrubs two invented reports using native MIS layouts.
-A separate invented staff-review workbook supplies the fields used for
-follow-up bands, Excel/HTML dashboards, and the lossless standard TOON
-export. The optional AI-assisted wording uses invented totals only and
-requires human review before display. The Python demo does not independently
-compute the 203/205 anti-join, infer profile fields from notes, connect to
-SharePoint, send notifications, or transmit data to a federal system.
-Separate MIS SQL reports are maintained outside this repository in restricted
-private storage. They are not an approved production service or automated
-delivery.
+Open `temp/management-demo/index.html` locally (no web server, model or cloud
+account needed). It produces HTML and Excel dashboards and a lossless
+`profiles.toon` from invented data. Details, Codespaces and Teams steps are in the
+[demo runbook](docs/operations/management_demo_runbook.md). It does not connect to
+SharePoint or MIS, infer fields from notes, or send data anywhere.
 
 ## Documentation
 
@@ -65,11 +99,16 @@ python -m ruff check .
 python -m mypy src
 ```
 
+The Office Script tests need Node.js 22.13+ and skip without it; SQL window tests
+need `sqlglot` and the restricted SQL files, and skip without them. Run the
+dashboard script tests directly with
+`node --test src/jvsg_triage/m365/sharepoint_demo/tests/importer.test.mjs`.
+
 The code for the rehearsal is under `src/jvsg_triage/demo/`. The underlying
 intake and scrubber are under `etl/` and `privacy/`; generated test data and
 evaluation tools are documented under [data/synthetic/](data/synthetic/README.md).
-Azure, Microsoft 365 synchronization, case-note inference, and VOMA remain
-unimplemented integration paths. The optional settings in `.env.example` do
+Azure Functions, live Microsoft 365 synchronization, model-based case-note
+inference, and VOMA remain unimplemented. The optional settings in `.env.example` do
 not grant access or authorization.
 
 Use only generated fixtures in development, demos, prompts, and CI. Do not copy
