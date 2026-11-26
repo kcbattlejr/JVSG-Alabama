@@ -58,7 +58,7 @@ cohort, built from structured data with visible data freshness. Templates only:
 **no model is used**, nothing is sent automatically, and referrals need
 consent and qualified staff review. See the
 [referral profile plan](docs/planning/community_partner_referral_profile_plan.md)
-for the decision tree and work breakdown.
+for the route, design and work breakdown.
 
 ## Decisions in force
 

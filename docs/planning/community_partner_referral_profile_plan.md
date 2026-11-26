@@ -1,127 +1,149 @@
-# Plan: community-partner referral profile ("warm handoff packet")
+# Plan: community-partner referral brief (templates only)
 
-**Status: decisions made November 26, 2026 for the November 30 demo (Option A, templates only).** Builds on the working
-SharePoint dashboard (`src/jvsg_triage/m365/sharepoint_demo`). The
-`excel_python` cells exist with offline tests but have not yet been run inside Excel. Repository work stays synthetic; real
-veteran data stays in the JVSG SharePoint site ([PII protocol](../data/pii_protocol.md)).
-Referral decisions stay with qualified staff; any generated text is a draft.
+**Status: decided November 26, 2026, for the November 30 demo.** Route: **Option A,
+fixed templates with no model.** Other routes are listed under
+[Next steps](#7-next-steps-not-part-of-the-demo). Builds on the working SharePoint
+dashboard (`src/jvsg_triage/m365/sharepoint_demo/`). Repository work uses synthetic
+data only; veteran data stays in the JVSG SharePoint site
+([PII protocol](../data/pii_protocol.md)). Referral decisions stay with qualified
+staff; the brief is a draft for their review.
 
-## 1. Framing
+## 1. Goal and claim
 
-The dashboard answers "who is in the hardest-to-place cohort". The next
-question (Hank's) is "what do we do for them". Decided answer: every veteran
-in the cohort gets, at minimum, a staff-reviewed referral to a community
-partner that can stabilize barriers.
+The dashboard shows which veterans are in the hardest-to-place follow-up cohort.
+Hank's question was what to do with them. Answer: every veteran in the cohort
+gets, at minimum, a **staff-reviewed referral to a community partner** that can
+help stabilize barriers, delivered as a warm handoff.
 
-A warm handoff needs two different documents:
+Demo claim: *each cohort veteran has a one-page referral brief built from
+structured data, with visible data freshness, a consent gate, and tracked
+referral status.* No model is used, nothing is sent automatically, and staff make
+every decision.
+
+Two documents, kept separate:
 
 | Document | Audience | Content | Release |
 |---|---|---|---|
-| **Staff referral brief** | JVSG staff / DVOP | Last-known-good profile, data freshness, suggested partner categories | Internal, SharePoint only |
-| **Partner referral sheet** | Community partner | Minimum necessary subset (name, contact, stated need, requested service, staff contact) | Only with the veteran's documented consent / release |
+| **Staff referral brief** (demo) | JVSG staff | Last-known-good profile, freshness flags, suggested partner categories | Restricted SharePoint workbook only |
+| **Partner referral sheet** (later) | Community partner | Minimum necessary subset | Only with the veteran's documented consent or release |
 
-Confirm with agency privacy/legal: release-of-information requirements for
-sharing with non-agency partners, and any restriction on reusing data from
-state systems. Generate the partner sheet only after consent is recorded.
+Confirm with agency privacy/legal: release-of-information rules for non-agency
+partners and any limit on reusing state-system data.
 
-## 2. Structured "last known good" profile instead of note scanning
+## 2. Why structured data, not case notes
 
-Recommended for v1. Reasons: deterministic and auditable, no model risk, fits
-337 veterans, avoids the unvalidated scrubber on real notes, and does not
-depend on a governance approval for note-level AI.
+Deterministic, auditable, no model risk, no dependence on the unvalidated note
+scrubber, and no governance approval for note-level AI. Notes stay with staff:
+they may read one veteran's notes themselves. Bulk note mining is a later phase
+(see the [TOON/SLM plan](./toon_and_slm_barrier_dx_plan.md)).
 
-Profile fields, each carried with **value, as-of date, source table.column**
-so staleness is visible (exact columns to be mapped from `docs/AW_table_schema.txt`;
-State ID is `dbo.indstaff.stateid`, per existing notes):
+## 3. Design
 
-- Identity and contact: name, phone/email/address, date contact info last
-  updated, county and local office, assigned staff.
+```text
+Read-only SELECT queries (MIS query window, restricted SQL)
+  -> CSV into the restricted SharePoint folder   (restricted/csv/profile/)
+  -> Power Query: Profile table (newest CSV, like Worklist.pq)
+  -> Brief sheet: pick a veteran, template formulas fill the brief
+  -> Referrals table: staff record consent and status (manual input)
+  -> Overview: referral status counts
+```
+
+**Profile fields.** Each carries value, **as-of date** and source, so staleness is
+visible. Exact columns are mapped from the vendor schema (restricted storage).
+
+- Identity, contact and its last-updated date; county and local office; staff.
 - Last employment: employer, occupation, wage, separation date.
-- Last positive outcome: last completed training, credential, placement, or
-  successful service.
-- Last service/activity and its date; last staff contact date (date only,
-  not note text); days since contact.
-- Structured barrier indicators: homelessness, disability, SBE designation,
-  justice involvement, limited English, and similar flags that exist as
-  fields.
-- Case status: enrollment, plan, closure/exit state.
-- Barrier domain mapping to the existing closed vocabulary (TRN, HSG, MED,
-  LEG) where a structured field supports it; otherwise `UNK`.
+- Last positive outcome: training, credential, placement or successful service.
+- Last service and date; last contact date (never note text); days since contact.
+- Structured barrier flags that exist as fields (housing, disability, SBE,
+  justice involvement, limited English, and similar).
+- Case status: enrollment, plan, closure.
+- Barrier domain from the closed vocabulary (TRN, HSG, MED, LEG) where a field
+  supports it, otherwise `UNK`.
 
-Output per veteran: one wide row (for Excel) plus a rendered one-page brief.
-Case notes stay optional: later, staff may open the notes for a single veteran
-themselves; bulk note mining waits on the Phase 2 governance gate in the
-[TOON/SLM plan](./toon_and_slm_barrier_dx_plan.md).
+**Queries.** The MIS query window is SELECT-only (no EXEC or `sp_`), so stored
+procedures are not an option. Use read-only SELECTs like steps 17 and 21: one per
+source area, long format `(stateid, field, value, as_of_date, source)`, pivoted in
+Power Query. State ID is `dbo.indstaff.stateid` (bigint); keep it text in Excel.
+Keep SQL in restricted storage per
+[sql_publication_strategy.md](../sql_publication_strategy.md).
 
-## 3. Stored procedures: probably not the right tool
+**Brief sheet, formulas first.** Office Scripts depend on the Automate tab, which
+may be unavailable, so the brief is built from worksheet formulas (`INDEX/MATCH`,
+`TEXTJOIN`, `IF`) driven by a veteran selector cell. An Office Script is optional,
+only to build the sheet layout. Fixed sections:
 
-- The MIS query window allows SELECT only: no EXEC, no `sp_`. A procedure
-  could not be created or run from there.
-- Creating objects in the vendor database needs the vendor/DBA, may be
-  unsupported, and creates a maintenance and change-control burden.
+1. Header: "Draft for staff review. Not a referral decision."
+2. Who and where: name, office, assigned staff, preferred contact and its
+   as-of date.
+3. Last known good: employment, outcome, last service, each with its date; fields
+   older than a set cutoff show "Stale - verify" and missing fields show
+   "Unknown", never blank or guessed.
+4. Barrier indicators found in structured data, by domain.
+5. Suggested partner categories, from a fixed mapping table (domain to category,
+   for example HSG to housing assistance) that staff can edit; a suggestion, not
+   an assignment.
+6. Consent and status: filled from the `Referrals` table.
 
-Recommended: the same pattern as the existing reports (`sql/04`-`21`): a
-**read-only SELECT** keyed to the cohort's State IDs (or joined to the cohort
-logic), run in the query window, exported to the JVSG SharePoint library. If
-IT later offers a supported view or scheduled export, the same SELECT moves
-there unchanged. Keep the SQL in the restricted location chosen under
-[sql_publication_strategy.md](../sql_publication_strategy.md), not the public repo.
+**Referrals table (manual).** Columns: `STATE_ID` (text), `STATUS` (not started,
+consent obtained, referred, accepted, declined), `CONSENT_DATE`, `PARTNER_CATEGORY`,
+`REVIEWED_BY`, `REVIEWED_ON`. It is separate from the query tables, so Refresh
+All never overwrites staff entries. The partner sheet area stays locked until
+status is at least "consent obtained".
 
-Query design: one query per source area (employment, services, contact,
-flags) returning long format `(stateid, field, value, as_of_date, source)`;
-pivot to wide in Power Query or Python. This keeps each query simple enough
-for the query-window limits and makes provenance explicit.
+## 4. Demo scope
 
-## 4. Decision tree: generating the brief
+In: staff brief from structured data, freshness flags, consent gate, referral
+status counts, synthetic walk-through, plain statement that no model is used.
 
-Constraint: Excel on SharePoint (web) runs in Microsoft's cloud and cannot
-reach `localhost` or a staff PC. Decisions, in order:
+Out: any model, bulk note mining, automatic transmission to partners, write-back
+to the state system, the partner-facing sheet.
 
-| Option | Decision | Reason |
-|---|---|---|
-| **A. Templates only (no model)** in Office Script or formulas | **Chosen for the Nov 30 demo** | Works under current licenses and permissions; no installs, no new data flow. |
-| B. Local Python/SLM on a staff laptop, via the synced SharePoint folder | Deferred | Needs IT approval of per-user Python and a named model (the laptop has no admin rights; application control may block it), disk-encryption and synced-PII confirmation, and model governance sign-off. Wording polish only. |
-| C. VBA in a desktop `.xlsm` calling a local model | Fallback only | Desktop Excel only; macro-enabled files need IT approval. |
-| D. In-tenant Azure Function called by an Office Script | Post-pilot | Needs IT hosting, managed identity and app registration; `azure_functions/` is reserved but not implemented. |
-| E. Modal, GitHub-hosted or other third-party service | Rejected for identified data | Veteran PII may not leave the JVSG SharePoint/tenant. De-identified payloads only, with written approval and a data-processing agreement; not worth the risk for wording polish. |
-| F. Power Automate / Copilot Studio / `=COPILOT` | Not available | Not licensed. Python in Excel has no network access, so it cannot call any model either. |
-
-No model is used in the demo. Any later SLM only rewrites a fixed, validated
-template into plain language from closed inputs, runs inside approved
-boundaries, and is labeled "draft - staff review required".
-
-## 5. Demo scope (Nov 30) and work breakdown
-
-Demo claim: "Every veteran in the cohort gets a staff-reviewed referral brief
-built from structured data with visible freshness." Show with **synthetic data
-only** in the repo; the live workbook stays in SharePoint.
+## 5. Work breakdown (Nov 26-30)
 
 | # | Task | Output | Where |
 |---|---|---|---|
-| 1 | Confirm with Hank: referral workflow, partner categories, and who owns the partner directory | Short decision note | SharePoint, not this repo |
-| 2 | Map profile fields to schema columns; mark gaps and stale-data risk | Field mapping table | Restricted storage |
-| 3 | Draft read-only profile SELECTs (long format `stateid, field, value, as_of_date, source`); validate on known veterans | SQL files | Restricted storage, per the SQL publication strategy |
-| 4 | Synthetic profile fixture (invented rows) matching the field list in section 2 | `data/synthetic/` CSV and schema note | This repo |
-| 5 | Brief template (Office Script or formulas): fixed sections, "as of" dates, "unknown" where a field is missing, partner-category suggestions from the closed barrier vocabulary | `BuildReferralBrief` script and tests | `src/jvsg_triage/m365/sharepoint_demo/` |
-| 6 | "Referral status" column (not started / consent obtained / referred / accepted / declined) and a status count on the Overview tab | Workbook change | SharePoint |
-| 7 | Demo script update: show brief, freshness flags, consent gate; state clearly that no model is used and no referral is automatic | Demo talking points | `docs/operations/` |
+| 1 | Confirm workflow, partner categories and partner-directory owner with Hank | Decision note | SharePoint |
+| 2 | Map profile fields to schema columns; note gaps and stale-data risk | Mapping table | Restricted storage |
+| 3 | Draft and validate profile SELECTs on known veterans (as done for query A) | SQL | Restricted storage |
+| 4 | Synthetic profile CSV from the generator, with invented freshness gaps | `data/synthetic/sharepoint_dashboard/restricted/csv/profile/` and tests | This repo |
+| 5 | `Profile.pq` query and Brief sheet formulas; domain-to-category mapping table | Power Query, layout notes | `sharepoint_demo/`, workbook in SharePoint |
+| 6 | `Referrals` table and Overview status counts | Workbook change | SharePoint |
+| 7 | Rehearse on synthetic data, then the live workbook; update the runbook and demo talking points | Script | `docs/operations/` |
 
-Out of scope for Nov 30: any model, bulk note mining, automatic partner
-transmission, write-back to the state system.
+Prioritize 1-3 and 5; if the live profile queries slip, demo the Brief on
+synthetic data and say so.
 
-## 6. After the demo
+## 6. Acceptance checks
 
-- IT request: per-user Python and a named local model (Option B), synced-PII
-  rules, and whether a supported scheduled export or view exists.
-- Pilot with a small subset, then all 337; record aggregate referral counts
-  for the NASWA nomination (publication needs approval).
-- Decide where referral status is recorded long term (state system service
-  codes preferred over the workbook).
+- Every brief field shows a value with an as-of date, "Stale - verify" or
+  "Unknown"; none is blank.
+- Refresh All keeps `Referrals` entries intact.
+- No model, network call or external transmission anywhere in the flow.
+- Brief and `Referrals` exist only in the restricted workbook; the repo holds
+  synthetic fixtures and code only.
+- Offline tests pass for the synthetic profile generator and column contracts.
 
-## 7. Open questions
+## 7. Next steps (not part of the demo)
 
-- Is there a partner directory, or do we build a minimal one (category,
-  county, contact, intake method)?
-- Is the cohort definition (steps 17/21) validated? Per the restricted SQL
-  status it is not yet validated against MIS records; the referral list
-  inherits that risk.
+| Route | Status | What it needs |
+|---|---|---|
+| **B. Local Python/SLM** on a staff laptop via the synced SharePoint folder, for plain-language wording | Next | IT approval of per-user Python and a named model (the laptop has no admin rights; application control may block it), disk-encryption and synced-PII confirmation, model governance sign-off. Model only rewrites the fixed template from closed inputs, output labeled "draft - staff review required". About 2-3 hours of CPU time per full run. |
+| **C. VBA in a desktop `.xlsm`** calling a local model | Fallback | Desktop Excel only; macro files need IT approval. |
+| **D. In-tenant Azure Function** called by an Office Script | After pilot | IT hosting, managed identity, app registration; `azure_functions/` is reserved, not implemented. |
+| **E. Third-party host (Modal, GitHub)** | Rejected for identified data | Veteran PII may not leave the JVSG SharePoint or tenant. Only de-identified payloads, with written approval and a data-processing agreement. |
+| **F. Power Automate, Copilot Studio, `=COPILOT`** | Not available | Not licensed. Python in Excel has no network access, so it cannot call a model. |
+
+Also after the demo: partner-facing referral sheet gated on consent; a supported
+view or scheduled export from IT; a minimal partner directory (category, county,
+contact, intake method); long-term home for referral status (state-system service
+codes preferred over the workbook); pilot on a small subset, then the full
+cohort, with aggregate referral counts for the NASWA nomination (publication
+needs approval).
+
+## 8. Open questions
+
+- Does a partner directory exist, and who owns it?
+- Is the cohort definition (steps 17 and 21) validated against MIS records? Per
+  the restricted SQL status it is not yet; the referral list inherits that risk.
+- What staleness cutoff per field should trigger "Stale - verify"?
