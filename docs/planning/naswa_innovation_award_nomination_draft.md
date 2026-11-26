@@ -72,6 +72,10 @@ outcomes; do not imply otherwise.
 
 > The dashboard is intended to give JVSG staff a clearer, more consistent view of
 > follow-up workload and recorded information, while reducing manual preparation.
+> It also supports community partner referral for barrier stabilization: a
+> fixed-template brief helps qualified staff connect veterans with partner
+> organizations that can address barriers to employment, so no veteran is left
+> behind. Staff review and approve every referral; nothing is sent automatically.
 > These are expected benefits, not measured results. A future, separately
 > authorized pilot would evaluate preparation time, data corrections, and timely
 > follow-up against the current process.
