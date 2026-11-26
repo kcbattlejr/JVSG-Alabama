@@ -208,7 +208,94 @@ function buildDrilldown(workbook: ExcelScript.Workbook): void {
   sheet.getRange("A9:I109").getFormat().autofitColumns();
   sheet.getRange("A:A").getFormat().setColumnWidth(170);
   sheet.getRange("K:K").setColumnHidden(true);
+  addReferralProfile(sheet);
   sheet.getFreezePanes().freezeRows(9);
+}
+
+// Draft community-partner referral profile for the State ID in M4, in L:P.
+// Reads the Profile and Classification tables (profile_id is "P" plus the
+// Profile row number, the same key Classification.pq assigns). Fixed template
+// text only; no model. Every line is an unverified draft for staff review.
+function addReferralProfile(sheet: ExcelScript.Worksheet): void {
+  const hasId = '$M$5<>""';
+  const row = 'MATCH(TRIM($M$4&""),Profile[STATE_ID],0)';
+  const field = (col: string) => '=IF(' + hasId + ',INDEX(Profile[' + col + "]," + row + '),"")';
+
+  const title = sheet.getRange("L3");
+  title.setValue("Community partner referral profile (draft for staff review)");
+  title.getFormat().getFont().setBold(true);
+  title.getFormat().getFont().setSize(13);
+  title.getFormat().getFont().setColor(NAVY);
+
+  sheet.getRange("L4").setValue("Select a State ID");
+  sheet.getRange("L4").getFormat().getFont().setBold(true);
+  sheet.getRange("M4").getFormat().getFill().setColor("#FFF4D6");
+  sheet.getRange("M4").getDataValidation().setRule({
+    list: { inCellDropDown: true, source: "=$B$10:$B$109" },
+  });
+  sheet.getRange("M4").setNumberFormat("@");
+  sheet.getRange("N4").setValue("Pick from the list or type a State ID from the Profile table.");
+  sheet.getRange("N4").getFormat().getFont().setColor(MUTED);
+
+  sheet.getRange("L5:L10").setValues([
+    ["Profile ID"], ["Office"], ["Last JVSG contact"], ["Contact info updated"], ["Profile as of"], ["Status"],
+  ]);
+  sheet.getRange("L5:L10").getFormat().getFont().setBold(true);
+  sheet.getRange("M5:M10").setFormulas([
+    ['=IFERROR("P"&TEXT(' + row + ',"0000"),"")'],
+    [field("OFFICE_NAME")],
+    ['=IF(' + hasId + ',TEXT(INDEX(Profile[LAST_CONTACT_DATE],' + row + '),"mm/dd/yyyy")&" ("&INDEX(Profile[DAYS_SINCE_CONTACT],' + row + ')&" days ago)","")'],
+    ['=IF(' + hasId + ',TEXT(INDEX(Profile[CONTACT_INFO_UPDATED_DATE],' + row + '),"mm/dd/yyyy"),"")'],
+    ['=IF(' + hasId + ',TEXT(INDEX(Profile[AS_OF_DATE],' + row + '),"mm/dd/yyyy"),"")'],
+    ['=IF($M$4="","Select a State ID in M4",IF(' + hasId + ',"Unverified draft - staff must confirm","State ID not found in the Profile table"))'],
+  ]);
+  sheet.getRange("M5:M10").setHorizontalAlignment(ExcelScript.HorizontalAlignment.left);
+
+  sheet.getRange("L12:P12").setValues([[
+    "Barrier area", "Suggested level", "Why (last known data)", "Data freshness", "Suggested partner category",
+  ]]);
+  header(sheet.getRange("L12:P12"));
+
+  const areas: [string, string][] = [
+    ["TRN", "Training and employment"], ["HSG", "Housing"], ["MED", "Health and VA benefits"], ["LEG", "Legal"],
+  ];
+  const why =
+    '"TRN-1","Credential or training completed within the last year","TRN-2","Enrolled in training",' +
+    '"TRN-3","No employment end date on file, or last job ended 180 or more days ago","TRN-0","No training or employment need indicated",' +
+    '"HSG-1","Recorded as homeless","HSG-2","Housing instability recorded","HSG-0","No housing indicator recorded",' +
+    '"MED-2","Disability recorded; medical service in the last year","MED-1","Disability recorded; no recent medical service",' +
+    '"MED-0","No disability recorded","LEG-1","Justice involvement recorded","LEG-0","None recorded"';
+  const body: string[][] = [];
+  areas.forEach(([code, label], i) => {
+    const r = 13 + i;
+    const pick = (col: string) =>
+      "XLOOKUP(1,(Classification[profile_id]=$M$5)*(Classification[domain]=\"" + code + "\"),Classification[" + col + '],"")';
+    body.push([
+      label,
+      '=IF(' + hasId + ',SWITCH(' + pick("state") + ',"CRT","Critical need","ACT","Active need","MIT","Being addressed","RES","Resolved","Unknown - verify with veteran"),"")',
+      '=IF(' + hasId + ",SWITCH(" + pick("rule_id") + "," + why + ',"")&IF(' + pick("evidence_as_of") + '="","","; as of "&TEXT(' + pick("evidence_as_of") + ',"mm/dd/yyyy")),"")',
+      '=IF(' + hasId + ',SWITCH(' + pick("freshness") + ',"current","Current","stale","Stale - verify","Date unknown - verify"),"")',
+      '=IF(' + hasId + ',IF(' + pick("partner_category") + '="","-",' + pick("partner_category") + '),"")',
+    ]);
+  });
+  sheet.getRange("L13:P16").setFormulas(body);
+  sheet.getRange("L13:P16").getFormat().setWrapText(true);
+  sheet.getRange("L13:P16").getFormat().setVerticalAlignment(ExcelScript.VerticalAlignment.top);
+
+  sheet.getRange("L18:L20").setValues([["Referral priority"], ["Suggested partner categories"], ["Handoff note"]]);
+  sheet.getRange("L18:L20").getFormat().getFont().setBold(true);
+  sheet.getRange("M18:M20").setFormulas([
+    ['=IF(' + hasId + ',IF(COUNTIF($M$13:$M$16,"Critical need")>0,"Critical need present - prioritize outreach",IF(COUNTIF($M$13:$M$16,"Active need")>0,"Active need(s) indicated - offer referral","No active need indicated from structured data; confirm with veteran")),"")'],
+    ['=IF(' + hasId + ',IFERROR(TEXTJOIN("; ",TRUE,IF(($M$13:$M$16="Critical need")+($M$13:$M$16="Active need")>0,$P$13:$P$16,"")),""),"")'],
+    ['="Built from structured MIS fields only (last known data, not current). Staff confirm each item with the veteran, obtain consent before sharing with any partner, and decide the referral. Not an eligibility or service decision."'],
+  ]);
+  sheet.getRange("M18:P20").getFormat().setWrapText(false);
+
+  sheet.getRange("L:L").getFormat().setColumnWidth(170);
+  sheet.getRange("M:M").getFormat().setColumnWidth(150);
+  sheet.getRange("N:N").getFormat().setColumnWidth(330);
+  sheet.getRange("O:O").getFormat().setColumnWidth(120);
+  sheet.getRange("P:P").getFormat().setColumnWidth(210);
 }
 
 function buildDefinitions(workbook: ExcelScript.Workbook): void {

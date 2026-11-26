@@ -141,6 +141,16 @@ Age`, `Watchlist`, `Drilldown`, `Definitions`) are built by `BuildDetailTabs.ts`
    and note-count charts), `Watchlist` (top 50 overdue), `Drilldown` (office, band
    and minimum-days filters in B4:B6, up to 100 rows) and `Definitions`, all as live
    formulas over the two tables. It deletes and recreates only those four sheets.
+   **Referral profile panel:** Drilldown columns L to P hold a draft community
+   partner referral profile. Pick a State ID in `M4` (dropdown of the rows
+   currently listed, or type one) and it fills office, last contact, a level
+   (critical, active, being addressed, resolved or unknown), the reason, data
+   freshness and the suggested partner category for each of training and
+   employment, housing, health and VA benefits, and legal, plus an overall
+   priority and a handoff note. It reads the `Profile` and `Classification`
+   tables with fixed template wording and no model, so both queries must be
+   loaded and refreshed. It is an unverified draft: staff confirm with the
+   veteran and get consent before anything goes to a partner.
 2. Test: on Drilldown pick an office, a band, then a minimum of 0, then a minimum
    larger than any value (no matches), and compare the count in B7 with the rows
    shown. Watchlist should be in descending days and show at most 50 rows.
