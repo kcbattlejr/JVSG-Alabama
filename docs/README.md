@@ -36,12 +36,12 @@ restricted information and is not approved for general release.
 
 ## NASWA Award Submission
 
-- [Nomination draft](naswa/nomination_draft.md): draft award material, not an
+- [Nomination draft](naswa/2027_naswa_it_innovation_award_nomination.md): draft award material, not an
   approved submission.
-- [Technical paper](naswa/technical_paper.md): ETL, SQL, SharePoint lessons and
+- [Technical paper](naswa/technical_paper_jvsg_follow_up_visibility.md): ETL, SQL, SharePoint lessons and
   future direction (sanitized, draft).
-- [Stakeholder bios](naswa/bios.md): drafts and approval tracker.
-- [Video script and screenshots](naswa/video_script_and_screenshots.md).
+- [Stakeholder bios](naswa/stakeholder_biographies_naswa_submission.md): drafts and approval tracker.
+- [Video script and screenshots](naswa/video_script_and_visual_assets_plan.md).
 - [Demo kit](../demo/naswa_demo/README.md): synthetic data and scripts for
   recording screenshots and video elsewhere.
 

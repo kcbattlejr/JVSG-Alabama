@@ -6,7 +6,7 @@ whole folder anywhere. **All data is invented**; no veteran, staff, office or
 cohort figure from the live system is used, and nothing here connects to MIS or
 SharePoint. Keep it separate from the restricted live workbook so a capture can
 never show live data (see the capture rules in
-[the video script](../../docs/naswa/video_script_and_screenshots.md)).
+[the video script](../../docs/naswa/video_script_and_visual_assets_plan.md)).
 
 ```text
 naswa_demo/
@@ -85,7 +85,7 @@ distributions are chosen for a readable demo, not drawn from any real cohort.
 ## Capture checklist
 
 Follow the shot list in
-[video_script_and_screenshots.md](../../docs/naswa/video_script_and_screenshots.md):
+[video_script_and_visual_assets_plan.md](../../docs/naswa/video_script_and_visual_assets_plan.md):
 Overview, Offices and Age, Drilldown with the referral panel (pick a State ID in
 `M4`), Watchlist, a validation failure (drop a wrong CSV into a folder and
 refresh to show the "expected columns are missing" check). Hide the ribbon's
