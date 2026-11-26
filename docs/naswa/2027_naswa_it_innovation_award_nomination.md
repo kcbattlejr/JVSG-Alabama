@@ -49,19 +49,19 @@
 ## 5. Implementation Timeline and Accomplishments
 
 > **2026 — Frontline Discovery and Program Recognition:**
-> The initiative originated from frontline service delivery by the Mobile JVSG team—Keith Battle and Local Veterans' Employment Representative (LVER) Robert Stratton—during their first year of service to the state. In October 2026, the team received the JVSG Team Incentive Award `[Confirm exact award title, date, and presenter]` and presented their intake-triage methodology at statewide JVSG training in Montgomery `[Confirm exact date and audience]`. Through daily outreach, the team identified a systemic bottleneck: veterans assessed at intake but not yet enrolled in formal case management risked falling through the cracks when contact tracking relied on manual spreadsheet preparation.
+> The initiative originated from frontline service delivery by the Mobile JVSG team—Keith Battle and Workforce Outreach Specialist for Veteran Services Robert Stratton—during their first year of service to the state. In October 2026, the team received the JVSG Team Incentive Award `[Confirm exact award title, date, and presenter]` and presented their intake-triage methodology at statewide JVSG training in Montgomery `[Confirm exact date and audience]`. Through daily outreach, the team identified a systemic bottleneck: veterans assessed at intake but not yet enrolled in formal case management risked falling through the cracks when contact tracking relied on manual spreadsheet preparation.
 >
 > *Baseline Operational Context (Pre-Initiative Team Performance):* Prior to deploying the dashboard, the Mobile JVSG team's frontline outreach generated approximately $2.24 million in combined annualized wages for veterans entering employment across the first three quarters of 2026 (self-reported MIS Entered Employment data; hourly, weekly, and annual wages standardized to annual equivalents):
 >
 > | 2026 Reporting Period | Veterans Placed | Combined Annualized Wages |
 > |---|---|---|
 > | Q1 (Jan–Mar) | 21 | $988,794.80 |
-> | Q2 (Apr–Jun) | `[confirm]` | ~$474,000 `[insert exact figure]` |
-> | Q3 (Jul–Sep) | 13 | ~$777,000 `[insert exact figure]` |
+> | Q2 (Apr–Jun) | `[confirm]` | $474,801 |
+> | Q3 (Jul–Sep) | 13 | $777,886 |
 > | Q4 (Oct–Dec) | Pending close | Pending close |
-> | **Q1–Q3 Subtotal** | **`[confirm]`** | **~$2.24M** |
+> | **Q1–Q3 Subtotal** | **`[confirm]`** | **$2,241,481.80 (~$2.24M)** |
 >
-> *(Governance Note: Confirm fiscal vs. calendar quarter alignment, Q2 placement count, and final Q2/Q3 totals; replace the September newsletter's preliminary "> $700,000" Q3 estimate with closed figures. These metrics contain no veteran identifiers, predate the software tool, and are presented strictly as baseline operational context rather than measured software outcomes.)*
+> *(Governance Note: Confirm fiscal vs. calendar quarter alignment and the Q2 placement count. Q2 was manually tabulated from the Veteran Status and Case Management reports and supersedes the figure in the submitted Quarterly Manager's Report; Q3 reflects 13 successful case closures. These supersede the September newsletter's preliminary "> $700,000" Q3 estimate. These metrics contain no veteran identifiers, predate the software tool, and are presented strictly as baseline operational context rather than measured software outcomes.)*
 >
 > **November 2026 — Architecture, Engineering, and Safeguard Validation:**
 > Designed and built the end-to-end ingestion, validation, and visualization pipeline. Key technical milestones included:
