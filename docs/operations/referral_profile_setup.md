@@ -14,7 +14,7 @@ Workbook steps: [sharepoint_demo_site.md](sharepoint_demo_site.md), section
 | Step | What | State |
 |---|---|---|
 | 1 | Re-run steps 17 and 21, refresh the dashboard | Per batch |
-| 2 | Run `sql/28` (service codes) and `sql/31` (application value counts); find housing and employment history columns (step 30 is blocked) | Not done |
+| 2 | Run `sql/28` (service codes); optionally `sql/31` (application value counts) | Not run |
 | 3 | Put codes in `svc_map` in `sql/29`, run it, save the CSV | Not run |
 | 4 | Add `Profile` and `Classification` queries to the workbook | Not done |
 | 5 | Check counts and spot-check veterans with staff | Not done |
@@ -29,27 +29,11 @@ Workbook steps: [sharepoint_demo_site.md](sharepoint_demo_site.md), section
    (`csv/manager/`, `restricted/csv/worklist/`).
 2. **Step 28** (`28_referral_profile_service_inventory.sql`): counts of service
    codes the candidates used in the last 365 days. No identifiers.
-3. **Step 30 cannot run in the query window**: MIS reports restricted tables for
-   `INFORMATION_SCHEMA` (metadata is blocked, as with the earlier step 08). Find
-   the two missing sources another way, then fill the two `SLOT` notes in the
-   step 29 header:
-   - Ask the vendor or IT for the full data dictionary for `tbl_case`,
-     `tbl_caseveteran` (the Wagner-Peyser application tables) and the employment
-     history table.
-   - Or open a veteran's Wagner-Peyser application and employment history screen
-     in MIS, note the field labels for housing stability and the employment
-     history grid, and send me the labels and any page or table names shown;
-     I'll map them to columns.
-   - Run **step 31** (`31_referral_profile_wp_application_values.sql`): value
-     counts, no identifiers, for the latest Wagner-Peyser application fields the
-     schema document shows: `tbl_caseveteran.col_housingplan` (military
-     post-transition housing plan), `col_vethomeless`, and
-     `tbl_case.col_empstatusid` (decoded with `tbl_employstatus_lu`),
-     `tbl_wpapp.col_curemp`, `col_selfemp`, and whether `col_layoffdate` is
-     recorded (all point-in-time answers at registration). Decide with staff which
-     housing plan values mean unstable.
-   - Then test one guess at a time: `SELECT TOP 5 k.<column> AS [x] FROM
-     dbo.tbl_case AS k` fails with "invalid column" if the name is wrong.
+3. Optional: **step 31** (`31_referral_profile_wp_application_values.sql`) shows
+   value counts for the latest Wagner-Peyser application fields (housing plan,
+   homeless, employment status, currently or self employed, layoff date
+   recorded) for comparison with the barrier and work history answers. Step 30
+   (metadata discovery) cannot run here: MIS blocks `INFORMATION_SCHEMA`.
 4. Choose, with the program owner, the codes that mean:
    `medical` (medical referral or service), `training_enrolled`, `credential`,
    `training_completion`. Leave `'N/A'` for any you cannot identify; that field
@@ -68,31 +52,27 @@ Workbook steps: [sharepoint_demo_site.md](sharepoint_demo_site.md), section
 | OFFICE_NAME | `onestopoffice_lu.onestopname` via `indstaff.office` | Same as step 17. |
 | LAST_CONTACT_DATE, DAYS_SINCE_CONTACT | Latest valid case note, any staff | Same as step 17. |
 | CONTACT_INFO_UPDATED_DATE | `ind.col_edit_date` | Proxy: last edit of the whole record, not proof the phone or address is current. |
-| HOMELESS_FLAG | `indveteran.col_vethomeless` or `col_homelessreintegration` = 1, or the latest WP application's `tbl_caseveteran.col_vethomeless` = 1 | 0 only when `col_vethomeless` = 0; otherwise NULL. |
-| HOUSING_UNSTABLE_FLAG | Housing stability on the veteran's most recent Wagner-Peyser application (`tbl_case`, `col_programid` = 3, latest `col_appdate`, not a partial save), documented at registration | Column not yet identified (step 30 is blocked; see section 1). NULL until the slot is filled. The application date shows how old the answer is. |
-| DISABILITY_FLAG | `indveteran.vetdisability` 1 or 2 (0 = no) | |
-| JUSTICE_FLAG | `indveteran.col_incarceration` | Meaning: released from incarceration in the past 12 months. |
+| HOMELESS_FLAG | `indveteran.col_vethomeless` or `col_homelessreintegration`, the latest WP application's `tbl_caseveteran.col_vethomeless`, or the latest `indbarrier_history.homeless` | Any 1 means homeless; 0 only when a source says 0; otherwise NULL. |
+| HOUSING_UNSTABLE_FLAG | Latest `indbarrier_history.col_housingassist` (needs housing assistance) | Barrier history is the audit table of the barrier screen; the latest non-deleted row per veteran is used. Confirm this is where registration housing answers land. |
+| DISABILITY_FLAG | `indveteran.vetdisability` 1 or 2 (0 = no), or latest barrier `phymtldis` = 1 | |
+| JUSTICE_FLAG | `indveteran.col_incarceration`, or latest barrier `offender` or `col_currentlyonparole` = 1 | |
 | LAST_MEDICAL_SERVICE_DATE | `serviceplan.actualdate` for the `medical` codes | Needs `svc_map`. |
 | TRAINING_ENROLLED_FLAG | `serviceplan` rows for `training_enrolled` codes in the last 365 days | Needs `svc_map`; NULL until set. |
 | LAST_OUTCOME_TYPE, LAST_OUTCOME_DATE | Latest `credential` or `training_completion` service | Needs `svc_map`. |
-| LAST_EMPLOYMENT_END_DATE | `tbl_wpapp.col_layoffdate` on the latest WP application | Proxy: layoff or separation date reported at registration. No employment history table exists in the schema document. NULL when not recorded, so TRN-3 still fires for those veterans. |
+| LAST_EMPLOYMENT_END_DATE | `indemphistory` (veteran work history, not inactive rows) | The as-of date when any entry is marked currently employed; otherwise the latest `enddate`; otherwise `tbl_wpapp.col_layoffdate`; otherwise NULL (TRN-3 then fires). |
 
 ## 3. Open questions to settle before relying on the output
 
-1. **Housing instability**: identify the column on the Wagner-Peyser application and
-   which values mean unstable versus stable. The answer is a point-in-time
-   registration answer, so the rules should treat an old application as stale
-   (the 180-day freshness rule needs the application date; add a column to the
-   profile contract if you want that, updating the CSV, Power Query, Python,
-   and tests together).
-2. **Employment end date**: accept the layoff-date proxy or find a history table.
-   Decide how a veteran with no layoff date is handled (step 31 shows how many).
-   Meanwhile rule TRN-3
-   ("no recent employment") fires for every veteran without a recent outcome or
-   enrolment, so the training and employment domain over-flags. Options: find a
-   source, or change TRN-3 to require a known date (then update
-   `dashboard_demo/profile.py`, `Classification.pq`, `cell4_profile_toon.py`,
-   and the parity tests together).
+1. **Housing instability** now comes from the barrier history "needs housing
+   assistance" answer. Confirm with staff that this is the answer captured at
+   registration and how current it is (step 31 shows the Wagner-Peyser
+   application answers for comparison). A barrier answer has no date in the
+   profile; adding one means changing the CSV, Power Query, Python, and tests
+   together.
+2. **Employment end date** uses work history entries. Check that a veteran
+   with only an undated or "currently employed" entry is treated correctly,
+   and that a veteran with no work history at all (NULL, so TRN-3 fires) is
+   what staff expect.
 3. **Service codes** for medical, training, credential and completion (step 28).
 4. **Thresholds** (180 and 365 days) are invented defaults; confirm them.
 5. **Field values**: confirm what `vetdisability`, `col_vethomeless` and
