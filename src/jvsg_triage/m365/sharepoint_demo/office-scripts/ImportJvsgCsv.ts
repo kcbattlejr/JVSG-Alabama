@@ -343,16 +343,21 @@ function buildDashboard(workbook: ExcelScript.Workbook, headers: string[], data:
   const bands = bandOrder(found);
 
   const counts = "tblManager[INDIVIDUALS]";
+  // Small groups are omitted from the aggregate report, so a band with no visible group
+  // is not a confirmed zero; show "Suppressed" instead of 0.
+  const bandTotal = (name: string): string =>
+    '=IF(COUNTIFS(tblManager[FOLLOW_UP_BAND],"' + name + '")=0,"Suppressed",SUMIFS(' + counts +
+    ',tblManager[FOLLOW_UP_BAND],"' + name + '"))';
   kpiBlock(
     sheet,
-    ["As of", "Visible veterans", "Overdue", "Due soon", "Current", "Percent overdue"],
+    ["As of", "Visible veterans", "Overdue", "Due soon", "Current", "Percent of visible overdue"],
     [
       "=MAX(tblManager[AS_OF_DATE])",
       "=SUM(" + counts + ")",
-      '=SUMIFS(' + counts + ',tblManager[FOLLOW_UP_BAND],"Overdue")',
-      '=SUMIFS(' + counts + ',tblManager[FOLLOW_UP_BAND],"Due soon")',
-      '=SUMIFS(' + counts + ',tblManager[FOLLOW_UP_BAND],"Current")',
-      '=IF(B6=0,0,C6/B6)',
+      bandTotal("Overdue"),
+      bandTotal("Due soon"),
+      bandTotal("Current"),
+      '=IF(OR(B6=0,NOT(ISNUMBER(C6))),0,C6/B6)',
     ],
     ["mm/dd/yyyy", "#,##0", "#,##0", "#,##0", "#,##0", "0%"]
   );
@@ -408,7 +413,8 @@ function buildDashboard(workbook: ExcelScript.Workbook, headers: string[], data:
 
   const note = sheet.getRangeByIndexes(totalRow + 2, 0, 1, 1);
   note.setValue(
-    "Groups below the suppression threshold are omitted, so totals cover visible groups only. " +
+    "Groups below the suppression threshold are omitted, so totals cover visible groups only; " +
+    "a band showing Suppressed has no visible group and is not a confirmed zero. " +
     "Bands are examples pending owner confirmation. LWIA is the veteran's record field."
   );
   note.getFormat().getFont().setItalic(true);

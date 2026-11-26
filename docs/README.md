@@ -31,6 +31,9 @@ restricted information and is not approved for general release.
 - [TOON and barrier-diagnosis plan](planning/toon_and_slm_barrier_dx_plan.md):
   proposed export and reviewed findings workflow.
 
+- [Community-partner referral profile plan](planning/community_partner_referral_profile_plan.md):
+  decisions and work breakdown for the Nov 30 demo (templates only, no model).
+
 ## History And Restricted Material
 
 - [Archive](archive/README.md): historical briefing and recording script.

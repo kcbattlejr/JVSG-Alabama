@@ -62,11 +62,15 @@ function main(workbook: ExcelScript.Workbook) {
   // Tiles: label row 4, value rows 5-6
   const counts = "Manager[INDIVIDUALS]";
   const band = "Manager[FOLLOW_UP_BAND]";
+  // A band with no visible group would read as a true zero, but small groups are omitted
+  // from the aggregate report, so say so instead of showing 0.
+  const bandTotal = (name: string): string =>
+    '=IF(COUNTIFS(' + band + ',"' + name + '")=0,"Suppressed",SUMIFS(' + counts + "," + band + ',"' + name + '"))';
   const tiles: { area: string; label: string; formula: string; fill: string; color: string }[] = [
-    { area: "A", label: "VETERANS IN REPORT", formula: "=SUM(" + counts + ")", fill: "#F4F7F9", color: NAVY },
-    { area: "E", label: "CURRENT (UNDER 15 DAYS)", formula: '=SUMIFS(' + counts + "," + band + ',"Current")', fill: "#DDF2E5", color: GREEN },
-    { area: "J", label: "DUE SOON (15-29 DAYS)", formula: '=SUMIFS(' + counts + "," + band + ',"Due soon")', fill: "#FFF0CC", color: AMBER },
-    { area: "N", label: "OVERDUE (30+ DAYS)", formula: '=SUMIFS(' + counts + "," + band + ',"Overdue")', fill: "#FCE1E1", color: RED },
+    { area: "A", label: "VETERANS IN REPORT (VISIBLE GROUPS)", formula: "=SUM(" + counts + ")", fill: "#F4F7F9", color: NAVY },
+    { area: "E", label: "CURRENT (UNDER 15 DAYS)", formula: bandTotal("Current"), fill: "#DDF2E5", color: GREEN },
+    { area: "J", label: "DUE SOON (15-29 DAYS)", formula: bandTotal("Due soon"), fill: "#FFF0CC", color: AMBER },
+    { area: "N", label: "OVERDUE (30+ DAYS)", formula: bandTotal("Overdue"), fill: "#FCE1E1", color: RED },
   ];
   const ends: { [start: string]: string } = { A: "D", E: "H", J: "M", N: "Q" };
   sheet.getRange("A4:Q4").getFormat().setRowHeight(22);
@@ -100,7 +104,7 @@ function main(workbook: ExcelScript.Workbook) {
   status.setFormula(
     '="As of "&TEXT(MAX(Manager[AS_OF_DATE]),"mm/dd/yyyy")&"  |  "&' +
     'TEXT(IF(SUM(' + counts + ')=0,0,SUMIFS(' + counts + "," + band + ',"Overdue")/SUM(' + counts + ')),"0%")' +
-    '&" overdue  |  Visible groups only; small groups are suppressed"'
+    '&" of visible veterans overdue  |  Visible groups only: small groups are suppressed, so band counts here can be lower than office-level counts"'
   );
   status.getFormat().getFont().setBold(true);
   status.getFormat().getFont().setColor(NAVY);
@@ -131,7 +135,7 @@ function main(workbook: ExcelScript.Workbook) {
     ["Due soon", "15-29 days since the most recent note."],
     ["Overdue", "30 or more days since the most recent note. Thresholds are examples pending owner confirmation."],
     ["Scope", "Veterans with a JVSG staff note in FY2026 and no active case-management (WP 205) plan."],
-    ["Suppression", "Groups below the privacy threshold are omitted, so totals cover visible groups only."],
+    ["Suppression", "Groups below the privacy threshold are omitted, so totals cover visible groups only. A band showing Suppressed has no visible group; it is not a confirmed zero, and office-level (restricted) counts can be higher."],
   ];
   rows.forEach((r, i) => {
     const n = 31 + i;

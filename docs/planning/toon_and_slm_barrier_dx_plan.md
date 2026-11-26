@@ -15,7 +15,7 @@ Model output is a draft for qualified staff review, never a decision.
 | `jvsg_triage.slm` | Empty placeholder package. |
 | `jvsg_triage.privacy.scrubber` | Local note scrubbing exists; effectiveness on real notes is unvalidated. |
 | Barrier vocabulary | Closed: four domains (TRN, HSG, MED, LEG) x five states (CRT, ACT, MIT, RES, UNK). |
-| Out of scope today | Case-note AI, live ingestion, write-back, referrals (see [scope](./deliverables_and_required_inputs.md)). |
+| Out of scope today | Case-note AI, live ingestion, write-back, automatic referrals (see [scope](./deliverables_and_required_inputs.md)). Staff-reviewed referral briefs from structured data are planned for the Nov 30 demo: [referral profile plan](./community_partner_referral_profile_plan.md). |
 
 ## Phase 0 - Stabilize the dashboard (do first, Nov 21-23)
 
@@ -160,6 +160,12 @@ the verification contract), and do not claim accuracy figures.
 
 ## Running a function against the live data (tenant-only options)
 
+> **Superseded Nov 25-26, 2026:** `=COPILOT`, Power Automate and Copilot Studio
+> are not licensed, and third-party hosts are rejected for identified data. The
+> Nov 30 demo uses the rules baseline and templates only, with no model. The
+> table below is kept as the options analysis; current decisions are in the
+> [referral profile plan](./community_partner_referral_profile_plan.md).
+
 Which "Copilot" matters. **GitHub Copilot Enterprise** is a coding assistant;
 it is not a hosted service to call from a workbook, and sending live notes to
 it or to GitHub Models is outside the tenant boundary. Use **Microsoft 365
@@ -184,6 +190,65 @@ before the demo; the scope checklist still lists case-note AI as unapproved.
 
 Implementation: the Office Script, offline tests and flow build guide are in
 [`m365/`](../../src/jvsg_triage/m365/README.md).
+
+## Python in Excel (web) strategy - approved Nov 25, implemented, not yet run in Excel
+
+**Status: approved Nov 25, 2026 (Python guard rails only).** Approved: Python for scrub/validate/TOON; Python in Excel cloud container acceptable for note text. `=COPILOT` is not available, so **no model step**: rules baseline only, SLM shown as roadmap. Implemented in [`m365/excel_python/`](../../src/jvsg_triage/m365/excel_python/README.md) (tests: `tests/test_excel_python_cells.py`). Not yet run inside Excel.
+
+**Original proposal:** Applies to Formulas > Insert
+Python in Excel for the web.
+
+### Findings
+
+- **Python in Excel cannot call Copilot or any model.** It runs in an isolated
+  Microsoft cloud container with no internet or network access, no local files
+  and no secrets/credentials, and only the preinstalled Anaconda package set
+  (no `pip install`). `requests`, GitHub Models and Azure OpenAI calls all fail
+  by design. There is no `=PY()` bridge to Copilot.
+- **`=COPILOT()` is a separate worksheet function** and runs outside Python.
+  The two combine only through cells: `=COPILOT(...)` writes cells, then a
+  `=PY(xl("Table[col]"))` cell reads those cells (and vice versa).
+- Python in Excel sends the referenced data to Microsoft's cloud container.
+  This is inside the M365 tenant, but it still needs the same privacy/IT
+  approval as `=COPILOT` before it touches live notes.
+- The repo package `jvsg_triage` cannot be imported there. Code must be
+  self-contained, pasted into cells (stdlib + pandas only; Polars is not in
+  the Excel Python set).
+
+### Recommended split
+
+| Step | Where | Tool |
+|---|---|---|
+| 1. Scrub notes (names, SIDs, phones) | Excel Python cell | Small pasted regex function ported from `privacy/scrubber`; deterministic. |
+| 2. Suggest domain/state/quote | Worksheet | `=COPILOT(prompt, scrubbed_range)` on a small sample (M365 Copilot licence), or the Office Script/Power Automate flow in `m365/` for bulk. |
+| 3. Validate against the closed contract | Excel Python cell | Reject anything outside TRN/HSG/MED/LEG x CRT/ACT/MIT/RES/UNK, or whose `evidence_quote` is not a verbatim substring of the scrubbed note. Rejected, never repaired. Mark rest `Unverified`. |
+| 4. TOON output | Excel Python cell | Pasted deterministic encoder for `barrier_findings` (header, row count, quoted fields) returned as one text cell; the operator saves it to the SharePoint library as the audit artifact. |
+| 5. Human review | Sheet | Confirm/Correct/Reject columns per the verification contract. |
+
+Python is the deterministic guard rails (scrub, validate, TOON); the model call
+stays in `=COPILOT` or the flow. A rules/keyword baseline can also run in
+Python in Excel with no model at all, which is the safest fallback demo.
+
+### Alternative SLM strategy
+
+If `=COPILOT` is unavailable or not approved for case notes: run only the
+rules baseline in Python in Excel, and show the SLM as roadmap using an
+approved in-tenant model (Azure OpenAI/AI Builder via Power Automate).
+
+### Proposed next steps (on approval)
+
+1. Add `src/jvsg_triage/m365/excel_python/` with single-file, stdlib-only
+   cells (`scrub.py`, `validate.py`, `toon_encode.py`) plus offline tests that
+   exec them against synthetic notes only, so the pasted code is tested.
+2. Provide paste-ready cell instructions and a synthetic sample sheet.
+3. Confirm availability of Python in Excel and `=COPILOT` on your tenant, and
+   get written privacy/IT approval before any live note is used.
+
+### Decisions (resolved Nov 25)
+
+1. Python = scrub/validate/TOON: approved.
+2. `=COPILOT`: not available; rules baseline only.
+3. Python in Excel cloud container for note text: acceptable.
 
 ## Risks
 

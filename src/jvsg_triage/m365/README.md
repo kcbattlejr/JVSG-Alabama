@@ -10,6 +10,7 @@ exports, run history or screenshots of live data.
 | `office-scripts/BarrierFindings.ts` | Excel Office Script: scrub notes, rules-based barrier extraction, model-output validation, `Unverified` findings sheet |
 | `flow/flow_build_guide.md` | Step-by-step Power Automate build (manual, batched) and optional model step |
 | `tests/harness.mjs` | Offline Node harness with a fake Office Scripts API, used by `tests/test_office_script.py` |
+| `excel_python/` | Python in Excel cells (scrub, rules baseline, contract check, TOON); no model, no network. See [excel_python/README.md](excel_python/README.md) |
 | `sharepoint_demo/` | SharePoint dashboard Power Query, Office Scripts, synthetic fixtures and tests |
 
 ## Design rules

@@ -53,7 +53,9 @@ named internal assignments into this repository.
 ## Explicitly outside the current MVP
 
 No live ingestion, scheduled sends, staff write-back, case-note AI,
-automated referrals, statewide access, or VOMA delivery is implemented or
+automated referrals (staff-reviewed referral briefs from structured data are
+planned for the Nov 30 demo; see the
+[referral profile plan](community_partner_referral_profile_plan.md)), statewide access, or VOMA delivery is implemented or
 approved. Explore each only after the manual pilot demonstrates value.
 Any model or external recipient needs its own approved purpose, minimum
 schema, privacy review, acceptance checks, and authorization. A NASWA
