@@ -150,7 +150,7 @@ function buildWatchlist(workbook: ExcelScript.Workbook): void {
   sheet.getRange("B5:B54").setNumberFormat("@");
   sheet.getRange("A4:I54").getFormat().autofitColumns();
   sheet.getRange("K:K").setColumnHidden(true);
-  sheet.freezePanes.freezeRows(4);
+  sheet.getFreezePanes().freezeRows(4);
 }
 
 function buildDrilldown(workbook: ExcelScript.Workbook): void {
@@ -208,7 +208,7 @@ function buildDrilldown(workbook: ExcelScript.Workbook): void {
   sheet.getRange("A9:I109").getFormat().autofitColumns();
   sheet.getRange("A:A").getFormat().setColumnWidth(170);
   sheet.getRange("K:K").setColumnHidden(true);
-  sheet.freezePanes.freezeRows(9);
+  sheet.getFreezePanes().freezeRows(9);
 }
 
 function buildDefinitions(workbook: ExcelScript.Workbook): void {
