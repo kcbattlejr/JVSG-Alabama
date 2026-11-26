@@ -14,7 +14,7 @@ Workbook steps: [sharepoint_demo_site.md](sharepoint_demo_site.md), section
 | Step | What | State |
 |---|---|---|
 | 1 | Re-run steps 17 and 21, refresh the dashboard | Per batch |
-| 2 | Run `sql/28` (service codes); find housing and employment history columns (step 30 is blocked) | Not done |
+| 2 | Run `sql/28` (service codes) and `sql/31` (application value counts); find housing and employment history columns (step 30 is blocked) | Not done |
 | 3 | Put codes in `svc_map` in `sql/29`, run it, save the CSV | Not run |
 | 4 | Add `Profile` and `Classification` queries to the workbook | Not done |
 | 5 | Check counts and spot-check veterans with staff | Not done |
@@ -40,6 +40,13 @@ Workbook steps: [sharepoint_demo_site.md](sharepoint_demo_site.md), section
      in MIS, note the field labels for housing stability and the employment
      history grid, and send me the labels and any page or table names shown;
      I'll map them to columns.
+   - Run **step 31** (`31_referral_profile_wp_application_values.sql`): value
+     counts, no identifiers, for the latest Wagner-Peyser application fields the
+     schema document shows: `tbl_caseveteran.col_housingplan` (military
+     post-transition housing plan), `col_vethomeless`, and
+     `tbl_case.col_empstatusid` (employment status at application, a
+     point-in-time answer, not an employment end date). Decide with staff which
+     housing plan values mean unstable.
    - Then test one guess at a time: `SELECT TOP 5 k.<column> AS [x] FROM
      dbo.tbl_case AS k` fails with "invalid column" if the name is wrong.
 4. Choose, with the program owner, the codes that mean:
