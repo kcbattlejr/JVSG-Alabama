@@ -108,7 +108,10 @@ fields only (`profile-rules-v1`, in `src/jvsg_triage/dashboard_demo/profile.py`)
   schema-driven codec `jvsg_triage.toon.codec`; every row is `Unverified` with null
   reviewer columns. TOON carries no names or State IDs, only a profile row key; the
   crosswalk stays in the workbook. TOON is the audit and exchange artifact, and the
-  Brief sheet shows the same classification via formulas or an Office Script port.
+  Brief sheet reads the `Classification` table. In the workbook the rules run in
+  Power Query (`Classification.pq`) and TOON is produced by Python in Excel
+  (`cell4_profile_toon.py`); steps are in the
+  [SharePoint runbook](../operations/sharepoint_demo_site.md#referral-profile-classification-and-toon-add-to-the-workbook).
 - Synthetic examples are in `data/synthetic/sharepoint_dashboard/toon/`. The live
   rule thresholds and flag-to-field mapping need staff confirmation before use.
 

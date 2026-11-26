@@ -1,6 +1,7 @@
 from dataclasses import replace
 from datetime import timedelta
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -8,10 +9,12 @@ from jvsg_triage.dashboard_demo.generate import AS_OF, generate_candidates
 from jvsg_triage.dashboard_demo.profile import (
     CLASSIFICATION_TOON_FIELDS,
     DOMAINS,
+    PARTNER_CATEGORIES,
     PROFILE_COLUMNS,
     PROFILE_TOON_FIELDS,
     Profile,
     classify,
+    freshness,
     generate_profiles,
     profile_csv_rows,
     toon_tables,
@@ -19,6 +22,8 @@ from jvsg_triage.dashboard_demo.profile import (
 from jvsg_triage.toon.codec import ToonError, decode_table, encode_table
 
 COMMITTED = Path(__file__).resolve().parents[1] / "data/synthetic/sharepoint_dashboard"
+QUERIES = Path(__file__).resolve().parents[1] / "src/jvsg_triage/m365/sharepoint_demo/power-query"
+CELLS = Path(__file__).resolve().parents[1] / "src/jvsg_triage/m365/excel_python"
 VOCAB = {"CRT", "ACT", "MIT", "RES", "UNK"}
 
 
@@ -114,3 +119,66 @@ def test_committed_profile_files_match_generator() -> None:
     summary, classes = toon_tables(profiles)
     assert (COMMITTED / "toon/profiles.toon").read_text(encoding="utf-8") == summary
     assert (COMMITTED / "toon/barrier_classifications.toon").read_text(encoding="utf-8") == classes
+
+
+def test_profile_power_query_requires_only_generated_columns() -> None:
+    import re
+
+    text = (QUERIES / "Profile.pq").read_text(encoding="utf-8")
+    block = re.search(r"Required = \{(.*?)\}", text, re.S)
+    assert block and set(re.findall(r'"([A-Z0-9_]+)"', block.group(1))) == set(PROFILE_COLUMNS)
+
+
+def test_classification_power_query_matches_python_rule_ids() -> None:
+    import re
+
+    text = (QUERIES / "Classification.pq").read_text(encoding="utf-8")
+    in_pq = set(re.findall(r'"((?:TRN|HSG|MED|LEG)-\d)"', text))
+    p = _blank()
+    in_py = {c.rule_id for c in classify(p)}
+    for variant in (
+        replace(p, homeless=True), replace(p, housing_unstable=True),
+        replace(p, disability=True), replace(p, justice=True), replace(p, training_enrolled=True),
+        replace(p, last_employment_end=None),
+        replace(p, outcome_type="credential", outcome_date=AS_OF),
+        replace(p, disability=True, last_medical_service=AS_OF),
+    ):  # fmt: skip
+        in_py |= {c.rule_id for c in classify(variant)}
+    assert in_pq == in_py
+    assert 'rules_version = "profile-rules-v1"' in text
+
+
+def test_excel_python_cell_matches_committed_toon() -> None:
+    pd = pytest.importorskip("pandas")
+    scope: dict[str, Any] = {}
+    for name in ("cell1_scrub", "cell2_rules", "cell3_toon", "cell4_profile_toon"):
+        exec((CELLS / f"{name}.py").read_text(), scope)  # noqa: S102 - repo-owned cells
+    profiles = generate_profiles(generate_candidates())
+    class_rows = []
+    for index, p in enumerate(profiles, start=1):
+        for c in classify(p):
+            flagged = c.state in ("CRT", "ACT")
+            class_rows.append({
+                "profile_id": f"P{index:04d}", "domain": c.domain, "state": c.state,
+                "rule_id": c.rule_id, "evidence_field": c.evidence_field,
+                "evidence_value": c.evidence_value,
+                "evidence_as_of": pd.Timestamp(c.evidence_as_of) if c.evidence_as_of else pd.NaT,
+                "freshness": freshness(c.evidence_as_of),
+                "partner_category": PARTNER_CATEGORIES[c.domain] if flagged else None,
+                "rules_version": "profile-rules-v1", "verification_status": "Unverified",
+            })  # fmt: skip
+    class_df = pd.DataFrame(class_rows)
+    profile_df = pd.DataFrame([
+        {"AS_OF_DATE": pd.Timestamp(AS_OF), "OFFICE_NAME": p.office_name,
+         "DAYS_SINCE_CONTACT": p.days_since_contact,
+         "CONTACT_INFO_UPDATED_DATE": (
+             pd.Timestamp(p.contact_info_updated) if p.contact_info_updated else pd.NaT)}
+        for p in profiles
+    ])  # fmt: skip
+    class_chunks, summary_chunks = scope["profile_toon"](profile_df, class_df)
+    assert len(class_chunks) > 1 and all(len(c) <= 32767 for c in class_chunks)
+    got = [r for chunk in class_chunks for r in decode_table(chunk, CLASSIFICATION_TOON_FIELDS)]
+    got_summary = [r for chunk in summary_chunks for r in decode_table(chunk, PROFILE_TOON_FIELDS)]
+    summary, classes = toon_tables(profiles)
+    assert got == decode_table(classes, CLASSIFICATION_TOON_FIELDS)
+    assert got_summary == decode_table(summary, PROFILE_TOON_FIELDS)

@@ -13,7 +13,7 @@ in [`src/jvsg_triage/m365/sharepoint_demo/`](src/jvsg_triage/m365/sharepoint_dem
 
 | Piece | What it does |
 |---|---|
-| `power-query/` | Four queries that read the newest MIS CSV from SharePoint folders (manager summary, office matrix, worklist, worklist by office); Refresh All updates the dashboard. |
+| `power-query/` | Queries that read the newest MIS CSV from SharePoint folders (manager summary, office matrix, worklist, worklist by office, profile) and `Classification.pq`, the rule-based barrier classification; Refresh All updates the dashboard. |
 | `office-scripts/` | `BuildOverview.ts` (overview tiles and charts), `ImportJvsgCsv.ts` and `RepairDetailFormulas.ts` (detail-tab repair). Small groups show "Suppressed", not 0. |
 | `sample_csv/` | Tiny invented CSVs used by the Node tests. A fuller 160-row set is in `data/synthetic/sharepoint_dashboard/`. |
 | `tests/` | Offline Node tests with a simulated workbook API. |
@@ -42,6 +42,10 @@ workbook, copy the CSVs from
 [`data/synthetic/sharepoint_dashboard/`](data/synthetic/sharepoint_dashboard/README.md)
 into the SharePoint test folders. The columns match the restricted MIS SQL
 (steps 17 and 21) and the Power Query files; tests enforce this.
+
+On the live workbook, the same classification and TOON run with Power Query
+(`Profile.pq`, `Classification.pq`) and Python in Excel; see
+[Referral profile, classification and TOON](docs/operations/sharepoint_demo_site.md#referral-profile-classification-and-toon-add-to-the-workbook).
 
 Also in the repo:
 

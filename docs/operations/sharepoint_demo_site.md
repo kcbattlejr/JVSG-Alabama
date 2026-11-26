@@ -130,6 +130,46 @@ node --test src/jvsg_triage/m365/sharepoint_demo/tests/importer.test.mjs
 These tests simulate workbook APIs; they do not compile against the Office
 Scripts runtime or replace testing in Excel.
 
+## Referral profile, classification and TOON (add to the workbook)
+
+Python does not run in SharePoint. Everything below runs inside the restricted
+workbook with Power Query and Python in Excel; no model, flow or script host is
+used. Rehearse the whole sequence on the synthetic files first.
+
+1. **Profile CSV.** Put the profile query output (restricted SQL, kept outside this
+   repo) in `restricted/csv/profile/`. Rehearsal file:
+   [synthetic_profile_report.csv](../../data/synthetic/sharepoint_dashboard/restricted/csv/profile/synthetic_profile_report.csv).
+2. **Queries.** In Power Query add
+   [Profile.pq](../../src/jvsg_triage/m365/sharepoint_demo/power-query/Profile.pq) as `Profile`, then
+   [Classification.pq](../../src/jvsg_triage/m365/sharepoint_demo/power-query/Classification.pq) as
+   `Classification` (it reads `Profile`). Load both to tables with those names, untick
+   background refresh, and use **Refresh All**. Both tables hold identifiers or
+   classifications of veterans: restricted workbook only.
+3. **Check the result (synthetic set).** `Classification` has 4 rows per profile
+   (640 for 160 profiles). Expected state counts: TRN ACT 99, MIT 12, RES 25, UNK 24;
+   HSG CRT 17, ACT 26, UNK 117; MED ACT 40, MIT 17, UNK 103; LEG ACT 33, UNK 127.
+   For live data, spot-check several veterans by hand against the rules. The
+   rules and thresholds are examples pending program-owner confirmation.
+4. **TOON.** Add a sheet named `Python` placed before the data sheets. Paste
+   [cell3_toon.py](../../src/jvsg_triage/m365/excel_python/cell3_toon.py) into A1 and
+   [cell4_profile_toon.py](../../src/jvsg_triage/m365/excel_python/cell4_profile_toon.py) into
+   A2 (**Formulas > Insert Python**), then in A3
+   `class_chunks, summary_chunks = profile_toon(xl("Profile[#All]", headers=True), xl("Classification[#All]", headers=True))`
+   (Python object), A4 `pd.Series(class_chunks)` and A5 `pd.Series(summary_chunks)`
+   (Excel values). Each cell is a valid TOON table. Save them as
+   `barrier_classifications.toon` and `profiles.toon` in the restricted library if an
+   audit artifact is needed. TOON holds a row key (`P0001`), never names or State IDs;
+   the `Profile` table row order is the crosswalk, so do not re-sort it between
+   export and review. Python in Excel sends the table data to Microsoft's cloud
+   container inside the tenant (approved for this use by the program owner).
+5. **Use.** Count by state with formulas, for example
+   `=COUNTIFS(Classification[state],"CRT")`. Every row is `Unverified` until staff
+   confirm, correct or reject it; nothing is a referral decision.
+
+If Python in Excel is unavailable, steps 1-3 and the counts still work; TOON can be
+generated later from the same CSV with `python -m jvsg_triage.dashboard_demo` logic
+on an approved machine.
+
 ## SharePoint page
 
 1. On a restricted site page, add the **Excel** web part and choose the
