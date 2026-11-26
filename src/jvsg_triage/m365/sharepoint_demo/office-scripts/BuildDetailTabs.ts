@@ -58,16 +58,65 @@ function header(range: ExcelScript.Range): void {
   range.getFormat().setWrapText(true);
 }
 
+function tile(sheet: ExcelScript.Worksheet, first: string, last: string, row: number, label: string, formula: string, caption: string, color: string): void {
+  const labelRange = sheet.getRange(first + row + ":" + last + row);
+  labelRange.merge(false);
+  labelRange.setValue(label);
+  const valueRange = sheet.getRange(first + (row + 1) + ":" + last + (row + 1));
+  valueRange.merge(false);
+  valueRange.setFormula(formula);
+  valueRange.setNumberFormat("#,##0");
+  valueRange.getFormat().getFont().setSize(24);
+  valueRange.getFormat().getFont().setBold(true);
+  const captionRange = sheet.getRange(first + (row + 2) + ":" + last + (row + 2));
+  captionRange.merge(false);
+  captionRange.setFormula(caption);
+  const all = sheet.getRange(first + row + ":" + last + (row + 2));
+  all.getFormat().getFill().setColor(color);
+  all.getFormat().getFont().setColor("#FFFFFF");
+  all.getFormat().setHorizontalAlignment(ExcelScript.HorizontalAlignment.center);
+  all.getFormat().setVerticalAlignment(ExcelScript.VerticalAlignment.center);
+  sheet.getRange(first + (row + 1)).getFormat().setRowHeight(38);
+}
+
+function styleChart(chart: ExcelScript.Chart, title: string, categoryTitle: string, valueTitle: string): void {
+  chart.getTitle().setText(title);
+  chart.getTitle().getFormat().getFont().setBold(true);
+  chart.getTitle().getFormat().getFont().setColor(NAVY);
+  const categoryAxis = chart.getAxes().getCategoryAxis();
+  categoryAxis.getTitle().setVisible(true);
+  categoryAxis.getTitle().setText(categoryTitle);
+  const valueAxis = chart.getAxes().getValueAxis();
+  valueAxis.getTitle().setVisible(true);
+  valueAxis.getTitle().setText(valueTitle);
+}
+
 function buildOffices(workbook: ExcelScript.Workbook, byOffice: ExcelScript.Table): void {
   const sheet = workbook.addWorksheet("Offices and Age");
   sheet.setShowGridlines(false);
-  banner(sheet, "Offices and age of last contact", "Restricted: unsuppressed office counts. Candidates for review, not decisions.", "P");
+  sheet.getRange("A:P").getFormat().setColumnWidth(80);
+  banner(sheet, "Offices and age of last contact", "Restricted: unsuppressed office counts. Candidates for qualified human review, not decisions.", "P");
 
-  // Office by band chart straight from the query table; Total is dropped from the chart.
-  const chart = sheet.addChart(ExcelScript.ChartType.columnStacked, byOffice.getRange(), ExcelScript.ChartSeriesBy.columns);
-  chart.getTitle().setText("Veterans by office and follow-up band");
-  chart.setPosition("A4", "H24");
+  // Summary tiles over the office table.
+  const share = (band: string) => '=IFERROR(TEXT(SUM(WorklistByOffice[' + band + "])/SUM(WorklistByOffice[Total]),\"0%\")&\" of the worklist\",\"\")";
+  tile(sheet, "A", "D", 4, "VETERANS ON THE WORKLIST", "=SUM(WorklistByOffice[Total])", '="across "&ROWS(WorklistByOffice[OFFICE_NAME])&" offices"', NAVY);
+  tile(sheet, "E", "H", 4, "OVERDUE", "=SUM(WorklistByOffice[Overdue])", share("Overdue"), RED);
+  tile(sheet, "I", "L", 4, "DUE SOON", "=SUM(WorklistByOffice[Due soon])", share("Due soon"), AMBER);
+  tile(sheet, "M", "P", 4, "CURRENT", "=SUM(WorklistByOffice[Current])", share("Current"), GREEN);
+
+  // 1. Office by band, horizontal so long office names read down the left side.
+  placeSection(
+    sheet, "A", "P", 8, "1. Where are veterans waiting longest?",
+    "Each bar is one office. Its length is the number of veterans on the worklist at that office, split by how long it has been since the last JVSG staff note: " +
+    "red = Overdue (30 or more days), amber = Due soon (15 to 29 days), green = Current (under 15 days). " +
+    "Look for offices with long red segments: those are the best places to focus outreach first. Day thresholds are examples pending program-owner confirmation."
+  );
+  const chart = sheet.addChart(ExcelScript.ChartType.barStacked, byOffice.getRange(), ExcelScript.ChartSeriesBy.columns);
+  chart.setPosition("A11", "P50");
   chart.getLegend().setPosition(ExcelScript.ChartLegendPosition.bottom);
+  styleChart(chart, "Veterans by office and follow-up band", "Office", "Number of veterans");
+  chart.getAxes().getCategoryAxis().setReversePlotOrder(true);
+  chart.getAxes().getCategoryAxis().getFormat().getFont().setSize(9);
   chart.getSeries().forEach((series) => {
     const name = series.getName();
     if (name === "Total") {
@@ -81,42 +130,97 @@ function buildOffices(workbook: ExcelScript.Workbook, byOffice: ExcelScript.Tabl
     }
   });
 
-  // Days since last contact buckets.
-  sheet.getRange("J4:K4").setValues([["Days since contact", "Veterans"]]);
-  header(sheet.getRange("J4:K4"));
+  // 2 and 3. Distribution charts with their data underneath.
+  placeSection(sheet, "A", "H", 52, "2. How long since the last contact?",
+    "Each column counts veterans by the number of days since their most recent JVSG staff note this fiscal year. A tall column at the right (181 days or more) means many veterans have gone a long time without contact.");
+  placeSection(sheet, "I", "P", 52, "3. How much contact have they had?",
+    "Each column counts veterans by how many JVSG staff notes they have this fiscal year. A tall column at 1 means most veterans have had only one touch, so they may be the easiest to lose.");
+
+  // Data tables sit under the charts so the numbers are visible.
+  sheet.getRange("A74:D74").merge(false);
+  sheet.getRange("A74").setValue("Days since contact");
+  sheet.getRange("E74:H74").merge(false);
+  sheet.getRange("E74").setValue("Veterans");
+  header(sheet.getRange("A74:H74"));
   const days = "Worklist[DAYS_SINCE_CONTACT]";
-  sheet.getRange("J5:K9").setFormulas([
+  const dayRows: [string, string][] = [
     ["0-90", "=COUNTIFS(" + days + ',">=0",' + days + ',"<=90")'],
     ["91-180", "=COUNTIFS(" + days + ',">=91",' + days + ',"<=180")'],
     ["181-270", "=COUNTIFS(" + days + ',">=181",' + days + ',"<=270")'],
     ["271-365", "=COUNTIFS(" + days + ',">=271",' + days + ',"<=365")'],
     ["Over 365", "=COUNTIFS(" + days + ',">365")'],
-  ]);
-  sheet.getRange("J5:J9").setNumberFormat("@");
-  const daysChart = sheet.addChart(ExcelScript.ChartType.columnClustered, sheet.getRange("J4:K9"), ExcelScript.ChartSeriesBy.columns);
-  daysChart.getTitle().setText("Days since last contact");
+  ];
+  dayRows.forEach(([label, formula], i) => {
+    const r = 75 + i;
+    sheet.getRange("A" + r + ":D" + r).merge(false);
+    sheet.getRange("A" + r).setNumberFormat("@");
+    sheet.getRange("A" + r).setValue(label);
+    sheet.getRange("E" + r + ":H" + r).merge(false);
+    sheet.getRange("E" + r).setFormula(formula);
+  });
+  // Chart source: use two contiguous helper columns (label and count).
+  sheet.getRange("R74:S74").setValues([["Days since contact", "Veterans"]]);
+  sheet.getRange("R75:S79").setFormulas(dayRows.map(([label, formula]) => [label, formula]));
+  sheet.getRange("R75:R79").setNumberFormat("@");
+  sheet.getRange("R:S").setColumnHidden(true);
+  const daysChart = sheet.addChart(ExcelScript.ChartType.columnClustered, sheet.getRange("R74:S79"), ExcelScript.ChartSeriesBy.columns);
+  daysChart.setPosition("A55", "H72");
   daysChart.getLegend().setVisible(false);
-  daysChart.setPosition("J11", "P24");
+  styleChart(daysChart, "Veterans by days since last contact", "Days since last contact", "Number of veterans");
+  daysChart.getSeries().forEach((series) => {
+    series.getFormat().getFill().setSolidColor(NAVY);
+    series.setHasDataLabels(true);
+  });
 
-  // Note count buckets.
-  sheet.getRange("A27:B27").setValues([["JVSG notes this FY", "Veterans"]]);
-  header(sheet.getRange("A27:B27"));
+  sheet.getRange("I74:L74").merge(false);
+  sheet.getRange("I74").setValue("JVSG notes this FY");
+  sheet.getRange("M74:P74").merge(false);
+  sheet.getRange("M74").setValue("Veterans");
+  header(sheet.getRange("I74:P74"));
   const notes = "Worklist[JVSG_NOTE_COUNT]";
-  sheet.getRange("A28:B32").setFormulas([
+  const noteRows: [string, string][] = [
     ["1", "=COUNTIFS(" + notes + ",1)"],
     ["2", "=COUNTIFS(" + notes + ",2)"],
     ["3", "=COUNTIFS(" + notes + ",3)"],
     ["4", "=COUNTIFS(" + notes + ",4)"],
     ["5 or more", "=COUNTIFS(" + notes + ',">=5")'],
-  ]);
-  sheet.getRange("A28:A32").setNumberFormat("@");
-  const notesChart = sheet.addChart(ExcelScript.ChartType.columnClustered, sheet.getRange("A27:B32"), ExcelScript.ChartSeriesBy.columns);
-  notesChart.getTitle().setText("JVSG note count");
+  ];
+  noteRows.forEach(([label, formula], i) => {
+    const r = 75 + i;
+    sheet.getRange("I" + r + ":L" + r).merge(false);
+    sheet.getRange("I" + r).setNumberFormat("@");
+    sheet.getRange("I" + r).setValue(label);
+    sheet.getRange("M" + r + ":P" + r).merge(false);
+    sheet.getRange("M" + r).setFormula(formula);
+  });
+  sheet.getRange("T74:U74").setValues([["JVSG notes this FY", "Veterans"]]);
+  sheet.getRange("T75:U79").setFormulas(noteRows.map(([label, formula]) => [label, formula]));
+  sheet.getRange("T75:T79").setNumberFormat("@");
+  sheet.getRange("T:U").setColumnHidden(true);
+  const notesChart = sheet.addChart(ExcelScript.ChartType.columnClustered, sheet.getRange("T74:U79"), ExcelScript.ChartSeriesBy.columns);
+  notesChart.setPosition("I55", "P72");
   notesChart.getLegend().setVisible(false);
-  notesChart.setPosition("D26", "H40");
+  styleChart(notesChart, "Veterans by number of JVSG notes", "JVSG notes this fiscal year", "Number of veterans");
+  notesChart.getSeries().forEach((series) => {
+    series.getFormat().getFill().setSolidColor(NAVY);
+    series.setHasDataLabels(true);
+  });
+}
 
-  sheet.getRange("A:A").getFormat().setColumnWidth(120);
-  sheet.getRange("J:J").getFormat().setColumnWidth(120);
+function placeSection(sheet: ExcelScript.Worksheet, first: string, last: string, row: number, title: string, text: string): void {
+  const head = sheet.getRange(first + row + ":" + last + row);
+  head.getFormat().getFill().setColor(NAVY);
+  head.getFormat().getFont().setColor("#FFFFFF");
+  head.getFormat().getFont().setBold(true);
+  sheet.getRange(first + row).setValue(title);
+  const body = sheet.getRange(first + (row + 1) + ":" + last + (row + 1));
+  body.merge(false);
+  body.setValue(text);
+  body.getFormat().setWrapText(true);
+  body.getFormat().setVerticalAlignment(ExcelScript.VerticalAlignment.top);
+  body.getFormat().getFill().setColor("#F4F7F9");
+  body.getFormat().getFont().setColor(INK);
+  sheet.getRange("A" + (row + 1)).getFormat().setRowHeight(60);
 }
 
 function buildWatchlist(workbook: ExcelScript.Workbook): void {

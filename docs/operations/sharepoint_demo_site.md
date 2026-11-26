@@ -137,8 +137,9 @@ Age`, `Watchlist`, `Drilldown`, `Definitions`) are built by `BuildDetailTabs.ts`
 1. With `Worklist` and `WorklistByOffice` loaded and refreshed, open **Automate >
    New Script**, paste
    [BuildDetailTabs.ts](../../src/jvsg_triage/m365/sharepoint_demo/office-scripts/BuildDetailTabs.ts)
-   and **Run**. It creates `Offices and Age` (office-by-band chart, days-since-contact
-   and note-count charts), `Watchlist` (top 50 overdue), `Drilldown` (office, band
+   and **Run**. It creates `Offices and Age` (four summary tiles, a horizontal office-by-band bar chart
+   with office names down the left, and days-since-contact and note-count charts,
+   each with a plain-language explanation and its data table), `Watchlist` (top 50 overdue), `Drilldown` (office, band
    and minimum-days filters in B4:B6, up to 100 rows) and `Definitions`, all as live
    formulas over the two tables. It deletes and recreates only those four sheets.
    **Referral profile panel:** Drilldown columns L to P hold a draft community
