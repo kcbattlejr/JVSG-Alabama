@@ -20,9 +20,11 @@ Jobs for Veterans State Grant (JVSG) specialists routinely document outreach and
 In state workforce case-management platforms, narrative case notes serve as the primary record of frontline veteran engagement. However, standard operational reports query formal service tables—rendering veterans invisible when staff document intake triage, employer outreach, or barrier stabilization solely through notes. To answer the fundamental operational question—*"Which veterans in my caseload have exceeded contact-timeliness thresholds?"*—this architecture shifts the population anchor from **service enrollment** to **note authorship**: a veteran enters the active follow-up cohort when an authorized JVSG staff member authors a case note within the current fiscal year.
 
 ### 1.2 Field Origins
-The engineering design emerged directly from frontline operations in Mobile, Alabama, where a two-person JVSG team (a Workforce Specialist and a Local Veterans' Employment Representative) identified two recurring failure modes:
+The engineering design emerged directly from frontline operations in Mobile, Alabama, where a two-person JVSG team (a Workforce Specialist and a Local Veterans' Employment Representative) identified three recurring failure modes:
 1. **Intake Attrition:** Veterans assessed at initial contact but not yet enrolled in intensive case management lacked automated tracking and were easily lost between manual spreadsheet reviews.
 2. **Unstructured Stability Risks:** Operational employment barriers—such as transit schedules, transitional housing curfews, legal obligations, and shift compatibility—resided solely in narrative notes. Matching a veteran to an employer based solely on occupational codes risked day-one placement failure if underlying stability barriers were overlooked.
+
+3. **Case-Management-to-Business-Services Handoff:** The Workforce Specialist (veteran case management) and the Workforce Outreach Specialist (business development) lacked a shared, quickly readable view of the same veterans, so employer outreach could not easily target veterans ready for placement. Making case-management data accessible to both roles is an explicit design goal.
 
 These practitioner insights—first shared at statewide JVSG training in October 2026—motivated the deterministic four-domain barrier model (Section 6) and structured referral brief (Section 8). They represent field-informed design hypotheses rather than empirically evaluated outcomes.
 

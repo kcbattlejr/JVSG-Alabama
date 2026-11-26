@@ -42,6 +42,8 @@
 >
 > To close this gap without costly infrastructure procurement or invasive database modifications, Alabama's Jobs for Veterans State Grant (JVSG) team engineered a lightweight, auditable Extract, Transform, Load (ETL) and visualization pipeline built entirely on existing enterprise tools. Operating within strict read-only database constraints, the workflow extracts structured metadata from note activity via single-statement SQL queries, enforces schema validation and strict role-based data segregation inside SharePoint, transforms records deterministically via Power Query, and delivers dual-tier dashboards in Excel Online.
 >
+> A second goal is to improve communication between the two roles on the Mobile team: the Workforce Specialist, who focuses on veteran case management, and the Workforce Outreach Specialist, who focuses on business development. The tool makes case-management data easier for both to access, so employer outreach can be matched to veterans who are ready for placement without opening multiple MIS windows.
+>
 > The architecture separates operational needs from executive oversight: frontline staff access an action-oriented follow-up worklist with data-freshness indicators and a rule-based referral brief, while managers view suppressed, aggregate cohort metrics that protect individual privacy. By designing around deterministic rules, automated schema checks, and human-in-the-loop governance, the system leaves GeoSol intact as the authoritative system of record. The current implementation uses no large language models, performs no free-text mining of case notes, and triggers no automated external referrals—demonstrating how state agencies can achieve high-impact operational visibility safely, transparently, and at near-zero marginal cost.
 
 ---
@@ -82,6 +84,9 @@
 
 > **Direct Operational Value to Alabama:**
 > For JVSG specialists and LVERs, the dashboard replaces ad-hoc, error-prone spreadsheet manipulation with a standardized, repeatable daily workflow. Freshness indicators immediately alert staff to the currency of underlying MIS exports, while deterministic follow-up bands (Current, Due Soon, Overdue) prioritize outreach so no veteran is inadvertently overlooked. Additionally, the integrated referral brief translates structured profile fields into standardized partner-referral language—helping qualified staff connect veterans with community organizations to resolve housing, medical, legal, or training barriers before job placement. Crucially, human judgment remains central: staff review, edit, and approve every referral brief manually.
+>
+> **Bridging Case Management and Business Services:**
+> The dashboard gives case managers and business-services staff a shared, plain view of the same follow-up data. The Workforce Specialist can surface veterans who are ready for employer referral, and the Workforce Outreach Specialist can see who is available when engaging employers, replacing ad-hoc handoffs. Staff still review every referral and placement decision.
 >
 > **A Replicable Blueprint for State Workforce Agencies:**
 > Many state workforce agencies operate under identical architectural constraints: legacy MIS platforms with read-only reporting windows, strict PII boundaries, limited IT budgets, and restricted access to cloud automation suites. Rather than offering a proprietary black-box product, Alabama's initiative provides a transparent, vendor-neutral engineering pattern that any state can replicate using existing Microsoft 365 and SQL tools:
