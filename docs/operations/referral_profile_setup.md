@@ -14,7 +14,7 @@ Workbook steps: [sharepoint_demo_site.md](sharepoint_demo_site.md), section
 | Step | What | State |
 |---|---|---|
 | 1 | Re-run steps 17 and 21, refresh the dashboard | Per batch |
-| 2 | Run `sql/28` (service codes) and `sql/30` (housing and employment history columns) | Not run |
+| 2 | Run `sql/28` (service codes); find housing and employment history columns (step 30 is blocked) | Not done |
 | 3 | Put codes in `svc_map` in `sql/29`, run it, save the CSV | Not run |
 | 4 | Add `Profile` and `Classification` queries to the workbook | Not done |
 | 5 | Check counts and spot-check veterans with staff | Not done |
@@ -29,10 +29,19 @@ Workbook steps: [sharepoint_demo_site.md](sharepoint_demo_site.md), section
    (`csv/manager/`, `restricted/csv/worklist/`).
 2. **Step 28** (`28_referral_profile_service_inventory.sql`): counts of service
    codes the candidates used in the last 365 days. No identifiers.
-3. Run **step 30** (`30_referral_profile_column_discovery.sql`): table and column
-   names only, to find the housing stability column on the Wagner-Peyser
-   application (`tbl_case`, program 3) and the employment history table. Then
-   fill the two `SLOT` comments in step 29 (housing and employment end date).
+3. **Step 30 cannot run in the query window**: MIS reports restricted tables for
+   `INFORMATION_SCHEMA` (metadata is blocked, as with the earlier step 08). Find
+   the two missing sources another way, then fill the two `SLOT` notes in the
+   step 29 header:
+   - Ask the vendor or IT for the full data dictionary for `tbl_case`,
+     `tbl_caseveteran` (the Wagner-Peyser application tables) and the employment
+     history table.
+   - Or open a veteran's Wagner-Peyser application and employment history screen
+     in MIS, note the field labels for housing stability and the employment
+     history grid, and send me the labels and any page or table names shown;
+     I'll map them to columns.
+   - Then test one guess at a time: `SELECT TOP 5 k.<column> AS [x] FROM
+     dbo.tbl_case AS k` fails with "invalid column" if the name is wrong.
 4. Choose, with the program owner, the codes that mean:
    `medical` (medical referral or service), `training_enrolled`, `credential`,
    `training_completion`. Leave `'N/A'` for any you cannot identify; that field
@@ -51,14 +60,14 @@ Workbook steps: [sharepoint_demo_site.md](sharepoint_demo_site.md), section
 | OFFICE_NAME | `onestopoffice_lu.onestopname` via `indstaff.office` | Same as step 17. |
 | LAST_CONTACT_DATE, DAYS_SINCE_CONTACT | Latest valid case note, any staff | Same as step 17. |
 | CONTACT_INFO_UPDATED_DATE | `ind.col_edit_date` | Proxy: last edit of the whole record, not proof the phone or address is current. |
-| HOMELESS_FLAG | `indveteran.col_vethomeless` = 1 or `col_homelessreintegration` = 1 | 0 only when `col_vethomeless` = 0; otherwise NULL. |
-| HOUSING_UNSTABLE_FLAG | Housing stability on the veteran's most recent Wagner-Peyser application (`tbl_case`, `col_programid` = 3, latest `col_appdate`, not a partial save), documented at registration | Column not yet identified (step 30). NULL until the slot is filled. The application date shows how old the answer is. |
+| HOMELESS_FLAG | `indveteran.col_vethomeless` or `col_homelessreintegration` = 1, or the latest WP application's `tbl_caseveteran.col_vethomeless` = 1 | 0 only when `col_vethomeless` = 0; otherwise NULL. |
+| HOUSING_UNSTABLE_FLAG | Housing stability on the veteran's most recent Wagner-Peyser application (`tbl_case`, `col_programid` = 3, latest `col_appdate`, not a partial save), documented at registration | Column not yet identified (step 30 is blocked; see section 1). NULL until the slot is filled. The application date shows how old the answer is. |
 | DISABILITY_FLAG | `indveteran.vetdisability` 1 or 2 (0 = no) | |
 | JUSTICE_FLAG | `indveteran.col_incarceration` | Meaning: released from incarceration in the past 12 months. |
 | LAST_MEDICAL_SERVICE_DATE | `serviceplan.actualdate` for the `medical` codes | Needs `svc_map`. |
 | TRAINING_ENROLLED_FLAG | `serviceplan` rows for `training_enrolled` codes in the last 365 days | Needs `svc_map`; NULL until set. |
 | LAST_OUTCOME_TYPE, LAST_OUTCOME_DATE | Latest `credential` or `training_completion` service | Needs `svc_map`. |
-| LAST_EMPLOYMENT_END_DATE | Employment history table | Table not in the schema document; find it with step 30. NULL until the slot is filled. |
+| LAST_EMPLOYMENT_END_DATE | Employment history table | Table not in the schema document; find it via the vendor dictionary or the MIS screen. NULL until the slot is filled. |
 
 ## 3. Open questions to settle before relying on the output
 
@@ -99,5 +108,5 @@ expected counts, once real data is loaded.
   staff review; it is not a referral or eligibility decision.
 - Keep the profile CSV, workbook and TOON files in the restricted SharePoint
   library only.
-- Validate the SQL against MIS records before any wider use. Steps 28, 29 and 30
-  have not been run.
+- Validate the SQL against MIS records before any wider use. Steps 28 and 29
+  have not been run; step 30 is blocked.
