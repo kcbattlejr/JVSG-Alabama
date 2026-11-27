@@ -10,21 +10,22 @@
 
 ## Abstract
 
-Jobs for Veterans State Grant (JVSG) specialists routinely document outreach and barrier-resolution work as free-text case notes inside state Management Information Systems (MIS). Because native MIS reporting typically anchors on formal service enrollments rather than narrative note activity, frontline staff and managers lack visibility into which veterans have gone too long without follow-up contact. We present a low-cost, auditable data-engineering pipeline built entirely within existing enterprise constraints: read-only, single-statement SQL access, no external automation orchestrator, and strict Personally Identifiable Information (PII) boundaries. The pipeline (1) defines the active veteran population via note authorship using constrained Common Table Expressions (CTEs), (2) routes typed CSV exports into permission-isolated SharePoint libraries, (3) validates and transforms schemas deterministically via Power Query, and (4) delivers dual-tier dashboards in Excel Online powered by Office Scripts and non-volatile worksheet formulas. A rule-based barrier classifier and fixed-template community referral brief assist qualified staff while enforcing strict human-in-the-loop governance. We detail the architectural trade-offs, privacy controls, automated testing harness, and explicit validation boundaries of the prototype.
+Jobs for Veterans State Grant (JVSG) programs deliver strong employment outcomes for eligible veterans enrolled in formal case management under federal statutory criteria (38 U.S.C. § 4103A). However, because native state Management Information System (MIS) reports anchor on formal service enrollments rather than narrative case-note activity, veterans who receive initial intake triage or outreach from JVSG staff—but are ineligible for or not yet enrolled in formal case management—disappear from standard follow-up queues. We present a low-cost, auditable data-engineering pipeline built entirely within existing enterprise constraints: read-only, single-statement SQL access, no external automation orchestrator, and strict Personally Identifiable Information (PII) boundaries. The pipeline (1) defines the active veteran cohort via note authorship using constrained Common Table Expressions (CTEs), (2) routes typed CSV exports into permission-isolated SharePoint libraries, (3) validates and transforms schemas deterministically via Power Query, and (4) delivers dual-tier dashboards in Excel Online powered by Office Scripts and non-volatile worksheet formulas. A rule-based barrier classifier (`Steps 28–29`) and fixed-template community referral brief assist qualified staff in executing statewide partner-referral campaigns and descriptive cohort trend profiling while enforcing strict human-in-the-loop governance. We detail the architectural trade-offs, privacy controls, automated testing harness, and explicit validation boundaries of the system.
 
 ---
 
 ## 1. Operational Problem and Engineering Constraints
 
-### 1.1 Reframing Population Visibility Around Note Activity
-In state workforce case-management platforms, narrative case notes serve as the primary record of frontline veteran engagement. However, standard operational reports query formal service tables—rendering veterans invisible when staff document intake triage, employer outreach, or barrier stabilization solely through notes. To answer the fundamental operational question—*"Which veterans in my caseload have exceeded contact-timeliness thresholds?"*—this architecture shifts the population anchor from **service enrollment** to **note authorship**: a veteran enters the active follow-up cohort when an authorized JVSG staff member authors a case note within the current fiscal year.
+### 1.1 Extending Visibility Beyond Formal Case Management
+Alabama's JVSG program consistently achieves strong employment results for veterans enrolled in formal case management. Under federal statutory eligibility guidelines (38 U.S.C. § 4103A and DOL VETS policy), intensive JVSG case management is strictly reserved for veterans who attest to qualifying Significant Barriers to Employment (SBEs) or belong to designated priority populations. Because native MIS operational reports query formal service-enrollment tables, veterans who engage with JVSG staff at intake—and have their interactions recorded in narrative case notes—but are ineligible for or not yet enrolled in formal case management vanish from standard follow-up views.
+
+Rather than treating that statutory boundary as a dead end, this architecture reframes the non-case-managed cohort as an opportunity to leave no veteran behind and better serve individuals facing high stability challenges. To answer the operational question—*"Which veterans documented by JVSG staff have exceeded contact-timeliness thresholds, and what structured barriers do their profiles reveal?"*—the pipeline shifts the population anchor from **service enrollment** to **note authorship**: a veteran enters the active follow-up cohort when an authorized JVSG staff member authors a case note within the current fiscal year. This shift unlocks both immediate statewide partner-referral outreach and aggregate profile trend analysis across a previously invisible population.
 
 ### 1.2 Field Origins
-The engineering design emerged directly from frontline operations in Mobile, Alabama, where a two-person JVSG team (a Workforce Specialist and a Local Veterans' Employment Representative) identified three recurring failure modes:
-1. **Intake Attrition:** Veterans assessed at initial contact but not yet enrolled in intensive case management lacked automated tracking and were easily lost between manual spreadsheet reviews.
-2. **Unstructured Stability Risks:** Operational employment barriers—such as transit schedules, transitional housing curfews, legal obligations, and shift compatibility—resided solely in narrative notes. Matching a veteran to an employer based solely on occupational codes risked day-one placement failure if underlying stability barriers were overlooked.
-
-3. **Case-Management-to-Business-Services Handoff:** The Workforce Specialist (veteran case management) and the Workforce Outreach Specialist (business development) lacked a shared, quickly readable view of the same veterans, so employer outreach could not easily target veterans ready for placement. Making case-management data accessible to both roles is an explicit design goal.
+The engineering design emerged directly from frontline operations in Mobile, Alabama, where a two-person JVSG team (a Workforce Specialist and a Local Veterans' Employment Representative) identified three recurring operational opportunities:
+1. **Non-Case-Managed Intake Visibility:** Veterans assessed at initial contact who did not qualify for—or were not yet enrolled in—intensive case management lacked automated tracking and risked slipping through the cracks between manual spreadsheet reviews.
+2. **Unstructured Stability Risks & Profile Trends:** Operational employment barriers—such as transit schedules, transitional housing curfews, legal obligations, medical/VA delays, and training gaps—resided in intake profiles and narrative notes. Surfacing structured barrier indicators allows staff to connect high-challenge veterans with community partners and enables leadership to spot recurring regional trends across non-enrolled veterans.
+3. **Case-Management-to-Business-Services Handoff:** The Workforce Specialist (veteran case management) and the Workforce Outreach Specialist (business development) lacked a shared, quickly readable view of the same veterans, so employer outreach could not easily target veterans ready for placement. Making case-management and follow-up visibility accessible to both roles is an explicit design goal.
 
 These practitioner insights—first shared at statewide JVSG training in October 2026—motivated the deterministic four-domain barrier model (Section 6) and structured referral brief (Section 8). They represent field-informed design hypotheses rather than empirically evaluated outcomes.
 
@@ -41,7 +42,7 @@ Every technical decision was shaped by six non-negotiable institutional boundari
 | **Absent Org-Chart Metadata** | The MIS lacks hierarchical supervisor tables; JVSG staff scope is resolved via explicit privilege-group and title rules. |
 
 ### 1.4 Scope and Non-Claims
-To maintain rigorous technical transparency, this paper claims **no** measured staff time savings, **no** formal accuracy validation of classification thresholds, **no** causal impact on veteran employment outcomes, and **no** production scheduling approval. Section 13 defines the formal validation protocol required prior to operational scaling.
+To maintain rigorous technical transparency, this paper claims **no** measured staff time savings, **no** formal accuracy validation of classification thresholds, **no** causal impact on veteran employment outcomes, and **no** production scheduling approval. Cohort profile trend analysis (`Steps 21` and `29`) is strictly descriptive—summarizing structured intake fields and timeliness distributions to guide human outreach rather than making predictive or clinical claims. Section 13 defines the formal validation protocol required prior to long-term operational scaling.
 
 ---
 
@@ -51,7 +52,7 @@ Data security is enforced structurally across three isolated storage tiers (gove
 
 1. **Tier 1 — Public / Source Control:** Contains application code, Power Query scripts, Office Scripts, schema contracts, documentation, and synthetic data generators. Zero live data or third-party PDFs are permitted.
 2. **Tier 2 — Restricted Operational SharePoint:** Houses live CSV exports and the production Excel workbook inside a dedicated `/restricted` folder with broken permission inheritance restricted strictly to authorized JVSG personnel. Worksheet hiding is treated as a UI convenience, never a security boundary.
-3. **Tier 3 — Manager Aggregate Layer:** Exposes de-identified, cell-suppressed summary counts (`step 21`) to leadership without row-level veteran access.
+3. **Tier 3 — Manager Aggregate Layer:** Exposes de-identified, cell-suppressed summary counts (`Step 21`) to leadership without row-level veteran access.
 
 **Core Privacy Invariants:** State IDs are treated as direct identifiers; free-text case notes are never exported by follow-up queries; and rule-based outputs serve strictly as advisory drafts requiring human verification.
 
@@ -86,8 +87,9 @@ Data security is enforced structurally across three isolated storage tiers (gove
                                   |
                                   v
 +-------------------------------------------------------------------+
-| Human-in-the-Loop Case Manager Review                             |
-|   -> Staff verify MIS records, edit brief, and execute outreach   |
+| Human-in-the-Loop Case Manager Review & Statewide Outreach        |
+|   -> Staff verify MIS records, edit brief, and execute partner    |
+|      referrals & follow-up contacts                               |
 +-------------------------------------------------------------------+
 ```
 
@@ -117,8 +119,8 @@ Because the MIS query interface rejects non-compliant SQL only at runtime, an au
 ### 4.5 Small-Cell Suppression and Differencing Protection
 Manager summaries (`Step 21`) aggregate counts by office group and age band, suppressing cells where $n < 10$. To mitigate **differencing attacks**—where a hidden cell value can be deduced by subtracting visible rows from a grand total—the pipeline renders `"Suppressed"` string literals rather than zeros, isolates row-level worklists (`Step 17`) inside restricted folders, and enforces internal total reconciliation without co-publishing granular and aggregate tables to the same audience.
 
-### 4.6 Structured Barrier Extraction (`Steps 28–29`)
-Exploratory query `Step 28` audits structured demographic and intake fields across four barrier domains (training, housing, medical, legal), while `Step 29` exports only validated non-narrative columns. Where upstream structured fields are unpopulated, the classifier explicitly assigns `UNK` (*no structured evidence*) rather than falsely implying the absence of a barrier.
+### 4.6 Structured Barrier Extraction & Cohort Profiling (`Steps 28–29`)
+Exploratory query `Step 28` audits structured demographic and intake fields across four barrier domains (training, housing, medical, legal), while `Step 29` exports only validated non-narrative columns. Where upstream structured fields are unpopulated, the classifier explicitly assigns `UNK` (*no structured evidence*) rather than falsely implying the absence of a barrier. Combined with `Step 17` and `Step 21`, these structured exports enable leadership to deep-dive cohort profiles across the non-case-managed population—identifying co-occurring barrier clusters (e.g., housing paired with legal or medical challenges), age-cohort attrition trends, and LWIA-level support needs without reading free-text case notes.
 
 ---
 
@@ -161,9 +163,14 @@ To ensure maintainability by agency analysts without requiring proprietary BI li
 
 ---
 
-## 8. Human-in-the-Loop Referral Brief
+## 8. Human-in-the-Loop Referral Brief & Statewide Outreach Mobilization
 
-The referral panel maps structured barrier states to standardized partner-referral **templates**. By design, the output reports only what structured intake fields indicate—never diagnosing clinical needs or prescribing services. Qualified JVSG staff review the draft against live MIS case notes, edit the text as appropriate, and manually initiate partner contact.
+The referral panel maps structured barrier states to standardized partner-referral **templates**. By design, the output reports only what structured intake fields indicate—never diagnosing clinical needs or prescribing services.
+
+Operationally, this workflow powers Alabama's statewide re-engagement and partner-referral campaign for non-case-managed veterans:
+1. **Identify High-Challenge Profiles:** Regional specialists and LVERs filter overdue queues (`Drilldown`/`Watchlist`) and inspect multi-domain barrier profiles (`Profile` tab) to surface veterans facing housing, medical, legal, or training obstacles outside formal JVSG case management.
+2. **Verify & Tailor Outreach:** Qualified JVSG staff cross-check the draft brief against live MIS case notes, edit the referral language as appropriate, and initiate warm handoffs to community partners, Veteran Service Organizations (VSOs), or American Job Center (AJC) partners.
+3. **Close the Follow-Up Loop:** Staff record outreach outcomes directly in GeoSol, ensuring non-enrolled veterans receive structured follow-up without altering the read-only pipeline.
 
 ---
 
@@ -205,17 +212,17 @@ The repository ships a self-contained demonstration kit (`demo/naswa_demo/`) tha
 | **Unvalidated Cohort Boundaries** | Audit a stratified sample of `Step 17` rows against live MIS screens to verify inclusion/exclusion edge cases. |
 | **Heuristic Staff Identification** | Reconcile privilege-group/title CTE rules quarterly against official JVSG personnel rosters. |
 | **Manual File Exports** | Partner with agency IT/MIS to transition from manual uploads to scheduled, encrypted file drops. |
-| **Unconfirmed Staleness Thresholds** | Obtain formal sign-off from the State JVSG Coordinator on 15/30-day contact and 180-day barrier thresholds. |
-| **Unmeasured Operational Outcomes** | Conduct a time-boxed pilot measuring prep-time reduction and follow-up timeliness before claiming impact. |
+| **Unconfirmed Staleness Thresholds** | Obtain formal sign-off from the State JVSG Coordinator on 15/30-day contact and 180-day barrier thresholds using feedback from the statewide outreach campaign. |
+| **Unmeasured Operational Outcomes** | Conduct a structured post-campaign evaluation measuring prep-time reduction, partner-referral completion, and follow-up timeliness before claiming outcome gains. |
 
 ---
 
 ## 14. Future Roadmap
 
-1. **Formal Validation & Scheduled Ingestion:** Complete the MIS screen audit and seek IT authorization for automated read-only exports.
-2. **Enterprise BI Scaling:** Evaluate migration of aggregate manager views to Power BI with Row-Level Security (RLS) if licensing expands.
+1. **Statewide Campaign Feedback & Formal Validation:** Incorporate practitioner feedback from the December 2026 statewide partner-referral and profile-analysis campaign into the MIS screen audit, and seek IT authorization for scheduled read-only exports.
+2. **Enterprise BI Scaling:** Evaluate migration of aggregate manager views and cross-LWIA barrier trend matrices to Power BI with Row-Level Security (RLS) if licensing expands.
 3. **Privacy-Gated NLP Exploration:** Evaluate local/private Small Language Models (SLMs) for structured barrier extraction using the de-identified TOON contract—strictly deferred until formal privacy review and mandatory human sign-off ([TOON & SLM Plan](../planning/toon_and_slm_barrier_dx_plan.md)).
-4. **Cross-State Transfer Package:** Publish parameterized SQL templates and an implementation guide for fellow NASWA member agencies.
+4. **Cross-State Transfer Package:** Publish parameterized SQL templates and an implementation guide for fellow NASWA member agencies seeking to extend visibility to non-case-managed veterans.
 
 ---
 
@@ -225,6 +232,7 @@ The repository ships a self-contained demonstration kit (`demo/naswa_demo/`) tha
 * **JVSG:** Jobs for Veterans State Grants (U.S. Department of Labor VETS program).
 * **LVER:** Local Veterans' Employment Representative.
 * **MIS:** State Management Information System (GeoSol).
+* **SBE:** Significant Barrier to Employment (statutory eligibility criterion under 38 U.S.C. § 4103A).
 * **TOON:** Token-Oriented Object Notation (compact, de-identified tabular interchange format).
 * **UNK:** Unknown state (indicates no structured evidence in source fields).
 
